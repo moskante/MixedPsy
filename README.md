@@ -4,4 +4,3 @@ The aim of the mixedpsychophysics project is to provide statistical tools (such 
 19 April 2010
 Work In Progress.
 See https://mixedpsychophysics.wordpress.com/ for a stable relase and documentation.
-TEST
