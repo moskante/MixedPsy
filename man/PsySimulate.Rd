@@ -8,7 +8,7 @@ Simulate psychophysical data.
 Given the arrays of fixed and random effects, as well as the covariance, and the characteristic of the simulated experiment (i.e., ) the function simulates a dataset in which for each subject the following information is provided: the slope and intercept value of the psychometric function, and the simulated responses to the stimulus levels that fit that function.
 }
 \usage{
-MERsimulate(fixeff, raneff, nsubjects, pps, ntrials, xint, constant = F)
+PsySimulate(fixeff, raneff, nsubjects, pps, ntrials, xint, constant = F)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
