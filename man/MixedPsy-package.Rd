@@ -1,25 +1,25 @@
-\name{merpsychophysics-package}
-\alias{merpsychophysics-package}
-\alias{merpsychophysics}
+\name{MixedPsy-package}
+\alias{MixedPsy-package}
+\alias{MixedPsy}
 \docType{package}
 \title{
-\packageTitle{merpsychophysics}
+\packageTitle{MixedPsy}
 }
 \description{
-\packageDescription{merpsychophysics}
+\packageDescription{MixedPsy}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{merpsychophysics}
-\packageIndices{merpsychophysics}
+\packageDESCRIPTION{MixedPsy}
+\packageIndices{MixedPsy}
 ~~ An overview of how to use the package, including the most important ~~
 ~~ functions ~~
 }
 \author{
-\packageAuthor{merpsychophysics}
+\packageAuthor{MixedPsy}
 
-Maintainer: \packageMaintainer{merpsychophysics}
+Maintainer: \packageMaintainer{MixedPsy}
 }
 \references{
 ~~ Literature or other references for background information ~~
