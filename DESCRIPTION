@@ -1,9 +1,16 @@
 Package: MixedPsy
 Type: Package
-Title: What the package does (short line)
+Title: Statistical tools for the psychophysics community
 Version: 1.0
 Date: 2015-07-05
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Authors@R: c(
+    person("Alessandro", "Moscatelli", email = "moskante@gmail.com", role = c("aut","cre")),
+    person("Priscilla", "Balestrucci", role = "aut"))
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Imports:
+  Matrix, 
+  mnormt
+  
+Suggests:
+
+License: GPL 3.0
