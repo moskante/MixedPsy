@@ -14,8 +14,8 @@ source("MERtreatment.r")
 source("pseMer.R")
 
 #for the single-subject analysis (psychometric function)
-source("delta.psy.probit.r")
-source("psych.function.r")
+source("psych.delta.R")
+source("psych.function.R")
 
 cat("The MERpsychophysics proto-package\n",
 	"Author: Alessandro Moscatelli\n",

@@ -18,7 +18,7 @@ psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
   myfit[[1]] = model.glm
   
   if(ps.link == "probit"){
-    myfit[[2]] = delta.psy.probit(model.glm)
+    myfit[[2]] = psych.delta(model.glm)
     if(ps.lines == T){
       segments(x0 = myfit[[2]][1,3], y0 = 0.5, x1 = myfit[[2]][1,4], y1 = 0.5,
                col = ps.col, lty = ps.lty)
