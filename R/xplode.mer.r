@@ -1,4 +1,4 @@
-#xplode.mer extract values and parametrs from a mer object. The FUN defines the statistics of interests
+#xplode.mer extract values and parametrs from a mer object.
 #To DO: adjust at line 115 for binary (single col) data
 xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = NA,
                       define.pf = list(pf1 = list(intercept = 1, slope = 2)))
