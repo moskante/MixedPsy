@@ -56,7 +56,7 @@ pseMer(mer.obj, B = 200, FUN = NULL, beep = F)
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (mer.obj, B = 200, FUN = NULL, beep = F) 
+function (mer.obj, B = 200, FUN = NULL, beep = F)
 {
     boot.flag = require("boot")
     if (boot.flag == F) {
@@ -79,15 +79,15 @@ function (mer.obj, B = 200, FUN = NULL, beep = F)
     if (is.null(parname)) {
         print("Warning messages: Parameters have no names")
     }
-    summary = matrix(NA, nrow = np, ncol = 3, dimnames = list(parname, 
+    summary = matrix(NA, nrow = np, ncol = 3, dimnames = list(parname,
         c("Estimate", "Inferior", "Superior")))
     boot.samp <- bootMer(mer.obj, myfun, nsim = B)
     summary[, 1] = boot.samp$t0
     jndpseconf = vector(mode = "list", length = np)
     for (i in 1:np) {
-        jndpseconf[[i]] <- boot.ci(boot.samp, type = c("norm", 
+        jndpseconf[[i]] <- boot.ci(boot.samp, type = c("norm",
             "basic", "perc"), index = i)
-        print(paste(parname[i], " 95\% CI:", jndpseconf[[i]]$perc[4], 
+        print(paste(parname[i], " 95\% CI:", jndpseconf[[i]]$perc[4],
             "  ", jndpseconf[[i]]$perc[5]))
         summary[i, 2] = jndpseconf[[i]]$perc[4]
         summary[i, 3] = jndpseconf[[i]]$perc[5]
