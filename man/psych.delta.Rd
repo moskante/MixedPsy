@@ -32,11 +32,11 @@ and the second is the slope. The estimate of the JND assumes a \emph{probit}
 link function.
 }
 \examples{
-#this is to simulate data from a single participant
-datafr.S1 <- MERsimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T)
+#load simulated data
+data(psych)
 #fit a glm (probit link)
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-family = binomial(link = "probit"), data = datafr.S1)
+family = binomial(link = "probit"), data = psych)
 psych.delta(model.glm)
 }
 \references{
