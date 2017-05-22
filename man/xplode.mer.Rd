@@ -34,7 +34,7 @@ A function to extract values from an object of class \code{"\linkS4class{merMod}
  \code{MixedPsy} functions.
 
 @examples
-datafr = MERsimulate(nsubjects = 10)
+datafr = PsySimulate(nsubjects = 10)
 mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 family = binomial(link = "probit"), data = datafr)
 xplode.mod1 = xplode.mer(model = mod1, name.cont = "X")

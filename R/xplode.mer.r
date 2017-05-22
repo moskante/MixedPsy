@@ -25,7 +25,7 @@
 #'  \code{MixedPsy} functions.
 #'
 #'  @examples
-#' datafr = MERsimulate(nsubjects = 10)
+#' datafr = PsySimulate(nsubjects = 10)
 #' mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 #' family = binomial(link = "probit"), data = datafr)
 #' xplode.mod1 = xplode.mer(model = mod1, name.cont = "X")
@@ -37,19 +37,22 @@ xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = 
 
   #To DO: adjust at line 115 for binary
   # (single col) data
-    xplode = vector("list", 25)
-    names(xplode) = c("fixef", "fixef.vcov", "n.psych.fun", "factor.col", "factor.colname", "factor.parnames",
+    xplode = vector("list", 27)
+    names(xplode) = c("fixef", "fixef.vcov", "ranef", "n.psych.fun", "factor.col", "factor.colname","factor.levels", "factor.parnames",
         "cont.col", "cont.colname", "psychometrics", "ranef.stddev", "ranef.VarCov", "multirand",
         "Groups", "Gp", "Groups.levels", "Groups.colnames", "flist", "nobs", "size", "response.colnames",
         "model.frame", "model.matrix", "rps", "formula", "family")
 
 
-    # 1)fixed effects--------------------------
+    #fixed effects--------------------------
     xplode$fixef = fixef(model)
 
     # Variance-Covariance Matrix of the fixed effects
     xplode$fixef.vcov = vcov(model)
-
+    
+    #random effects
+    xplode$ranef = ranef(model)
+    
     # Number of psychometric functions
     xplode$n.psych.fun = length(define.pf)
 
@@ -61,7 +64,9 @@ xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = 
         xplode$factor.col = which(names(model.frame(model)) == name.factor)
         xplode$factor.colname = name.factor
         n.factors = length(levels(model.frame(model)[, xplode$factor.col]))
-        factor.parnames = vector("character", n.factors)
+        xplode$factor.levels = levels(model.frame(model)[, xplode$factor.col])
+        factor.parnames =  vector("character", n.factors)
+        
         for (i in 1:n.factors) {
             xplode$factor.parnames[i] = paste(name.factor, levels(model.frame(model)[, xplode$factor.col])[i],
                 sep = "")
@@ -124,6 +129,8 @@ xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = 
     if (length(xplode$ranef.stddev) > 1) {
         xplode$ranef.VarCov = nearPD(VarCorr(model)[[1]])$mat
         xplode$multirand = TRUE
+    }else{
+        xplode$multirand = FALSE
     }
 
     # 3)family xplode$family = family(model) Bug fix 05.09.2014:
@@ -168,7 +175,7 @@ xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = 
     return(xplode)
 }
 
-# rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode.mer
+#FUNCTION: rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode.mer
 kombo = function(vector) {
   n = length(vector)
   if (n > 1) {
@@ -188,4 +195,28 @@ kombo = function(vector) {
     temp = vector
   }
   return(temp)
+}
+
+#FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
+curve.probit = function(X, x.from, x.to){
+  BETAplus = which(X[,2] > 0) 
+  Xplus = X[BETAplus,]
+  Xminus = X[-BETAplus,]
+  
+  if(nrow(Xplus) > 0){	
+    apply(X = Xplus, MARGIN = 1,
+          FUN = function(X) {curve(expr = pnorm(x, mean = -X[1]/X[2], sd = 1/X[2] ),
+                                   from = x.from, to = x.to,
+                                   col = X[3],
+                                   add = T)}
+    )}
+  
+  if(nrow(Xminus) > 0){
+    apply(X = Xminus, MARGIN = 1,
+          FUN = function(X) {curve(expr = 1 - pnorm(x, mean = -X[1]/X[2], sd = 1/abs(X[2] )),
+                                   from = x.from, to = x.to,
+                                   col = X[3],
+                                   add = T)}
+    )}
+  return(BETAplus)
 }
