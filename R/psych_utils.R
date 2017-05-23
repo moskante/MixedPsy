@@ -122,7 +122,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'                         x.range = c(40, 120), ps.lines = T)
 #' @export
 #'
-PsychFunction = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
+PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", br = F) {
   myfit = vector("list", 2)
   ps.terms = terms(ps.formula)
@@ -195,7 +195,7 @@ PsychFunction = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x
 #' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
 #'
 #' @export
-PsychShape = function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1) {
+PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1) {
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
     curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,

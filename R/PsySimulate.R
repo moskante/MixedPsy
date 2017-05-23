@@ -41,7 +41,7 @@
 #' @importFrom mnormt rmnorm
 #' @importFrom Matrix nearPD
 #'
-PsySimulate = function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, pps = 9, 
+PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, pps = 9, 
     ntrials = 40, xint = c(40, 120), constant = F) {
     
     

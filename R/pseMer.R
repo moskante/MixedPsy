@@ -1,6 +1,6 @@
 # CI of the jndpse and jnd based on bootMer{lme4.1} function
 
-pseMer = function(mer.obj, B = 200, FUN = NULL, beep = F) {
+pseMer <- function(mer.obj, B = 200, FUN = NULL, beep = F) {
 
     boot.flag = require("boot")
     if (boot.flag == F) {

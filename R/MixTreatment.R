@@ -57,7 +57,7 @@
 #'
 #'
 #'
-MixTreatment = function(xplode.obj, datafr) {
+MixTreatment <- function(xplode.obj, datafr) {
 
     treat.lev = nlevels(xplode.obj$model.frame[, xplode.obj$factor.col])
     temp.models = delta.par = temp.xplode = vector("list", treat.lev)
