@@ -51,7 +51,7 @@
 #' #1)use MixTreatment (note, you have to provide also the dataframe to the function)
 #' formula.mod = cbind(Longer, Total - Longer) ~ X * condition + (1 + X| Subject)
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr)
-#' xplode.mod1 = xplode.mer(model = mod1, name.cont = "X", name.factor = "condition")
+#' xplode.mod1 = xplode(model = mod1, name.cont = "X", name.factor = "condition")
 #' MixTreatment(xplode.mod1, datafr)
 #'
 #'
@@ -68,7 +68,7 @@ MixTreatment = function(xplode.obj, datafr) {
             base = i)
         temp.models[[i]] = glmer(formula = xplode.obj$formula, family = binomial("probit"), data = datafr,
             nAGQ = 1)
-        temp.xplode[[i]] = xplode.mer(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.fact = xplode.obj$factor.colname,
+        temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.fact = xplode.obj$factor.colname,
             define.pf = xplode.obj$define.pf)
         delta.par[[i]] = MERdelta.probit(temp.xplode[[i]])[[1]]
     }

@@ -24,7 +24,7 @@
 #' formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)
 #' define.mod = list(pf1 = list(intercept = 1, slope = 2))
-#' xplode.mod1 = xplode.mer(model = mod1, name.cont = "X", define.pf = define.mod)
+#' xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
 #' myplot = MixPlot(xplode.mod1, pf = 1,  p05line = F, x.ref = 60, x.range = c(0,160),
 #'  col = T,x.label = "Stimulus Intensity", y.label = "Predicted Response")
 #'
@@ -69,7 +69,7 @@ MixPlot = function(xplode.obj, pf = 1,  p05line = F, x.ref,
     estimates = data.frame(cbind(estimates, curvecolors))
   }
   
-  #see xplode.mer$moddel.frame
+  #see xplode$moddel.frame
   plot(y =  newdata[,1][,1]/newdata$size,
        x = newdata[,xplode.obj$cont.col],  xlim = x.range,
        xlab = x.label, ylim = c(0,1), ylab = y.label,
@@ -80,7 +80,7 @@ MixPlot = function(xplode.obj, pf = 1,  p05line = F, x.ref,
     abline(v = x.ref, col = "lightgrey", lty = "dashed")
   }
   
-  curve.probit(estimates, x.range[1], x.range[2])	
+  CurveProbit(estimates, x.range[1], x.range[2])	
   
   palette("default")	
   return(estimates)

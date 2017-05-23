@@ -29,7 +29,7 @@
 #'
 #' #psychometric function to fit single-subject data
 #' plot(Longer/Total ~ X, data = datafr.S1)
-#' fit.S1 = psych.function(ps.formula = cbind(Longer, Total - Longer) ~ X
+#' fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X
 #'                      ps.link = 'probit', ps.data = datafr.S1,
 #'                      x.range = c(40, 120), ps.lines = T)
 #'

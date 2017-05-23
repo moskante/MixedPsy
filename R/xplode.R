@@ -28,11 +28,11 @@
 #' datafr = PsySimulate(nsubjects = 10)
 #' mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 #' family = binomial(link = "probit"), data = datafr)
-#' xplode.mod1 = xplode.mer(model = mod1, name.cont = "X")
+#' xplode.mod1 = xplode(model = mod1, name.cont = "X")
 #' MERdelta.probit(xplode.mod2)
 #'
 #' @export
-xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = NA, define.pf = list(pf1 = list(intercept = 1,
+xplode = function(model, name.cont = NA, name.factor = NA, names.response = NA, define.pf = list(pf1 = list(intercept = 1,
     slope = 2))) {
 
   #To DO: adjust at line 115 for binary
@@ -175,7 +175,7 @@ xplode.mer = function(model, name.cont = NA, name.factor = NA, names.response = 
     return(xplode)
 }
 
-#FUNCTION: rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode.mer
+#FUNCTION: rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode
 kombo = function(vector) {
   n = length(vector)
   if (n > 1) {
@@ -198,7 +198,7 @@ kombo = function(vector) {
 }
 
 #FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
-curve.probit = function(X, x.from, x.to){
+CurveProbit = function(X, x.from, x.to){
   BETAplus = which(X[,2] > 0) 
   Xplus = X[BETAplus,]
   Xminus = X[-BETAplus,]

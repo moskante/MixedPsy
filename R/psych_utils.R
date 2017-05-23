@@ -5,13 +5,13 @@
 #' The method only applies to univariable GLMs (psychometric functions) having
 #' a \emph{probit} link function.
 #'
-#' @details \code{psych.delta} estimates PSE and JND of a univariable psychometric
+#' @details \code{PsychDelta} estimates PSE and JND of a univariable psychometric
 #' function (object of class \code{"glm"}).
 #'
 #' @param model the fitted psychometric function. An object of class \code{"glm"}.
 #' @param alpha significance level of the confidence interval.
 #'
-#' @return \code{psych.delta} returns a matrix including Estimate, Standard Error,
+#' @return \code{PsychDelta} returns a matrix including Estimate, Standard Error,
 #' Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
 #' are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 #'
@@ -40,10 +40,10 @@
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = psych)
-#' psych.delta(model.glm)
+#' PsychDelta(model.glm)
 #' @export
 #'
-psych.delta <- function(model, alpha = 0.05) {
+PsychDelta <- function(model, alpha = 0.05) {
 
     pse <- -model$coef[1]/model$coef[2]
     BETA <- model$coef[2]
@@ -71,7 +71,7 @@ psych.delta <- function(model, alpha = 0.05) {
 
 #' Fitting and Plotting Psychometric Functions
 #'
-#' \code{psych.function} is used to fit psychometric functions using either
+#' \code{PsychFunction} is used to fit psychometric functions using either
 #' \code{glm()} or \code{brglm()}, estimate the PSE, the JND and the related
 #' confidence intervals and draw the curve on an existing plot.
 #'
@@ -94,7 +94,7 @@ psych.delta <- function(model, alpha = 0.05) {
 #' whose range is specified from x.range. Std. Errors and 95\% confidence intervals
 #' of the PSE and JND are estimated via Delta Methods, see Faraggi et al (2003).
 #'
-#' @return \code{psych.function} returns list including the fitted glm (or brglm),
+#' @return \code{PsychFunction} returns list including the fitted glm (or brglm),
 #' the estimate of PSE and JND and a flag to indicate if brglm was called.
 #'
 #' @references
@@ -117,12 +117,12 @@ psych.delta <- function(model, alpha = 0.05) {
 #'
 #' #psychometric function to fit single-subject data
 #' plot(Longer/Total ~ X, data = datafr.S1)
-#' fit.S1 = psych.function(ps.formula = cbind(Longer, Total - Longer) ~ X,
+#' fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
 #'                         ps.link = "probit", ps.data = datafr.S1,
 #'                         x.range = c(40, 120), ps.lines = T)
 #' @export
 #'
-psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
+PsychFunction = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", br = F) {
   myfit = vector("list", 2)
   ps.terms = terms(ps.formula)
@@ -141,7 +141,7 @@ psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
   myfit[[1]] = model.glm
 
   if (ps.link == "probit") {
-    myfit[[2]] = psych.delta(model.glm)
+    myfit[[2]] = PsychDelta(model.glm)
     if (ps.lines == T) {
       segments(x0 = myfit[[2]][1, 3], y0 = 0.5, x1 = myfit[[2]][1, 4], y1 = 0.5, col = ps.col,
                lty = ps.lty)
@@ -164,7 +164,7 @@ psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 
 #' Fitting and Plotting Psychometric Functions
 #'
-#' \code{psych.shape()} plots a psychometric function of a known pse and jnd
+#' \code{PsychShape()} plots a psychometric function of a known pse and jnd
 #' on an existing plot.
 #'
 #' @param pse,jnd the pse and the jnd of the desired psychometric function
@@ -174,7 +174,7 @@ psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' @param ps.col color of the line to be plotted
 #' @param ps.lty line type the line to be plotted
 #'
-#' @details psych.shape() can be used to visualize the predicted results of a
+#' @details PsychShape() can be used to visualize the predicted results of a
 #' psychophysical experiment or to plot a fitted psychometric function whose
 #' values of pse and jnd are known. Currently only working with probit and logit
 #' link function.
@@ -190,12 +190,12 @@ psych.function = function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' y = c(0,1)
 #' x = c(-40, 40)
 #' plot(y ~ x, type = "n", bty = "n", lab = c(5,3,7))
-#' psych.shape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.col = "gray", ps.lwd = 3)
-#' psych.shape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black")
-#' psych.shape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
+#' PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.col = "gray", ps.lwd = 3)
+#' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black")
+#' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
 #'
 #' @export
-psych.shape = function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1) {
+PsychShape = function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1) {
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
     curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,
