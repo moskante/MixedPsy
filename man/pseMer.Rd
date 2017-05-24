@@ -43,10 +43,6 @@ based on the algorithm in Moscatelli et al, (2012). The current function is a si
 of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
 }
 \examples{
-library(lme4)
-library(boot)
-library(beepr)
-
 #load simulated data
 data(psych)
 formula.mod <- cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)

@@ -121,7 +121,8 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'                         ps.link = "probit", ps.data = datafr.S1,
 #'                         x.range = c(40, 120), ps.lines = T)
 #' @export
-#'
+#' @importFrom brglm brglm
+#' 
 PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", br = F) {
   myfit = vector("list", 2)
@@ -133,7 +134,6 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
   myfit[[3]] = brflag
 
   if (br == T & brflag == T) {
-    require(brglm)
     model.glm = brglm(formula = ps.formula, family = binomial(link = ps.link), data = ps.data)
     warning("Binomial-response GLMs fitted using the bias-reduction method (brglm)")
   }
@@ -206,7 +206,7 @@ PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps
       curve(expr = plogis(x, location = pse, scale = 1/slope), from = x.range[1], to = x.range[2],
             col = ps.col, add = TRUE, lwd = ps.lwd)
     } else {
-      warning("For the moment it only works with probit and logit link function")
+      warning("The function only works with probit and logit link function")
     }
   }
   return(0)

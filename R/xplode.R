@@ -32,6 +32,7 @@
 #' MERdelta.probit(xplode.mod2)
 #'
 #' @export
+#' @import lme4
 xplode = function(model, name.cont = NA, name.factor = NA, names.response = NA, define.pf = list(pf1 = list(intercept = 1,
     slope = 2))) {
 

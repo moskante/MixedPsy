@@ -44,7 +44,10 @@
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = psych)
 #' pse.boot <- pseMer(mod1, B = 600, ci.type = c("norm", "perc"))
 #' @export
-#'
+#' @importFrom lme4 bootMer
+#' @importFrom Matrix nearPD
+#' @importFrom boot boot.ci
+#' @importFrom beepr beep
 
 pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05, 
                    ci.type = c("norm", "basic", "perc"), beep = F) {
