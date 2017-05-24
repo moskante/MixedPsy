@@ -1,3 +1,43 @@
+#' PSE/JND for Univariable GLMM Using Delta Methods
+#'
+#' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
+#' Difference (JND) and the related Standard Errors by means of Delta Method.
+#' 
+#' @details \code{MixDelta} estimates PSE and JND of a univariable psychometric
+#' function (object of class \code{"glm"}).The method only applies to univariable GLMMs 
+#'  having a \emph{probit} link function. Use \code{MixTreatment} for multivariable GLMMs.
+#'
+#' @param xplode.obj an object of class \code{xplode.obj} (univariable GLMMs).
+#' @param alpha significance level of the confidence interval.
+#'
+#' @return \code{MixDelta} returns a list of length 1 including Estimate, Standard Error,
+#' Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
+#' are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
+#'
+#' @note The function assumes that the first model coefficient is the intercept
+#' and the second is the slope. The estimate of the JND assumes a \emph{probit}
+#' link function.
+#'
+#' @references
+#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
+#' at the Population-Level: The Generalized Linear Mixed Model.
+#' Journal of Vision, 12(11):26, 1-17.
+#'
+#' @seealso
+#'  \code{MixTreatment} for univarible and multivariable GLMM. \code{\link{pseMer}} 
+#'  provides the bootstrap-based confidence intervals.
+#'
+#' @examples
+#' library(lme4)
+#' #load simulated data
+#' data(psych)
+#' formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
+#' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = psych)
+#' define.mod = list(pf1 = list(intercept = 1, slope = 2))
+#' xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
+#' pse.jnd = MixDelta(xplode.mod1)
+#' @export
+#'
 MixDelta <- function(xplode.obj, alpha = 0.05) {
 
     # check if link = probit

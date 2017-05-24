@@ -4,7 +4,7 @@
 \alias{MixPlot}
 \title{Plotting univariable GLMM}
 \usage{
-MixPlot(xplode.obj, pf = 1, p05line = F, x.ref, x.range, col = F,
+MixPlot(xplode.obj, x.range, x.ref, pf = 1, p05line = F, col = F,
   x.label = "Stimulus Intensity", y.label = "Predicted Response")
 }
 \description{
