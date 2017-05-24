@@ -8,23 +8,25 @@ pseMer(mer.obj, B = 200, FUN = NULL, alpha = 0.05, ci.type = c("norm",
   "basic", "perc"), beep = F)
 }
 \arguments{
-\item{mer.obj}{an object of class \code{"\linkS4class{merMod}"}}
+\item{mer.obj}{An object of class \code{"\linkS4class{merMod}"}.}
 
-\item{B}{the number of bootstrap samples}
+\item{B}{The number of bootstrap samples.}
 
-\item{FUN}{an optional custom made function to specify the required parameters to be estimated.
-if empy, pseMer will estimate the PSE and the JND of a univariable GLMM (see details)}
+\item{FUN}{An optional, custom made function to specify the required parameters to be estimated.
+if NULL, \code{pseMer()} will estimate the PSE and the JND of a univariable GLMM.}
 
 \item{alpha}{Significance level of the confidence interval.}
 
 \item{ci.type}{A vector of character strings representing the type of intervals required. The value 
 should be any subset of the values c("norm","basic", "stud", "perc", "bca") or simply "all" which will 
 compute all five types of intervals. "perc" should be always included for the summary table.}
+
+\item{beep}{Logical. If TRUE, a "ping" sound alerts that the simulation is complete.}
 }
 \value{
 \code{pseMer} returns a list of length 3 including a summary table (Estimate, Standard Error,
 Inferior and Superior Confidence Interval of the parameters) and the output of  \code{lme4::bootMer()} 
-and \code{boot::boot.ci()} functions for further analises. Confidence Intervals in the summary table are
+and \code{boot::boot.ci()} functions, for further analises. Confidence Intervals in the summary table are
 based on the percentile method.
 }
 \description{
@@ -34,7 +36,6 @@ Difference (JND) and the related Standard Errors by means of Bootstrap Method.
 \details{
 \code{pseMer} estimates PSE and JND (and additional user defined paremters) from a 
 fitted GLMM model (class \code{"\linkS4class{merMod}"}).
-, B = 200, FUN = NULL, beep = F
 }
 \note{
 A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
@@ -43,6 +44,9 @@ of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
 }
 \examples{
 library(lme4)
+library(boot)
+library(beepr)
+
 #load simulated data
 data(psych)
 formula.mod <- cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
@@ -58,5 +62,6 @@ Bates, D., Maechler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-E
  Models Using lme4. Journal of Statistical Software, 67(1), 1–51.
 }
 \seealso{
-\code{\link{bootMer}} from lme4 package and \code{\link{boot.ci}} from boot package.
+\code{\link{bootMer}} from lme4 package and \code{\link{boot.ci}} from boot package. The "ping" sound is 
+provided by beepr package.
 }
