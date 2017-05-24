@@ -3,28 +3,28 @@
 #' A function to extract values from an object of class \code{"\linkS4class{merMod}"}
 #' (more specifically, from an object of subclass glmerMod).
 #'
-#'  @param model the GLMM fitted with \code{glmer}. An object of class
-#'  \code{"\linkS4class{merMod}"}.
-#'  @param name.cont  a string providing the name of the continuous predictor,
-#'  as in the formula object of the fitted model
-#'  @param name.factor a string providing the name of name of the categorical
-#'  predictor, as in the formula object of the fitted model
-#'  @param names.response optional. A string providing the name of name of the
+#' @param model The GLMM fitted with \code{glmer}. An object of class
+#' \code{"\linkS4class{merMod}"}.
+#' @param name.cont  A string providing the name of the continuous predictor,
+#' as in the formula object of the fitted model
+#' @param name.factor A string providing the name of name of the categorical
+#' predictor, as in the formula object of the fitted model
+#' @param names.response Optional. A string providing the name of name of the
 #'  response variable, as in the formula object of the fitted model
-#'  @param define.pf  optional. Specifies which parameter pertains to the intercept
+#' @param define.pf  Optional. Specifies which parameter pertains to the intercept
 #'  and which to the slope in the formula object.
 #'
-#'  @details For simplicity, several \code{MixedPsy} functions take as input an
+#' @details For simplicity, several \code{MixedPsy} functions take as input an
 #'  object of class \code{xplode} instead of an object of class
 #'  \code{"\linkS4class{merMod}"}. Most of these functions assume by default that
 #'  the continuous predictor is entered first in the formula object. It is possible
 #'  to use a different order, this requires to specify which parameter pertains to
 #'  the intercept and which to the slope, by changing \code{define.pf}.
 #'
-#'  @return An object of class \code{"\linkS4class{merMod}"} to be used with other
+#' @return An object of class \code{"\linkS4class{merMod}"} to be used with other
 #'  \code{MixedPsy} functions.
 #'
-#'  @examples
+#' @examples
 #' datafr = PsySimulate(nsubjects = 10)
 #' mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 #' family = binomial(link = "probit"), data = datafr)
@@ -33,6 +33,7 @@
 #'
 #' @export
 #' @import lme4
+#' 
 xplode = function(model, name.cont = NA, name.factor = NA, names.response = NA, define.pf = list(pf1 = list(intercept = 1,
     slope = 2))) {
 

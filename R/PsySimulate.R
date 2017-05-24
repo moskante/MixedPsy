@@ -19,9 +19,7 @@
 #' If constant = TRUE, the X interval is divided in  intervals of constant
 #' length. Default is FALSE.
 #'
-#' @return Simulated dataset
-#'
-#' @author Alessandro Moscatelli, Priscilla Balestrucci
+#' @return The simulated dataset
 #'
 #' @examples
 #' #simulate dataset (one subject)

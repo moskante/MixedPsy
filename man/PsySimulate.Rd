@@ -29,7 +29,7 @@ If constant = TRUE, the X interval is divided in  intervals of constant
 length. Default is FALSE.}
 }
 \value{
-Simulated dataset
+The simulated dataset
 }
 \description{
 Given the arrays of fixed and random effects, as well as the covariance,
@@ -52,7 +52,4 @@ fit.S1
 
 PsySimulate()
 
-}
-\author{
-Alessandro Moscatelli, Priscilla Balestrucci
 }

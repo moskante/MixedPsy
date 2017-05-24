@@ -7,28 +7,36 @@
 MixPlot(xplode.obj, x.range, x.ref, pf = 1, p05line = F, col = F,
   x.label = "Stimulus Intensity", y.label = "Predicted Response")
 }
+\arguments{
+\item{xplode.obj}{an object of class xplode}
+
+\item{x.range}{a vector of length two specifying the range for model predictions}
+
+\item{x.ref}{if p05line = T, this is the position of the vertical line on the x axis}
+
+\item{pf}{for multivariable GLMM including one factorial predictor,
+the level number to be plotted}
+
+\item{p05line}{logical, should be an horizontal and a vertical line added? 
+the horizontal line is fixed at P(Y = 1) = 0.5.}
+
+\item{col}{logical, if TRUE a different color will be used for different clusters/participants}
+
+\item{x.label, y.label}{label for the x and the y axes}
+}
+\value{
+a data.frame object including the intercept and slope of each participant
+(algebraic sum of the fixed effects and the modes of the random effects) and the 
+color number for the plot.
+}
 \description{
 A function to plot binomial data and the fitted GLMM (object of class xplode).
 }
 \details{
-@param xplode.obj an object of class xplode
- @param pf for multivariable GLMM including one factorial predictor,
-  the level number to be plotted 
- @param p05line logical, should be an horizontal and a vertical line added? 
-  the horizontal line is fixed at P(Y = 1) = 0.5.
- @param x.ref if p05line = T, this is the position of the vertical line on the x axis
- @param x.range a vector of length two specifying the range for model predictions
- @param col logical, if TRUE a different color will be used for different clusters/participants
- @param x.label,y.label label for the x and the y axes
-  
- @details The function is currently only working with GLMM including maximum three 
- random effects (random intercept, random slope and covariance of the two)
- 
- @return a data.frame object including the intercept and slope of each participant
-  (algebraic sum of the fixed effects and the modes of the random effects) and the 
-  color number for the plot.
-
-@examples
+The function is currently only working with GLMM including maximum three 
+random effects (random intercept, random slope and covariance of the two)
+}
+\examples{
 datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = T)                               
 formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)
@@ -36,4 +44,5 @@ define.mod = list(pf1 = list(intercept = 1, slope = 2))
 xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
 myplot = MixPlot(xplode.mod1, pf = 1,  p05line = F, x.ref = 60, x.range = c(0,160),
  col = T,x.label = "Stimulus Intensity", y.label = "Predicted Response")
+
 }
