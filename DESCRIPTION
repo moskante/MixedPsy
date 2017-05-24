@@ -1,22 +1,26 @@
 Package: MixedPsy
-Title: Statistical tools for the psychophysics community
+Title: Statistical Tools for the Analysis of Psychophysical Data
 Version: 0.0.0.9000
 Authors@R: c(
     person("Alessandro", "Moscatelli", email = "moskante@gmail.com", role = c("aut","cre")),
     person("Priscilla", "Balestrucci", role = "aut"))
-Description: What the package does (one paragraph).
+Description: A package for the analysis of psychophysical data in R. The package allows to estimate the PSE/JND 
+    (either from a GLM/psychometric function or from a GLMM), plot the fitted models and 
+    the binomial data, simulate psychometric functions of a given shape and data sets.
 Depends: R (>= 3.4.0)
 Imports:
-  Matrix,
-  mnormt,
-  brglm,
+  beepr,
   boot,
-  beepr
+  brglm,
+  lme4,
+  Matrix,
+  mnormt
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
 License: GPL 3.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown,
-    testthat
 VignetteBuilder: knitr

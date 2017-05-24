@@ -38,10 +38,6 @@
 #' provided by beepr package.
 #'
 #' @examples
-#' library(lme4)
-#' library(boot)
-#' library(beepr)
-#' 
 #' #load simulated data
 #' data(psych)
 #' formula.mod <- cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
@@ -52,11 +48,6 @@
 
 pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05, 
                    ci.type = c("norm", "basic", "perc"), beep = F) {
-
-    boot.flag = require("boot")
-    if (boot.flag == F) {
-        print("Package boot is missing. Install the package to use the function.")
-    }
 
     if (is.null(FUN)) {
         myfun <- function(mer.obj) {
@@ -75,25 +66,24 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
     if (is.null(parname)) {
         print("Warning messages: Parameters have no names")
     }
-    summary = matrix(NA, nrow = np, ncol = 3, dimnames = list(parname, c("Estimate", "Inferior",
-        "Superior")))
+    summary = matrix(NA, nrow = np, ncol = 3,
+                     dimnames = list(parname, c("Estimate", "Inferior","Superior")))
 
-    # Warning: these two lines are only valid in lme4.1
-    boot.samp <- bootMer(mer.obj, myfun, nsim = B)
+    boot.samp <- lme4::bootMer(mer.obj, myfun, nsim = B)
     summary[, 1] = boot.samp$t0
 
     jndpseconf = vector(mode = "list", length = np)
     my.conf = 1 - alpha
     
     for (i in 1:np) {
-        jndpseconf[[i]] <- boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
+        jndpseconf[[i]] <- boot::boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
         print(paste(parname[i], " 95% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
         summary[i, 2] = jndpseconf[[i]]$percent[4]
         summary[i, 3] = jndpseconf[[i]]$percent[5]
     }
 
     if (beep == T) {
-        beep()
+        beepr::beep()
     }
     out = list(summary, boot.samp, jndpseconf)
     return(out)
