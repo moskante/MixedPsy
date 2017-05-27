@@ -70,7 +70,7 @@ MixTreatment <- function(xplode.obj, datafr) {
             nAGQ = 1)
         temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.fact = xplode.obj$factor.colname,
             define.pf = xplode.obj$define.pf)
-        delta.par[[i]] = MERdelta.probit(temp.xplode[[i]])[[1]]
+        delta.par[[i]] = MixDelta(temp.xplode[[i]])[[1]]
     }
     return(delta.par)
 }
