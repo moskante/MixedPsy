@@ -20,6 +20,7 @@
 #' color number for the plot. 
 #'
 #' @examples
+#' library(lme4)
 #' datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = T)                               
 #' formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)
@@ -61,8 +62,8 @@ MixPlot <- function(xplode.obj, x.range, x.ref,
                    xplode.obj$psychometrics[[pf]]$slope["Estimate"])
 
   if(xplode.obj$multirand == FALSE){
-    estimates = data.frame(matrix(numeric(), nrow = nrow(ranef(model)[[1]]), ncol = 3))
-    estimates[,1] = xplode.obj$ranef + fixef.pf[1]
+    estimates = data.frame(matrix(numeric(), nrow = nrow(xplode.obj$ranef[[1]]), ncol = 3))
+    estimates[,1] = xplode.obj$ranef[[1]] + fixef.pf[1]
     estimates[,2] = rep(fixef.pf[2], times = nrow(estimates))
     estimates[,3] = curvecolors
   }else{
