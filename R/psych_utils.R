@@ -109,7 +109,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'
 #'
 #'# simulate data from a single participant
-#'datafr.S1 <- MERsimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T)
+#'datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
 
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
@@ -125,11 +125,11 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' 
 PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", br = F) {
-  myfit = vector("list", 2)
+  myfit = vector("list", 3)
   ps.terms = terms(ps.formula)
 
   model.glm = glm(formula = ps.formula, family = binomial(link = ps.link), data = ps.data)
-  brflag = ifelse(trunc(max(model.glm$fitted.values)) == 1 | trunc(min(model.glm$fitted.values)) ==
+  brflag = ifelse(trunc(max(model.glm$fitted.values)) == 1 & trunc(min(model.glm$fitted.values)) ==
                     0, T, F)
   myfit[[3]] = brflag
 

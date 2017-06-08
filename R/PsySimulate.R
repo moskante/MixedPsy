@@ -23,17 +23,7 @@
 #'
 #' @examples
 #' #simulate dataset (one subject)
-#' datafr.S1 <- MERsimulate(nsubject = 1, constant = T)
-#'
-#' #psychometric function to fit single-subject data
-#' plot(Longer/Total ~ X, data = datafr.S1)
-#' fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X
-#'                      ps.link = 'probit', ps.data = datafr.S1,
-#'                      x.range = c(40, 120), ps.lines = T)
-#'
-#' fit.S1
-#'
-#' PsySimulate()
+#' datafr.S1 <- PsySimulate(nsubject = 1, constant = T)
 #'
 #' @export
 #' @importFrom mnormt rmnorm
