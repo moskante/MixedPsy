@@ -172,7 +172,8 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' See `Details'
 #' @param x.range a vector of length two specifying the range of the function
 #' @param ps.col color of the line to be plotted
-#' @param ps.lty line type the line to be plotted
+#' @param ps.lwd line width
+#' @param ps.lty line type
 #'
 #' @details PsychShape() can be used to visualize the predicted results of a
 #' psychophysical experiment or to plot a fitted psychometric function whose
@@ -195,16 +196,17 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
 #'
 #' @export
-PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1) {
+PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1,
+                       ps.lty = "solid") {
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
     curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,
-          add = TRUE, lwd = ps.lwd)
+          add = TRUE, lwd = ps.lwd, lty = ps.lty)
   } else {
     if (ps.link == "logit") {
       slope = log(3) * (1/jnd)
       curve(expr = plogis(x, location = pse, scale = 1/slope), from = x.range[1], to = x.range[2],
-            col = ps.col, add = TRUE, lwd = ps.lwd)
+            col = ps.col, add = TRUE, lwd = ps.lwd, lty = ps.lty)
     } else {
       warning("The function only works with probit and logit link function")
     }
