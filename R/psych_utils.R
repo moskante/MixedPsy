@@ -85,7 +85,8 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' to predict. See `Details'
 #' @param x.range a vector of length two specifying the range for model predictions
 #' @param ps.col color of the lines to be plotted
-#' @param ps.lty line type of the lines to be plotted
+#' @param ps.lty line type
+#' @param ps.lwd line width
 #' @param br  logical. If TRUE, brglm is used if fitted values are equal to 0 or 1
 #'
 #' @details If lines is TRUE, the function draw model predictions on an existing plot.
@@ -108,8 +109,8 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
 #'
 #'
-#'# simulate data from a single participant
-#'datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
+#' # simulate data from a single participant
+#' datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
 
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
@@ -124,7 +125,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' @importFrom brglm brglm
 #' 
 PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
-                          ps.col = "black", ps.lty = "dashed", br = F) {
+                          ps.col = "black", ps.lty = "dashed", ps.lwd = 1, br = F) {
   myfit = vector("list", 3)
   ps.terms = terms(ps.formula)
 
@@ -144,7 +145,7 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
     myfit[[2]] = PsychDelta(model.glm)
     if (ps.lines == T) {
       segments(x0 = myfit[[2]][1, 3], y0 = 0.5, x1 = myfit[[2]][1, 4], y1 = 0.5, col = ps.col,
-               lty = ps.lty)
+               lty = ps.lty, lwd = ps.lwd)
     }
   } else {
     myfit[[2]] = NA
@@ -156,8 +157,9 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
       ps.x <- data.frame(seq(x.range[1], x.range[2], length.out = 1000))
       names(ps.x) = attr(ps.terms, "term.labels")
     }
-    lines(x = seq(x.range[1], x.range[2], length.out = 1000), y = predict(object = model.glm,
-                                                                          newdata = data.frame(ps.x), type = "response"), col = ps.col, lty = ps.lty)
+    lines(x = seq(x.range[1], x.range[2], length.out = 1000),
+          y = predict(object = model.glm, newdata = data.frame(ps.x), type = "response"),
+          col = ps.col, lty = ps.lty, lwd = ps.lwd)
   }
   return(myfit)
 }
