@@ -37,6 +37,7 @@ The function is currently only working with GLMM including maximum three
 random effects (random intercept, random slope and covariance of the two)
 }
 \examples{
+library(lme4)
 datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = T)                               
 formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)

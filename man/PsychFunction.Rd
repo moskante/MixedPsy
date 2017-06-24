@@ -5,7 +5,8 @@
 \title{Fitting and Plotting Psychometric Functions}
 \usage{
 PsychFunction(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA,
-  ps.lines = F, ps.col = "black", ps.lty = "dashed", br = F)
+  ps.lines = F, ps.col = "black", ps.lty = "dashed", ps.lwd = 1,
+  br = F)
 }
 \arguments{
 \item{ps.formula}{an object of class ``formula'', such as \code{cbind(yes, no) ~ X}}
@@ -25,7 +26,9 @@ the PSE will be added to an existing plot}
 
 \item{ps.col}{color of the lines to be plotted}
 
-\item{ps.lty}{line type of the lines to be plotted}
+\item{ps.lty}{line type}
+
+\item{ps.lwd}{line width}
 
 \item{br}{logical. If TRUE, brglm is used if fitted values are equal to 0 or 1}
 }
@@ -45,6 +48,19 @@ predictor. If ps.x is empty, the new data frame is a vector of length = 1000,
 whose range is specified from x.range. Std. Errors and 95\% confidence intervals
 of the PSE and JND are estimated via Delta Methods, see Faraggi et al (2003).
 }
+\examples{
+# simulate data from a single participant
+datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
+#fit a glm (probit link)
+model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
+family = binomial(link = "probit"), data = datafr.S1)
+
+#psychometric function to fit single-subject data
+plot(Longer/Total ~ X, data = datafr.S1)
+fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
+                        ps.link = "probit", ps.data = datafr.S1,
+                        x.range = c(40, 120), ps.lines = T)
+}
 \references{
 Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the 50 per
 cent response dose. Statistics in Medicine, 22(12), 1977b-1988.
@@ -55,17 +71,4 @@ Journal of Vision, 12(11):26, 1-17.
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models.
-
-
-# simulate data from a single participant
-datafr.S1 <- MERsimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T)
-#fit a glm (probit link)
-model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-family = binomial(link = "probit"), data = datafr.S1)
-
-#psychometric function to fit single-subject data
-plot(Longer/Total ~ X, data = datafr.S1)
-fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
-                        ps.link = "probit", ps.data = datafr.S1,
-                        x.range = c(40, 120), ps.lines = T)
 }

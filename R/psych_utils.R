@@ -108,10 +108,9 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
 #'
-#'
+#' @examples
 #' # simulate data from a single participant
 #' datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
-
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = datafr.S1)

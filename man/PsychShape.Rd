@@ -5,7 +5,7 @@
 \title{Fitting and Plotting Psychometric Functions}
 \usage{
 PsychShape(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit",
-  ps.col = "black", ps.lwd = 1)
+  ps.col = "black", ps.lwd = 1, ps.lty = "solid")
 }
 \arguments{
 \item{pse, jnd}{the pse and the jnd of the desired psychometric function}
@@ -17,7 +17,9 @@ See `Details'}
 
 \item{ps.col}{color of the line to be plotted}
 
-\item{ps.lty}{line type the line to be plotted}
+\item{ps.lwd}{line width}
+
+\item{ps.lty}{line type}
 }
 \description{
 \code{PsychShape()} plots a psychometric function of a known pse and jnd
