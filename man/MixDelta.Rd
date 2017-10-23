@@ -39,6 +39,7 @@ mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = 
 define.mod = list(pf1 = list(intercept = 1, slope = 2))
 xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
 pse.jnd = MixDelta(xplode.mod1)
+
 }
 \references{
 Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data

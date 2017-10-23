@@ -23,11 +23,12 @@
 #'
 #' @examples
 #' #simulate dataset (one subject)
-#' datafr.S1 <- PsySimulate(nsubject = 1, constant = T)
+#' datafr.S1 <- PsySimulate(nsubject = 1, constant = TRUE)
 #'
-#' @export
 #' @importFrom mnormt rmnorm
 #' @importFrom Matrix nearPD
+#' @importFrom stats rbinom runif
+#' @export
 #'
 PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, pps = 9, 
     ntrials = 40, xint = c(40, 120), constant = F) {

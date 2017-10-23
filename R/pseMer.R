@@ -40,9 +40,11 @@
 #' @examples
 #' #load simulated data
 #' data(psych)
+#' library(lme4)
 #' formula.mod <- cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = psych)
 #' pse.boot <- pseMer(mod1, B = 600, ci.type = c("norm", "perc"))
+#' 
 #' @export
 #' @importFrom lme4 bootMer
 #' @importFrom Matrix nearPD

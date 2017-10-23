@@ -40,6 +40,6 @@ the simulated responses to the stimulus levels that fit that function.
 }
 \examples{
 #simulate dataset (one subject)
-datafr.S1 <- PsySimulate(nsubject = 1, constant = T)
+datafr.S1 <- PsySimulate(nsubject = 1, constant = TRUE)
 
 }

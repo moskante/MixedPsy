@@ -25,14 +25,16 @@
 #'  \code{MixedPsy} functions.
 #'
 #' @examples
+#' library(lme4)
 #' datafr = PsySimulate(nsubjects = 10)
 #' mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 #' family = binomial(link = "probit"), data = datafr)
 #' xplode.mod1 = xplode(model = mod1, name.cont = "X")
-#' MERdelta.probit(xplode.mod2)
+#' MixDelta(xplode.mod1)
 #'
-#' @export
 #' @import lme4
+#' @importFrom stats formula model.frame model.matrix model.response nobs
+#' @export
 #' 
 xplode = function(model, name.cont = NA, name.factor = NA, names.response = NA, define.pf = list(pf1 = list(intercept = 1,
     slope = 2))) {
@@ -177,6 +179,7 @@ xplode = function(model, name.cont = NA, name.factor = NA, names.response = NA, 
     return(xplode)
 }
 
+#' @importFrom utils combn
 #FUNCTION: rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode
 kombo = function(vector) {
   n = length(vector)
@@ -199,6 +202,8 @@ kombo = function(vector) {
   return(temp)
 }
 
+#' @importFrom graphics curve
+#' @importFrom stats pnorm
 #FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
 CurveProbit = function(X, x.from, x.to){
   BETAplus = which(X[,2] > 0) 

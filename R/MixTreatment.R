@@ -10,12 +10,11 @@
 #' (object of class \code{"\linkS4class{merMod}"}) from \code{xplode.obj} includes
 #' one continuous predictor and one factorial predictor.
 #' @param datafr  the data frame fitted with the GLMM model
-#' @param tr.alpha  significance level of the confidence interval
 #'
 #' @details The function \code{MixTreatment} is based on a recursive use of
-#' \code{glmer} and \code{delta.psy.probit} to multivariable GLMM including
-#' continuous and factorial predictors. The same caveats of \code{delta.psy.probit}
-#' appliy (e.g., confidence interval based on normality assumption).
+#' \code{glmer} and \code{PsychDelta} to multivariable GLMM including
+#' continuous and factorial predictors. The same caveats of \code{PsychDelta}
+#' apply (e.g., confidence interval based on normality assumption).
 #'
 #' @return A list, whose lenght is equal to the levels of the factorial predictor, i.
 #' Each cell of the list is equal to the output of \code{delta.psy.probit} applied to
@@ -26,36 +25,35 @@
 #' Population-Level: The Generalized Linear Mixed Model.
 #' Journal of Vision, 12(11):26, 1-17.
 #'
-#' @seealso \code{\link[lme4]{glmr}} for Generalized Linear Mixed Models (including
-#' random effects).\code{\link{delta.psy.probit}} for a univariable model.
+#' @seealso \code{\link[lme4]{glmer}} for Generalized Linear Mixed Models (including
+#' random effects).\code{\link{PsychFunction}} for a univariable model.
 #' \code{\link{pseMer}} provides the bootstrap-based confidence intervals.
-#'
-#' @export
 #'
 #' @keywords Delta Method, Multivariable GLMM #####NOT SHOWN
 #'
 #' @examples
 #' #In two steps: Simulate a dataset with a categorical variable ("condition")
-#' datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = T)
+#' datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = TRUE)
 #' levels(datafr.1$Subject) = c("S1", "S2", "S3", "S4", "S5", "S6")
 #' datafr.1$condition = rep("A", 54)
 #'
-#' datafr.2 <- PsySimulate(fixeff = c(-7, 0.0875),nsubject = 6, constant = T)
+#' datafr.2 <- PsySimulate(fixeff = c(-7, 0.0875),nsubject = 6, constant = TRUE)
 #' levels(datafr.2$Subject) = c("S1", "S2", "S3", "S4", "S5", "S6")
 #' datafr.2$condition = rep("B", 54)
 #'
-#' datafr = merge(datafr.1, datafr.2, all = T)
+#' datafr = merge(datafr.1, datafr.2, all = TRUE)
 #' datafr$condition = as.factor(datafr$condition)
 #'
 #' #How to estimate the PSE in the two condtions?
 #' #1)use MixTreatment (note, you have to provide also the dataframe to the function)
+#' library(lme4)
 #' formula.mod = cbind(Longer, Total - Longer) ~ X * condition + (1 + X| Subject)
 #' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr)
 #' xplode.mod1 = xplode(model = mod1, name.cont = "X", name.factor = "condition")
 #' MixTreatment(xplode.mod1, datafr)
 #'
-#'
-#'
+#' @importFrom stats binomial contrasts<- contr.treatment
+#' @export
 #'
 MixTreatment <- function(xplode.obj, datafr) {
 

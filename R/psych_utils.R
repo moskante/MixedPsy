@@ -28,7 +28,7 @@
 #' Journal of Vision, 12(11):26, 1-17.
 #'
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models (without
-#' random effects) and \code{\link[lme4]{glmr}} for Generalized Linear Mixed
+#' random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
 #' Models (including random effects). \code{MERdelta.probit} and \code{MERtreatment}
 #' for univarible and multivariable GLMM, respectively (object of class
 #' \code{"\linkS4class{merMod}"}). \code{\link{pseMer}} provides the bootstrap-based
@@ -41,6 +41,8 @@
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = psych)
 #' PsychDelta(model.glm)
+#' 
+#' @importFrom stats vcov
 #' @export
 #'
 PsychDelta <- function(model, alpha = 0.05) {
@@ -110,7 +112,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'
 #' @examples
 #' # simulate data from a single participant
-#' datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T)
+#' datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE)
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = datafr.S1)
@@ -119,9 +121,12 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' plot(Longer/Total ~ X, data = datafr.S1)
 #' fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
 #'                         ps.link = "probit", ps.data = datafr.S1,
-#'                         x.range = c(40, 120), ps.lines = T)
-#' @export
+#'                         x.range = c(40, 120), ps.lines = TRUE)
+#'                         
 #' @importFrom brglm brglm
+#' @importFrom stats glm predict terms
+#' @importFrom graphics lines segments
+#' @export
 #'
 PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", ps.lwd = 1, br = F) {
@@ -198,6 +203,7 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black")
 #' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
 #'
+#' @importFrom stats plogis
 #' @export
 PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1,
                        ps.lty = "solid") {

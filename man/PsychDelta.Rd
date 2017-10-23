@@ -38,6 +38,7 @@ data(psych)
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 family = binomial(link = "probit"), data = psych)
 PsychDelta(model.glm)
+
 }
 \references{
 Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the
@@ -49,7 +50,7 @@ Journal of Vision, 12(11):26, 1-17.
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models (without
-random effects) and \code{\link[lme4]{glmr}} for Generalized Linear Mixed
+random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
 Models (including random effects). \code{MERdelta.probit} and \code{MERtreatment}
 for univarible and multivariable GLMM, respectively (object of class
 \code{"\linkS4class{merMod}"}). \code{\link{pseMer}} provides the bootstrap-based

@@ -50,7 +50,7 @@ of the PSE and JND are estimated via Delta Methods, see Faraggi et al (2003).
 }
 \examples{
 # simulate data from a single participant
-datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = T) 
+datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE)
 #fit a glm (probit link)
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 family = binomial(link = "probit"), data = datafr.S1)
@@ -59,7 +59,8 @@ family = binomial(link = "probit"), data = datafr.S1)
 plot(Longer/Total ~ X, data = datafr.S1)
 fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
                         ps.link = "probit", ps.data = datafr.S1,
-                        x.range = c(40, 120), ps.lines = T)
+                        x.range = c(40, 120), ps.lines = TRUE)
+                        
 }
 \references{
 Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the 50 per

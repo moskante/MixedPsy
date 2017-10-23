@@ -38,12 +38,12 @@ random effects (random intercept, random slope and covariance of the two)
 }
 \examples{
 library(lme4)
-datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = T)                               
+datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = TRUE)
 formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
 mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)
 define.mod = list(pf1 = list(intercept = 1, slope = 2))
 xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
-myplot = MixPlot(xplode.mod1, pf = 1,  p05line = F, x.ref = 60, x.range = c(0,160),
- col = T,x.label = "Stimulus Intensity", y.label = "Predicted Response")
+myplot = MixPlot(xplode.mod1, pf = 1,  p05line = FALSE, x.ref = 60, x.range = c(0,160),
+ col = TRUE, x.label = "Stimulus Intensity", y.label = "Predicted Response")
 
 }

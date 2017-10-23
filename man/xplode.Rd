@@ -40,10 +40,11 @@ For simplicity, several \code{MixedPsy} functions take as input an
  the intercept and which to the slope, by changing \code{define.pf}.
 }
 \examples{
+library(lme4)
 datafr = PsySimulate(nsubjects = 10)
 mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
 family = binomial(link = "probit"), data = datafr)
 xplode.mod1 = xplode(model = mod1, name.cont = "X")
-MERdelta.probit(xplode.mod2)
+MixDelta(xplode.mod1)
 
 }

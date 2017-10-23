@@ -1,3 +1,6 @@
+#' @importFrom grDevices palette rainbow
+#' @importFrom graphics abline plot
+#' 
 GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates, lme4 = F, model,
    		x.label = "Stimulus Intensity", y.label = "Predicted Response",
    		p05line = F, x.ref = mean(dataframe[,X.col]),

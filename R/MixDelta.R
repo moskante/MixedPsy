@@ -36,6 +36,9 @@
 #' define.mod = list(pf1 = list(intercept = 1, slope = 2))
 #' xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
 #' pse.jnd = MixDelta(xplode.mod1)
+#' 
+#' @importFrom stats qnorm
+#' @importFrom grDevices palette
 #' @export
 #'
 MixDelta <- function(xplode.obj, alpha = 0.05) {
