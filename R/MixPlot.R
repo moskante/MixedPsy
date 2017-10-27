@@ -21,13 +21,14 @@
 #'
 #' @examples
 #' library(lme4)
-#' datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = TRUE)
-#' formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
-#' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr.1)
+#' data(vibro_exp3)
+#' formula.mod = cbind(faster, slower) ~ speed + (1 + speed| subject)
+#' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"),
+#'  data = vibro_exp3[vibro_exp3$vibration == 0,])
 #' define.mod = list(pf1 = list(intercept = 1, slope = 2))
-#' xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
-#' myplot = MixPlot(xplode.mod1, pf = 1,  p05line = FALSE, x.ref = 60, x.range = c(0,160),
-#'  col = TRUE, x.label = "Stimulus Intensity", y.label = "Predicted Response")
+#' xplode.mod1 = xplode(model = mod1, name.cont = "speed", define.pf = define.mod)
+#' myplot = MixPlot(xplode.mod1, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
+#'  col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
 #'
 #' @export
 #' 

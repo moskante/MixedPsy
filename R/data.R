@@ -40,5 +40,5 @@
 #' The role of vibration in tactile speed perception. Journal of Neurophysiology, 114(6),
 #'  3131–3139. <doi:10.1152/jn.00621.2015>
 #'
-#' @usage data(vibro.exp3)
-"vibro.exp3"
+#' @usage data(vibro_exp3)
+"vibro_exp3"
