@@ -3,12 +3,10 @@ Version: 1.0.0
 Title: Statistical Tools for the Analysis of Psychophysical Data
 Authors@R: c(
     person("Alessandro", "Moscatelli", email = "moskante@gmail.com", role = c("aut","cre")),
-    person("Priscilla", "Balestrucci", role = "aut"))
+    person("Priscilla", "Balestrucci", email = "priscilla.balestrucci@gmail.com", role = "aut"))
 Maintainer: Alessandro Moscatelli <moskante@gmail.com>
 Depends: R (>= 3.1.0)
-Description: Analyze psychophysical data in R. This package allows to estimate the PSE/JND 
-    (either from a GLM/psychometric function or from a GLMM), plot the fitted models and 
-    the binomial data, simulate psychometric functions of a given shape and data sets.
+Description: Tools for the analysis of psychophysical data in R. This package allows to estimate the Point of Subjective Equivalence (PSE) and the Just Noticeable Difference (JND), either from a psychometric function or from a Generalized Linear Mixed Model. Additionally, the package allows plotting the fitted models and the response data, simulating psychometric functions of different shapes, and simulating data sets.
 Imports:
   beepr,
   boot,

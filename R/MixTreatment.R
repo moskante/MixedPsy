@@ -66,7 +66,7 @@ MixTreatment <- function(xplode.obj, datafr) {
             base = i)
         temp.models[[i]] = glmer(formula = xplode.obj$formula, family = binomial("probit"), data = datafr,
             nAGQ = 1)
-        temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.fact = xplode.obj$factor.colname,
+        temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname,
             define.pf = xplode.obj$define.pf)
         delta.par[[i]] = MixDelta(temp.xplode[[i]])[[1]]
     }

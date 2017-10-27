@@ -17,3 +17,28 @@
 #'
 #' @usage data(psych)
 "psych"
+#
+#' Data from tactile discrimination task - EXP3
+#'
+#' A dataset containing the response and stimuli from a tactile discrimination task (nine participants). In a
+#'  forced-choice experiment, participants were required to discriminate the motion speed of a moving surface by
+#'  touching it. Simultaneously with the motion stimulus, a 32Hz masking vibration occurred in half of the trials. 
+#'
+#' @format A data frame with 72 rows and 6 variables:
+#' \describe{
+#' \item{speed}{a numeric vector giving the motion speed in cm/s of the moving surface}
+#' \item{vibration}{a numeric vector giving the vibration frequency in Hz of the masking stimulus. Either 32Hz or
+#'  0 (no vibration - control condition)}
+#' \item{faster}{The proportion of trials in which the comparison stimulus was judged as faster than the reference}
+#' \item{slower}{The proportion of trials in which the comparison stimulus was judged as slower than the reference}
+#' \item{subject}{subject id}
+#' }
+#' 
+#' @source Original data were published in Dallmann et al. (2015).
+#' @references 
+#' Dallmann, C. J., Ernst, M. O., & Moscatelli, A. (2015). 
+#' The role of vibration in tactile speed perception. Journal of Neurophysiology, 114(6),
+#'  3131–3139. <doi:10.1152/jn.00621.2015>
+#'
+#' @usage data(vibro.exp3)
+"vibro.exp3"
