@@ -1,4 +1,4 @@
-#' PSE/JND for Multivariable GLMM Using Delta Methods
+#' PSE and JND for Multivariable GLMM Using Delta Methods
 #'
 #' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
 #' Difference (JND) and the related Standard Errors by means of Delta Method.
