@@ -13,10 +13,10 @@
 #' \item{Subject}{Subject code (S1 to S8)}
 #' }
 #' 
-#' @seealso PsySimulate()
+#' @seealso PsySimulate() for simulating dataframes.
 #'
-#' @usage data(psych)
-"psych"
+#' @usage data(simul_data)
+"simul_data"
 #
 #' Data from tactile discrimination task - EXP3
 #'

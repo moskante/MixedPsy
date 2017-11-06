@@ -1,0 +1,21 @@
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(bibtype = "Manual",
+         title = "Psychophysics with R: The R package MixedPsy",
+         author = c(person("Alessandro", "Moscatelli"),
+                    person("Priscilla", "Balestrucci")),
+         year = 2017,
+         note = note)
+         
+bibentry(bibtype = "Article",
+         title = "Modeling psychophysical data at the population-level: The generalized linear mixed model",
+         author = c(person("Alessandro", "Moscatelli"),
+                    person("Maura", "Mezzetti"),
+                    person("Francesco", "Lacquaniti")),
+         year = 2012,
+         journal = "Journal of Vision",
+         volume = "12",
+         issue = "11",
+         pages = "1--17",
+         doi = "10.1167/12.11.26")
+         
