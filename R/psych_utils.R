@@ -36,10 +36,10 @@
 #'
 #' @examples
 #' #load simulated data
-#' data(psych)
+#' data(simul_data)
 #' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-#' family = binomial(link = "probit"), data = psych)
+#' family = binomial(link = "probit"), data = simul_data)
 #' PsychDelta(model.glm)
 #' 
 #' @importFrom stats vcov

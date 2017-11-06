@@ -4,47 +4,55 @@
 \alias{MixPlot}
 \title{Plotting univariable GLMM}
 \usage{
-MixPlot(xplode.obj, x.range, x.ref, pf = 1, p05line = F, col = F,
+MixPlot(xplode.obj, pf = 1, p05line = F, x.range, x.ref, col = F,
   x.label = "Stimulus Intensity", y.label = "Predicted Response")
 }
 \arguments{
 \item{xplode.obj}{an object of class xplode}
 
-\item{x.range}{a vector of length two specifying the range for model predictions}
-
-\item{x.ref}{if p05line = T, this is the position of the vertical line on the x axis}
-
-\item{pf}{for multivariable GLMM including one factorial predictor,
+\item{pf}{integer: for multivariable GLMM including one factorial predictor,
 the level number to be plotted}
 
 \item{p05line}{logical, should be an horizontal and a vertical line added? 
 the horizontal line is fixed at P(Y = 1) = 0.5.}
 
+\item{x.range}{a vector of length two specifying the range for model predictions}
+
+\item{x.ref}{if p05line = T, this is the position of the vertical line on the x axis}
+
 \item{col}{logical, if TRUE a different color will be used for different clusters/participants}
 
-\item{x.label, y.label}{label for the x and the y axes}
+\item{x.label, y.label}{label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
+y.label = "Predicted Response"}
 }
 \value{
-a data.frame object including the intercept and slope of each participant
+a data.frame object including the intercept and slope for each participant
 (algebraic sum of the fixed effects and the modes of the random effects) and the 
 color number for the plot.
 }
 \description{
-A function to plot binomial data and the fitted GLMM (object of class xplode).
+Plot binomial data and the fitted GLMM (object of class xplode).
 }
-\details{
+\note{
 The function is currently only working with GLMM including maximum three 
 random effects (random intercept, random slope and covariance of the two)
 }
 \examples{
 library(lme4)
 data(vibro_exp3)
-formula.mod = cbind(faster, slower) ~ speed + (1 + speed| subject)
-mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"),
- data = vibro_exp3[vibro_exp3$vibration == 0,])
-define.mod = list(pf1 = list(intercept = 1, slope = 2))
-xplode.mod1 = xplode(model = mod1, name.cont = "speed", define.pf = define.mod)
-myplot = MixPlot(xplode.mod1, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
- col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
+              data = vibro_exp3[vibro_exp3$vibration == 0,])
+define.mod <- list(pf1 = list(intercept = 1, slope = 2))
+xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
+myplot <- MixPlot(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
+                  col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
 
 }
+\seealso{
+\code{\link{xplode}} objects of class \code{xplode.obj}.
+}
+\keyword{DeltaMethod}
+\keyword{GLMM}
+\keyword{Plotting}
+\keyword{Univariable}

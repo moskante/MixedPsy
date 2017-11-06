@@ -1,10 +1,10 @@
-#' PSE and JND for Multivariable GLMM Using Delta Methods
+#' PSE/JND for Multivariable GLMM Using Delta Methods
 #'
-#' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
-#' Difference (JND) and the related Standard Errors by means of Delta Method.
-#' The method apply to multivariable GLMM having a \emph{probit} link function.
+#' Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
+#' Difference (JND) and the related Standard Errors for a multivariate distribution by means of Delta Method.
+#' The method applies to multivariable GLMM having a \emph{probit} link function.
 #' The function is based on a recursive use of \code{glmer} and
-#' \code{delta.psy.probit}
+#' \code{MixDelta}
 #'
 #' @param xplode.obj an object of class \code{xplode.obj}. The fitted model
 #' (object of class \code{"\linkS4class{merMod}"}) from \code{xplode.obj} includes
@@ -21,36 +21,23 @@
 #' a multivariable model whose baseline is level i of the factorial predictor.
 #'
 #' @references
-#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data at the
-#' Population-Level: The Generalized Linear Mixed Model.
-#' Journal of Vision, 12(11):26, 1-17.
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #'
 #' @seealso \code{\link[lme4]{glmer}} for Generalized Linear Mixed Models (including
-#' random effects).\code{\link{PsychFunction}} for a univariable model.
-#' \code{\link{pseMer}} provides the bootstrap-based confidence intervals.
+#' random effects).\code{\link{MixDelta}} for univariable model with delta method.
+#' \code{\link{pseMer}} for bootstrap-based confidence intervals.
 #'
-#' @keywords Delta Method, Multivariable GLMM #####NOT SHOWN
+#' @keywords DeltaMethod Multivariable GLMM
 #'
 #' @examples
-#' #In two steps: Simulate a dataset with a categorical variable ("condition")
-#' datafr.1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 6, constant = TRUE)
-#' levels(datafr.1$Subject) = c("S1", "S2", "S3", "S4", "S5", "S6")
-#' datafr.1$condition = rep("A", 54)
-#'
-#' datafr.2 <- PsySimulate(fixeff = c(-7, 0.0875),nsubject = 6, constant = TRUE)
-#' levels(datafr.2$Subject) = c("S1", "S2", "S3", "S4", "S5", "S6")
-#' datafr.2$condition = rep("B", 54)
-#'
-#' datafr = merge(datafr.1, datafr.2, all = TRUE)
-#' datafr$condition = as.factor(datafr$condition)
-#'
-#' #How to estimate the PSE in the two condtions?
-#' #1)use MixTreatment (note, you have to provide also the dataframe to the function)
 #' library(lme4)
-#' formula.mod = cbind(Longer, Total - Longer) ~ X * condition + (1 + X| Subject)
-#' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = datafr)
-#' xplode.mod1 = xplode(model = mod1, name.cont = "X", name.factor = "condition")
-#' MixTreatment(xplode.mod1, datafr)
+#' data(vibro_exp3)
+#' formula.mod <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
+#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = vibro_exp3)
+#' xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
+#' MixTreatment(xplode.mod, vibro_exp3)
 #'
 #' @importFrom stats binomial contrasts<- contr.treatment
 #' @export

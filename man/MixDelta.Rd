@@ -9,7 +9,7 @@ MixDelta(xplode.obj, alpha = 0.05)
 \arguments{
 \item{xplode.obj}{an object of class \code{xplode.obj} (univariable GLMMs).}
 
-\item{alpha}{significance level of the confidence interval.}
+\item{alpha}{significance level of the confidence interval. Default is 0.05.}
 }
 \value{
 \code{MixDelta} returns a list of length 1 including Estimate, Standard Error,
@@ -17,8 +17,9 @@ Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
 are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 }
 \description{
-Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
-Difference (JND) and the related Standard Errors by means of Delta Method.
+Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
+Difference (JND) and the related Standard Errors for an univariate distribution 
+by means of Delta Method.
 }
 \details{
 \code{MixDelta} estimates PSE and JND of a univariable psychometric
@@ -32,21 +33,28 @@ link function.
 }
 \examples{
 library(lme4)
-#load simulated data
-data(psych)
-formula.mod = cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
-mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = psych)
-define.mod = list(pf1 = list(intercept = 1, slope = 2))
-xplode.mod1 = xplode(model = mod1, name.cont = "X", define.pf = define.mod)
-pse.jnd = MixDelta(xplode.mod1)
+data(vibro_exp3)
+formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), 
+              data = vibro_exp3[vibro_exp3$vibration == 0,])
+define.mod <- list(pf = list(intercept = 1, slope = 2))
+xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
+pse.jnd <- MixDelta(xplode.mod)
 
 }
 \references{
-Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-at the Population-Level: The Generalized Linear Mixed Model.
-Journal of Vision, 12(11):26, 1-17.
+Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+at the population-level: The generalized linear mixed model. 
+Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+
+Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). 
+Pacific Grove, CA: Duxbury Press
 }
 \seealso{
-\code{MixTreatment} for univarible and multivariable GLMM. \code{\link{pseMer}} 
- provides the bootstrap-based confidence intervals.
+\code{\link{MixTreatment}} for univarible and multivariable GLMM. 
+ \code{\link{pseMer}} for bootstrap-based confidence intervals. 
+ \code{\link{xplode}} objects of class \code{xplode.obj}.
 }
+\keyword{DeltaMethod}
+\keyword{GLMM}
+\keyword{Univariable}

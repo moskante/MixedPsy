@@ -4,7 +4,7 @@
 #' Difference (JND) and the related Standard Errors by means of Bootstrap Method.
 #' 
 #' @param mer.obj An object of class \code{"\linkS4class{merMod}"}.
-#' @param B The number of bootstrap samples.
+#' @param B integer: the number of bootstrap samples.
 #' @param FUN An optional, custom made function to specify the required parameters to be estimated.
 #' if NULL, \code{pseMer()} will estimate the PSE and the JND of a univariable GLMM.
 #' @param alpha Significance level of the confidence interval.
@@ -14,36 +14,40 @@
 #' @param beep Logical. If TRUE, a "ping" sound alerts that the simulation is complete.
 #'
 #' @return \code{pseMer} returns a list of length 3 including a summary table (Estimate, Standard Error,
-#' Inferior and Superior Confidence Interval of the parameters) and the output of  \code{lme4::bootMer()} 
-#' and \code{boot::boot.ci()} functions, for further analises. Confidence Intervals in the summary table are
+#' Inferior and Superior Confidence Interval of the parameters) and the output of  \code{\link[lme4]{bootMer}} 
+#' and \code{\link[boot]{boot.ci}} functions, for further analises. Confidence Intervals in the summary table are
 #' based on the percentile method.
 #'
 #' @details \code{pseMer} estimates PSE and JND (and additional user defined paremters) from a 
 #' fitted GLMM model (class \code{"\linkS4class{merMod}"}).
 #' 
 #' @note A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
-#' based on the algorithm in Moscatelli et al, (2012). The current function is a simple wrapper
+#' based on the algorithm in Moscatelli et al. (2012). The current function is a simple wrapper
 #' of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
+#' 
+#' Increasing the nuber of bootstrap samples (\code{B}) makes the estimate more reliable. 
+#' However, this will also increase the duration of the computation.
 #'
 #' @references
-#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-#' at the Population-Level: The Generalized Linear Mixed Model.
-#' Journal of Vision, 12(11):26, 1-17.
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #' 
-#' Bates, D., Maechler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-Effects
-#'  Models Using lme4. Journal of Statistical Software, 67(1), 1–51.
+#' Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-Effects 
+#' Models Using lme4. Journal of Statistical Software, 67(1), 51. https://doi.org/10.18637/jss.v067.i01
 #'
 #' @seealso
-#' \code{\link{bootMer}} from lme4 package and \code{\link{boot.ci}} from boot package. The "ping" sound is 
-#' provided by beepr package.
+#' \code{\link[lme4]{bootMer}} from \code{lme4} package and \code{\link[boot]{boot.ci}} from \code{boot} package. 
+#' The "ping" sound is provided by \code{\link[beepr]{beep}} function from the \code{beepr} package.
 #'
 #' @examples
-#' #load simulated data
-#' data(psych)
 #' library(lme4)
-#' formula.mod <- cbind(Longer, Total - Longer) ~ X + (1 + X| Subject)
-#' mod1 <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = psych)
-#' pse.boot <- pseMer(mod1, B = 600, ci.type = c("norm", "perc"))
+#' data(vibro_exp3)
+#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), 
+#'               data = vibro_exp3[vibro_exp3$vibration == 0,])
+#' pse.boot <- pseMer(mod, B = 100, ci.type = c("norm", "perc"))
+#' pse.boot[1]
 #' 
 #' @export
 #' @importFrom lme4 bootMer
