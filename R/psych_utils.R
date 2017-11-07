@@ -1,16 +1,17 @@
-#' PSE and JND  Using Delta Method
+#' PSE/JND for univariable GLM Using Delta Method
 #'
-#' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
+#' Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
 #' Difference (JND) and the related Standard Errors by means of Delta Method.
 #' The method only applies to univariable GLMs (psychometric functions) having
 #' a \emph{probit} link function.
 #'
-#' @details \code{PsychDelta} estimates PSE and JND of a univariable psychometric
-#' function (object of class \code{"glm"}).
 #'
 #' @param model the fitted psychometric function. An object of class \code{"glm"}.
 #' @param alpha significance level of the confidence interval.
 #'
+#' @details \code{PsychDelta} estimates PSE and JND of a univariable psychometric
+#' function (object of class \code{"glm"}).
+#' 
 #' @return \code{PsychDelta} returns a matrix including Estimate, Standard Error,
 #' Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
 #' are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
@@ -20,19 +21,21 @@
 #' link function.
 #'
 #' @references
-#' Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the
-#' 50 per cent response dose. Statistics in Medicine, 22(12), 1977b-1988.
+#' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
+#' response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
 #'
-#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-#' at the Population-Level: The Generalized Linear Mixed Model.
-#' Journal of Vision, 12(11):26, 1-17.
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #'
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models (without
 #' random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
-#' Models (including random effects). \code{MERdelta.probit} and \code{MERtreatment}
+#' Models (including random effects). \code{MixDelta} and \code{MixTreatment}
 #' for univarible and multivariable GLMM, respectively (object of class
-#' \code{"\linkS4class{merMod}"}). \code{\link{pseMer}} provides the bootstrap-based
+#' \code{"\linkS4class{merMod}"}). \code{\link{pseMer}} for bootstrap-based
 #' confidence intervals.
+#' 
+#' @keywords Univariable GLM DeltaMethod
 #'
 #' @examples
 #' #load simulated data
@@ -73,9 +76,9 @@ PsychDelta <- function(model, alpha = 0.05) {
 
 #' Fitting and Plotting Psychometric Functions
 #'
-#' \code{PsychFunction} is used to fit psychometric functions using either
-#' \code{glm()} or \code{brglm()}, estimate the PSE, the JND and the related
-#' confidence intervals and draw the curve on an existing plot.
+#' Fit psychometric functions using either
+#' \code{glm()} or \code{brglm()}, estimate PSE, JND and the related
+#' confidence intervals, and draw the curve on an existing plot.
 #'
 #' @param ps.formula an object of class ``formula'', such as \code{cbind(yes, no) ~ X}
 #' @param ps.link a link function for the binomial family of error distribution.
@@ -91,24 +94,27 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' @param ps.lwd line width
 #' @param br  logical. If TRUE, brglm is used if fitted values are equal to 0 or 1
 #'
-#' @details If lines is TRUE, the function draw model predictions on an existing plot.
+#' @details If \code{lines = TRUE}, the function draws model predictions on an existing plot.
 #' Only for univariable glm of the type \code{F(Y) ~ X}, where X is a continuous
-#' predictor. If ps.x is empty, the new data frame is a vector of length = 1000,
-#' whose range is specified from x.range. Std. Errors and 95\% confidence intervals
-#' of the PSE and JND are estimated via Delta Methods, see Faraggi et al (2003).
+#' predictor. If \code{ps.x} is empty, the new data frame is a vector of length = 1000,
+#' whose range is specified from \code{x.range}. Std. Errors and 95\% confidence intervals
+#' of the PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003).
 #'
-#' @return \code{PsychFunction} returns list including the fitted glm (or brglm),
-#' the estimate of PSE and JND and a flag to indicate if brglm was called.
+#' @return a list including the fitted glm (or \code{brglm}),
+#' the estimate of PSE and JND and a flag to indicate if \code{brglm} was called.
 #'
 #' @references
-#' Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the 50 per
-#' cent response dose. Statistics in Medicine, 22(12), 1977b-1988.
+#' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
+#' response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
 #'
-#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-#' at the Population-Level: The Generalized Linear Mixed Model.
-#' Journal of Vision, 12(11):26, 1-17.
-#'
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' 
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
+#' \code{\link{PsychShape}} for plotting psychometric function of given PSE and JND
+#' 
+#' @keywords Plotting Psychometric GLM DeltaMethod
 #'
 #' @examples
 #' # simulate data from a single participant
@@ -117,7 +123,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = datafr.S1)
 #'
-#' #psychometric function to fit single-subject data
+#' #fit psychometric function single-subject data and draw on existing plot
 #' plot(Longer/Total ~ X, data = datafr.S1)
 #' fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
 #'                         ps.link = "probit", ps.data = datafr.S1,
@@ -170,30 +176,33 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
   return(myfit)
 }
 
-#' Fitting and Plotting Psychometric Functions
+#' Plotting Psychometric Functions given PSE and JND
 #'
-#' \code{PsychShape()} plots a psychometric function of a known pse and jnd
+#' \code{PsychShape()} plots a psychometric function with known pse and jnd
 #' on an existing plot.
 #'
 #' @param pse,jnd the pse and the jnd of the desired psychometric function
-#' @param ps.link a link function for the binomial family of error distribution.
-#' See `Details'
+#' @param ps.link a link function for the binomial family of error distribution (see Details).
 #' @param x.range a vector of length two specifying the range of the function
 #' @param ps.col color of the line to be plotted
 #' @param ps.lwd line width
 #' @param ps.lty line type
 #'
-#' @details PsychShape() can be used to visualize the predicted results of a
+#' @details \code{PsychShape()} can be used to visualize the predicted results of a
 #' psychophysical experiment or to plot a fitted psychometric function whose
 #' values of pse and jnd are known. Currently only working with probit and logit
 #' link function.
 #'
 #' @references
-#' Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-#' at the Population-Level: The Generalized Linear Mixed Model.
-#' Journal of Vision, 12(11):26, 1-17.
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' 
+#' Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
+#' Springer Science & Business Media.
 #'
 #' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
+#' \code{\link{PsychFunction}} for estimation of PSE and JND.
 #'
 #' @examples
 #' y = c(0,1)
@@ -205,6 +214,7 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #'
 #' @importFrom stats plogis
 #' @export
+#' 
 PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1,
                        ps.lty = "solid") {
   if (ps.link == "probit") {

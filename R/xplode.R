@@ -1,7 +1,7 @@
 #' Extract values from a fitted GLMM object
 #'
-#' A function to extract values from an object of class \code{"\linkS4class{merMod}"}
-#' (more specifically, from an object of subclass glmerMod).
+#' Extract values from an object of class \code{"\linkS4class{merMod}"}
+#' (more specifically, from an object of subclass \code{glmerMod}).
 #'
 #' @param model The GLMM fitted with \code{glmer}. An object of class
 #' \code{"\linkS4class{merMod}"}.
@@ -23,6 +23,12 @@
 #'
 #' @return An object of class \code{"\linkS4class{merMod}"} to be used with other
 #'  \code{MixedPsy} functions.
+#'  
+#' @keywords GLMM
+#' 
+#' @seealso \code{\link[lme4]{merMod-class}} and \code{\link[lme4]{glmer}} from package 
+#' \code{\link[lme4]{lme4}} for objects of class ``\code{merMod}''.
+#' \code{\link{MixDelta}}, \code{\link{MixTreatment}} for use of objects of class \code{xplode.obj}.
 #'
 #' @examples
 #' library(lme4)

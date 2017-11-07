@@ -55,4 +55,3 @@ myplot <- MixPlot(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c
 \keyword{DeltaMethod}
 \keyword{GLMM}
 \keyword{Plotting}
-\keyword{Univariable}

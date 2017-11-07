@@ -28,8 +28,8 @@ An object of class \code{"\linkS4class{merMod}"} to be used with other
  \code{MixedPsy} functions.
 }
 \description{
-A function to extract values from an object of class \code{"\linkS4class{merMod}"}
-(more specifically, from an object of subclass glmerMod).
+Extract values from an object of class \code{"\linkS4class{merMod}"}
+(more specifically, from an object of subclass \code{glmerMod}).
 }
 \details{
 For simplicity, several \code{MixedPsy} functions take as input an
@@ -48,3 +48,9 @@ xplode.mod1 = xplode(model = mod1, name.cont = "X")
 MixDelta(xplode.mod1)
 
 }
+\seealso{
+\code{\link[lme4]{merMod-class}} and \code{\link[lme4]{glmer}} from package 
+\code{\link[lme4]{lme4}} for objects of class ``\code{merMod}''.
+\code{\link{MixDelta}}, \code{\link{MixTreatment}} for use of objects of class \code{xplode.obj}.
+}
+\keyword{GLMM}

@@ -33,20 +33,20 @@ the PSE will be added to an existing plot}
 \item{br}{logical. If TRUE, brglm is used if fitted values are equal to 0 or 1}
 }
 \value{
-\code{PsychFunction} returns list including the fitted glm (or brglm),
-the estimate of PSE and JND and a flag to indicate if brglm was called.
+a list including the fitted glm (or \code{brglm}),
+the estimate of PSE and JND and a flag to indicate if \code{brglm} was called.
 }
 \description{
-\code{PsychFunction} is used to fit psychometric functions using either
-\code{glm()} or \code{brglm()}, estimate the PSE, the JND and the related
-confidence intervals and draw the curve on an existing plot.
+Fit psychometric functions using either
+\code{glm()} or \code{brglm()}, estimate PSE, JND and the related
+confidence intervals, and draw the curve on an existing plot.
 }
 \details{
-If lines is TRUE, the function draw model predictions on an existing plot.
+If \code{lines = TRUE}, the function draws model predictions on an existing plot.
 Only for univariable glm of the type \code{F(Y) ~ X}, where X is a continuous
-predictor. If ps.x is empty, the new data frame is a vector of length = 1000,
-whose range is specified from x.range. Std. Errors and 95\% confidence intervals
-of the PSE and JND are estimated via Delta Methods, see Faraggi et al (2003).
+predictor. If \code{ps.x} is empty, the new data frame is a vector of length = 1000,
+whose range is specified from \code{x.range}. Std. Errors and 95\% confidence intervals
+of the PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003).
 }
 \examples{
 # simulate data from a single participant
@@ -55,7 +55,7 @@ datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 family = binomial(link = "probit"), data = datafr.S1)
 
-#psychometric function to fit single-subject data
+#fit psychometric function single-subject data and draw on existing plot
 plot(Longer/Total ~ X, data = datafr.S1)
 fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
                         ps.link = "probit", ps.data = datafr.S1,
@@ -63,13 +63,18 @@ fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
                         
 }
 \references{
-Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the 50 per
-cent response dose. Statistics in Medicine, 22(12), 1977b-1988.
+Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
+response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
 
-Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-at the Population-Level: The Generalized Linear Mixed Model.
-Journal of Vision, 12(11):26, 1-17.
+Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+at the population-level: The generalized linear mixed model. 
+Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models.
+\code{\link{PsychShape}} for plotting psychometric function of given PSE and JND
 }
+\keyword{DeltaMethod}
+\keyword{GLM}
+\keyword{Plotting}
+\keyword{Psychometric}

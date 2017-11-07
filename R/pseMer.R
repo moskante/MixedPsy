@@ -19,7 +19,8 @@
 #' based on the percentile method.
 #'
 #' @details \code{pseMer} estimates PSE and JND (and additional user defined paremters) from a 
-#' fitted GLMM model (class \code{"\linkS4class{merMod}"}).
+#' fitted GLMM model (class \code{"\linkS4class{merMod}"}). 
+#' The "ping" sound is provided by \code{\link[beepr]{beep}} function from the \code{beepr} package.
 #' 
 #' @note A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
 #' based on the algorithm in Moscatelli et al. (2012). The current function is a simple wrapper
@@ -38,16 +39,38 @@
 #'
 #' @seealso
 #' \code{\link[lme4]{bootMer}} from \code{lme4} package and \code{\link[boot]{boot.ci}} from \code{boot} package. 
-#' The "ping" sound is provided by \code{\link[beepr]{beep}} function from the \code{beepr} package.
+#' 
+#' @keywords Univariable Multivariable GLMM Bootstrap
 #'
 #' @examples
+#' ## Example 1: estimate pse/jnd of a univariable GLMM
 #' library(lme4)
 #' data(vibro_exp3)
-#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
-#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), 
+#' formula.mod1 <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+#' mod1 <- glmer(formula = formula.mod1, family = binomial(link = "probit"), 
 #'               data = vibro_exp3[vibro_exp3$vibration == 0,])
-#' pse.boot <- pseMer(mod, B = 100, ci.type = c("norm", "perc"))
-#' pse.boot[1]
+#' BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("norm", "perc"))
+#' 
+#' ## Example 2: specify custom parameters for bootstrap estimation of a 
+#' # multivariate model
+#' 
+#' formula.mod2 <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
+#' mod2 <- glmer(formula = formula.mod2, family = binomial(link = "probit"), 
+#'                data = vibro_exp3)
+#'               
+#' fun2mod = function(mer.obj){
+#' #allocate space: 4 parameters (jnd_0Hz, jnd_32Hz, pse_0Hz, pse_32Hz) j
+#' jndpse = vector(mode = "numeric", length = 4)
+#' names(jndpse) = c("jnd_0Hz","jnd_32Hz", "pse_0Hz", "pse_32Hz")
+#' jndpse[1] = qnorm(0.75)/fixef(mer.obj)[2] #jnd_0Hz
+#' jndpse[2] = qnorm(0.75)/(fixef(mer.obj)[2] + fixef(mer.obj)[4]) #jnd_32Hz
+#' jndpse[3] = -fixef(mer.obj)[1]/fixef(mer.obj)[2] #pse_0Hz
+#' jndpse[4] = -(fixef(mer.obj)[1] + fixef(mer.obj)[3])/(fixef(mer.obj)[2] 
+#'                + fixef(mer.obj)[4]) #pse_32Hz
+#' return(jndpse)
+#' }
+#' 
+#' BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)
 #' 
 #' @export
 #' @importFrom lme4 bootMer

@@ -2,7 +2,7 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychShape}
 \alias{PsychShape}
-\title{Fitting and Plotting Psychometric Functions}
+\title{Plotting Psychometric Functions given PSE and JND}
 \usage{
 PsychShape(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit",
   ps.col = "black", ps.lwd = 1, ps.lty = "solid")
@@ -12,8 +12,7 @@ PsychShape(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit",
 
 \item{x.range}{a vector of length two specifying the range of the function}
 
-\item{ps.link}{a link function for the binomial family of error distribution.
-See `Details'}
+\item{ps.link}{a link function for the binomial family of error distribution (see Details).}
 
 \item{ps.col}{color of the line to be plotted}
 
@@ -22,11 +21,11 @@ See `Details'}
 \item{ps.lty}{line type}
 }
 \description{
-\code{PsychShape()} plots a psychometric function of a known pse and jnd
+\code{PsychShape()} plots a psychometric function with known pse and jnd
 on an existing plot.
 }
 \details{
-PsychShape() can be used to visualize the predicted results of a
+\code{PsychShape()} can be used to visualize the predicted results of a
 psychophysical experiment or to plot a fitted psychometric function whose
 values of pse and jnd are known. Currently only working with probit and logit
 link function.
@@ -41,10 +40,14 @@ PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "lo
 
 }
 \references{
-Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-at the Population-Level: The Generalized Linear Mixed Model.
-Journal of Vision, 12(11):26, 1-17.
+Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+at the population-level: The generalized linear mixed model. 
+Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+
+Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
+Springer Science & Business Media.
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models.
+\code{\link{PsychFunction}} for estimation of PSE and JND.
 }

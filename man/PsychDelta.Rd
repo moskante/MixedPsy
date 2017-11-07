@@ -2,7 +2,7 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychDelta}
 \alias{PsychDelta}
-\title{PSE and JND  Using Delta Method}
+\title{PSE/JND for univariable GLM Using Delta Method}
 \usage{
 PsychDelta(model, alpha = 0.05)
 }
@@ -17,7 +17,7 @@ Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
 are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 }
 \description{
-Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
+Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
 Difference (JND) and the related Standard Errors by means of Delta Method.
 The method only applies to univariable GLMs (psychometric functions) having
 a \emph{probit} link function.
@@ -41,18 +41,21 @@ PsychDelta(model.glm)
 
 }
 \references{
-Faraggi D, Izikson P, Reiser B (2003). Confidence intervals for the
-50 per cent response dose. Statistics in Medicine, 22(12), 1977b-1988.
+Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
+response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
 
-Moscatelli A, Mezzetti M, Lacquaniti F (2012). Modelling Psychophysical Data
-at the Population-Level: The Generalized Linear Mixed Model.
-Journal of Vision, 12(11):26, 1-17.
+Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+at the population-level: The generalized linear mixed model. 
+Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models (without
 random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
-Models (including random effects). \code{MERdelta.probit} and \code{MERtreatment}
+Models (including random effects). \code{MixDelta} and \code{MixTreatment}
 for univarible and multivariable GLMM, respectively (object of class
-\code{"\linkS4class{merMod}"}). \code{\link{pseMer}} provides the bootstrap-based
+\code{"\linkS4class{merMod}"}). \code{\link{pseMer}} for bootstrap-based
 confidence intervals.
 }
+\keyword{DeltaMethod}
+\keyword{GLM}
+\keyword{Univariable}

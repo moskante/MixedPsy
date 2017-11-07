@@ -22,7 +22,7 @@
 #' 
 #' @seealso \code{\link{xplode}} objects of class \code{xplode.obj}.
 #' 
-#' @keywords DeltaMethod Univariable GLMM Plotting
+#' @keywords DeltaMethod GLMM Plotting
 #'
 #' @examples
 #' library(lme4)
