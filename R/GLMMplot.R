@@ -24,6 +24,7 @@ GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates
 		BETAplus = which(X[,2] > 0) 
 		Xplus = X[BETAplus,]
 		Xminus = X[-BETAplus,]
+		x = NA
 		
 		if(nrow(Xplus) > 0){	
 		apply(X = Xplus, MARGIN = 1,

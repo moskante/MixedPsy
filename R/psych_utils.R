@@ -217,6 +217,7 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
 #' 
 PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1,
                        ps.lty = "solid") {
+  x = NA
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
     curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,
