@@ -49,7 +49,8 @@
 #' formula.mod1 <- cbind(faster, slower) ~ speed + (1 + speed| subject)
 #' mod1 <- glmer(formula = formula.mod1, family = binomial(link = "probit"), 
 #'               data = vibro_exp3[vibro_exp3$vibration == 0,])
-#' BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("norm", "perc"))
+#' \dontshow{BootEstim.1a <- pseMer(mod1, B = 5, ci.type = c("perc"))}
+#' \donttest{BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("perc"))}
 #' 
 #' ## Example 2: specify custom parameters for bootstrap estimation of a 
 #' # multivariate model
@@ -70,7 +71,7 @@
 #' return(jndpse)
 #' }
 #' 
-#' BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)
+#' \donttest{BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)}
 #' 
 #' @export
 #' @importFrom lme4 bootMer
@@ -109,9 +110,11 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
     
     for (i in 1:np) {
         jndpseconf[[i]] <- boot::boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
-        print(paste(parname[i], " 95% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
-        summary[i, 2] = jndpseconf[[i]]$percent[4]
-        summary[i, 3] = jndpseconf[[i]]$percent[5]
+        if("perc" %in% ci.type){
+          print(paste(parname[i], " 95% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
+          summary[i, 2] = jndpseconf[[i]]$percent[4]
+          summary[i, 3] = jndpseconf[[i]]$percent[5]
+        }
     }
 
     if (beep == T) {

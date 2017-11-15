@@ -53,7 +53,8 @@ data(vibro_exp3)
 formula.mod1 <- cbind(faster, slower) ~ speed + (1 + speed| subject)
 mod1 <- glmer(formula = formula.mod1, family = binomial(link = "probit"), 
               data = vibro_exp3[vibro_exp3$vibration == 0,])
-BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("norm", "perc"))
+\dontshow{BootEstim.1a <- pseMer(mod1, B = 5, ci.type = c("perc"))}
+\donttest{BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("perc"))}
 
 ## Example 2: specify custom parameters for bootstrap estimation of a 
 # multivariate model
@@ -74,7 +75,7 @@ jndpse[4] = -(fixef(mer.obj)[1] + fixef(mer.obj)[3])/(fixef(mer.obj)[2]
 return(jndpse)
 }
 
-BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)
+\donttest{BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)}
 
 }
 \references{
