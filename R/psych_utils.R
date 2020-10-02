@@ -183,6 +183,7 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
     myfit[[4]] <- list(segment, line)
     
   }
+  names(myfit) <- c("glm", "estimate", "brflag", "plot")
   return(myfit)
 }
 
