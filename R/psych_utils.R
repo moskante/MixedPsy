@@ -136,7 +136,7 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'
 PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
                           ps.col = "black", ps.lty = "dashed", ps.lwd = 1, br = F) {
-  myfit = vector("list", 3)
+  myfit = vector("list", 4)
   ps.terms = terms(ps.formula)
 
   model.glm = glm(formula = ps.formula, family = binomial(link = ps.link), data = ps.data)
@@ -156,8 +156,12 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
   if (ps.link == "probit") {
     myfit[[2]] = PsychDelta(model.glm)
     if (ps.lines == T) {
-      segments(x0 = myfit[[2]][1, 3], y0 = 0.5, x1 = myfit[[2]][1, 4], y1 = 0.5, col = ps.col,
-               lty = ps.lty, lwd = ps.lwd)
+      #segments(x0 = myfit[[2]][1, 3], y0 = 0.5, x1 = myfit[[2]][1, 4], y1 = 0.5, col = ps.col,
+      #         lty = ps.lty, lwd = ps.lwd)
+      segment <- geom_segment(data = NULL, aes(x = myfit[[2]][1, 3], y = 0.5, 
+                                               xend = myfit[[2]][1,4], yend = 0.5), 
+                              color = ps.col, linetype = ps.lty, size = ps.lwd)
+      
     }
   } else {
     myfit[[2]] = NA
@@ -169,10 +173,17 @@ PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.
       ps.x <- data.frame(seq(x.range[1], x.range[2], length.out = 1000))
       names(ps.x) = attr(ps.terms, "term.labels")
     }
-    lines(x = seq(x.range[1], x.range[2], length.out = 1000),
-          y = predict(object = model.glm, newdata = data.frame(ps.x), type = "response"),
-          col = ps.col, lty = ps.lty, lwd = ps.lwd)
+    #lines(x = seq(x.range[1], x.range[2], length.out = 1000),
+    #      y = predict(object = model.glm, newdata = data.frame(ps.x), type = "response"),
+    #      col = ps.col, lty = ps.lty, lwd = ps.lwd)
+    x = seq(x.range[1], x.range[2], length.out = 1000)
+    y = predict(object = model.glm, newdata = data.frame(ps.x), type = "response")
+    line <- geom_line(data = NULL, aes(x=x, y=y),color = ps.col, linetype = ps.lty, size = ps.lwd)
+    
+    myfit[[4]] <- list(segment, line)
+    
   }
+  names(myfit) <- c("glm", "estimate", "brflag", "plot")
   return(myfit)
 }
 
