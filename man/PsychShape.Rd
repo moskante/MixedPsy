@@ -4,24 +4,31 @@
 \alias{PsychShape}
 \title{Plotting Psychometric Functions given PSE and JND}
 \usage{
-PsychShape(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit",
-  ps.col = "black", ps.lwd = 1, ps.lty = "solid")
+PsychShape(
+  pse = 0,
+  jnd,
+  x.range = c(NA, NA),
+  ps.link = "probit",
+  ps.col = "black",
+  ps.lwd = 1,
+  ps.lty = "solid"
+)
 }
 \arguments{
-\item{pse, jnd}{the pse and the jnd of the desired psychometric function}
+\item{pse, jnd}{point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.}
 
-\item{x.range}{a vector of length two specifying the range of the function}
+\item{x.range}{a vector of length two specifying the range of the function.}
 
 \item{ps.link}{a link function for the binomial family of error distribution (see Details).}
 
-\item{ps.col}{color of the line to be plotted}
+\item{ps.col}{color of the line to be plotted.}
 
-\item{ps.lwd}{line width}
+\item{ps.lwd}{line width.}
 
-\item{ps.lty}{line type}
+\item{ps.lty}{line type.}
 }
 \description{
-\code{PsychShape()} plots a psychometric function with known pse and jnd
+\code{PsychShape()} plots a psychometric function with known PSE and JND
 on an existing plot.
 }
 \details{

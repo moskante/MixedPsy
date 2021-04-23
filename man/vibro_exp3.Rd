@@ -4,7 +4,8 @@
 \name{vibro_exp3}
 \alias{vibro_exp3}
 \title{Data from tactile discrimination task - EXP3}
-\format{A data frame with 72 rows and 6 variables:
+\format{
+A data frame with 72 rows and 6 variables:
 \describe{
 \item{speed}{a numeric vector giving the motion speed in cm/s of the moving surface}
 \item{vibration}{a numeric vector giving the vibration frequency in Hz of the masking stimulus. Either 32Hz or
@@ -12,7 +13,8 @@
 \item{faster}{The proportion of trials in which the comparison stimulus was judged as faster than the reference}
 \item{slower}{The proportion of trials in which the comparison stimulus was judged as slower than the reference}
 \item{subject}{subject id}
-}}
+}
+}
 \source{
 Original data were published in Dallmann et al. (2015).
 }

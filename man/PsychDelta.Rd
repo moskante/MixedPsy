@@ -9,7 +9,7 @@ PsychDelta(model, alpha = 0.05)
 \arguments{
 \item{model}{the fitted psychometric function. An object of class \code{"glm"}.}
 
-\item{alpha}{significance level of the confidence interval.}
+\item{alpha}{significance level of the confidence interval.Default is 0.05.}
 }
 \value{
 \code{PsychDelta} returns a matrix including Estimate, Standard Error,
@@ -19,11 +19,11 @@ are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 \description{
 Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
 Difference (JND) and the related Standard Errors by means of Delta Method.
-The method only applies to univariable GLMs (psychometric functions) having
-a \emph{probit} link function.
+The method only applies to GLMs (psychometric functions) with one continuous 
+predictor and a \emph{probit} link function.
 }
 \details{
-\code{PsychDelta} estimates PSE and JND of a univariable psychometric
+\code{PsychDelta} estimates PSE and JND of a psychometric
 function (object of class \code{"glm"}).
 }
 \note{
@@ -32,11 +32,11 @@ and the second is the slope. The estimate of the JND assumes a \emph{probit}
 link function.
 }
 \examples{
-#load simulated data
-data(simul_data)
+#load 1 participant from simulated data
+data.S1 <- subset(simul_data, Subject == "S1")
 #fit a glm (probit link)
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-family = binomial(link = "probit"), data = simul_data)
+family = binomial(link = "probit"), data = data.S1)
 PsychDelta(model.glm)
 
 }

@@ -2,64 +2,39 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychFunction}
 \alias{PsychFunction}
-\title{Fitting and Plotting Psychometric Functions}
+\title{Fitting Psychometric Functions}
 \usage{
-PsychFunction(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA,
-  ps.lines = F, ps.col = "black", ps.lty = "dashed", ps.lwd = 1,
-  br = F)
+PsychFunction(ps.formula, ps.link, ps.data, br = F)
 }
 \arguments{
-\item{ps.formula}{an object of class ``formula'', such as \code{cbind(yes, no) ~ X}}
+\item{ps.formula}{an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}}
 
-\item{ps.link}{a link function for the binomial family of error distribution.
-See `Details}
+\item{ps.link}{link function for the binomial family of error distribution. Default is \code{"probit"}.}
 
-\item{ps.data}{a data frame including the variables in the model}
+\item{ps.data}{a data frame including the variables in the model.}
 
-\item{x.range}{a vector of length two specifying the range for model predictions}
-
-\item{ps.x}{optionally, a data frame in which to look for variables with which
-to predict. See `Details'}
-
-\item{ps.lines}{logical. If TRUE, model predictions and confidence intervals of
-the PSE will be added to an existing plot}
-
-\item{ps.col}{color of the lines to be plotted}
-
-\item{ps.lty}{line type}
-
-\item{ps.lwd}{line width}
-
-\item{br}{logical. If TRUE, brglm is used if fitted values are equal to 0 or 1}
+\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} is used if fitted values are equal to 0 or 1.}
 }
 \value{
-a list including the fitted glm (or \code{brglm}),
+\code{\link{PsychFunction}} returns a list including the fitted model,
 the estimate of PSE and JND and a flag to indicate if \code{brglm} was called.
 }
 \description{
 Fit psychometric functions using either
-\code{glm()} or \code{brglm()}, estimate PSE, JND and the related
-confidence intervals, and draw the curve on an existing plot.
+\code{glm()} or \code{brglm()}; estimate PSE, JND, and the related
+confidence intervals with Delta Method.
 }
 \details{
-If \code{lines = TRUE}, the function draws model predictions on an existing plot.
-Only for univariable glm of the type \code{F(Y) ~ X}, where X is a continuous
-predictor. If \code{ps.x} is empty, the new data frame is a vector of length = 1000,
-whose range is specified from \code{x.range}. Std. Errors and 95\% confidence intervals
-of the PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003).
+Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
+predictor. Std. Errors and 95\% confidence intervals
+of PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003). Currently only working with \code{"probit"}
+link function.
 }
 \examples{
 # simulate data from a single participant
-datafr.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE)
-#fit a glm (probit link)
-model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-family = binomial(link = "probit"), data = datafr.S1)
-
-#fit psychometric function single-subject data and draw on existing plot
-plot(Longer/Total ~ X, data = datafr.S1)
+data.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE)
 fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
-                        ps.link = "probit", ps.data = datafr.S1,
-                        x.range = c(40, 120), ps.lines = TRUE)
+                        ps.link = "probit", ps.data = data.S1)
                         
 }
 \references{
@@ -71,10 +46,11 @@ at the population-level: The generalized linear mixed model.
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
-\code{\link[stats]{glm}} for for Generalized Linear Models.
-\code{\link{PsychShape}} for plotting psychometric function of given PSE and JND
+\code{\link[stats]{glm}} for for Generalized Linear Models; 
+\code{\link[brglm]{brglm}} for fitting a GLM using bias-reduction;
+\code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object;
+\code{\link{PsychShape}} for plotting a psychometric function given its PSE and JND.
 }
 \keyword{DeltaMethod}
 \keyword{GLM}
-\keyword{Plotting}
 \keyword{Psychometric}

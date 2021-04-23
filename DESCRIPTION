@@ -18,10 +18,11 @@ Imports:
   brglm,
   lme4,
   Matrix,
-  mnormt
+  mnormt,
+  ggplot2
 LazyData: true
 License: GPL (>=2)
 URL: https://mixedpsychophysics.wordpress.com
 BugReports: https://github.com/moskante/MixedPsy/issues
 Encoding: UTF-8
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.1

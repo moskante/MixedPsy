@@ -4,8 +4,13 @@
 \alias{xplode}
 \title{Extract values from a fitted GLMM object}
 \usage{
-xplode(model, name.cont = NA, name.factor = NA, names.response = NA,
-  define.pf = list(pf1 = list(intercept = 1, slope = 2)))
+xplode(
+  model,
+  name.cont = NA,
+  name.factor = NA,
+  names.response = NA,
+  define.pf = list(pf1 = list(intercept = 1, slope = 2))
+)
 }
 \arguments{
 \item{model}{The GLMM fitted with \code{glmer}. An object of class

@@ -4,9 +4,15 @@
 \alias{PsySimulate}
 \title{Simulate psychophysical data}
 \usage{
-PsySimulate(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06),
-  nsubjects = 8, pps = 9, ntrials = 40, xint = c(40, 120),
-  constant = F)
+PsySimulate(
+  fixeff = c(-7, 0.0875),
+  raneff = c(2.4, -0.002, 2e-06),
+  nsubjects = 8,
+  pps = 9,
+  ntrials = 40,
+  xint = c(40, 120),
+  constant = F
+)
 }
 \arguments{
 \item{fixeff}{Array of fixed effects. First item is the intercept, second

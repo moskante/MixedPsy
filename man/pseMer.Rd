@@ -4,8 +4,14 @@
 \alias{pseMer}
 \title{PSE/JND for GLMM Using Bootstrap Methods}
 \usage{
-pseMer(mer.obj, B = 200, FUN = NULL, alpha = 0.05, ci.type = c("norm",
-  "basic", "perc"), beep = F)
+pseMer(
+  mer.obj,
+  B = 200,
+  FUN = NULL,
+  alpha = 0.05,
+  ci.type = c("norm", "basic", "perc"),
+  beep = F
+)
 }
 \arguments{
 \item{mer.obj}{An object of class \code{"\linkS4class{merMod}"}.}

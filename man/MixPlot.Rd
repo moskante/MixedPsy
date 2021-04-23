@@ -4,8 +4,16 @@
 \alias{MixPlot}
 \title{Plotting univariable GLMM}
 \usage{
-MixPlot(xplode.obj, pf = 1, p05line = F, x.range, x.ref, col = F,
-  x.label = "Stimulus Intensity", y.label = "Predicted Response")
+MixPlot(
+  xplode.obj,
+  pf = 1,
+  p05line = F,
+  x.range,
+  x.ref,
+  col = F,
+  x.label = "Stimulus Intensity",
+  y.label = "Predicted Response"
+)
 }
 \arguments{
 \item{xplode.obj}{an object of class xplode}
