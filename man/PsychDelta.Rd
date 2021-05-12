@@ -2,7 +2,7 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychDelta}
 \alias{PsychDelta}
-\title{PSE/JND for univariable GLM Using Delta Method}
+\title{PSE/JND from GLM Using Delta Method}
 \usage{
 PsychDelta(model, alpha = 0.05)
 }

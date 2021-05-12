@@ -1,4 +1,4 @@
-#' PSE/JND for univariable GLM Using Delta Method
+#' PSE/JND from GLM Using Delta Method
 #'
 #' Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
 #' Difference (JND) and the related Standard Errors by means of Delta Method.
@@ -83,15 +83,15 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' @param ps.formula an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}
 #' @param ps.link link function for the binomial family of error distribution. Default is \code{"probit"}.
 #' @param ps.data a data frame including the variables in the model.
-#' @param br  logical. If TRUE, \code{\link[brglm]{brglm}} is used if fitted values are equal to 0 or 1.
+#' @param br  logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1.
 #'
 #' @details Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
 #' predictor. Std. Errors and 95\% confidence intervals
-#' of PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003). Currently only working with \code{"probit"}
+#' of PSE and JND are estimated via Delta Methods (Faraggi et al., 2003). Currently only working with \emph{probit} 
 #' link function.
 #'
 #' @return \code{\link{PsychFunction}} returns a list including the fitted model,
-#' the estimate of PSE and JND and a flag to indicate if \code{brglm} was called.
+#' the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
 #'
 #' @references
 #' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
@@ -101,8 +101,8 @@ PsychDelta <- function(model, alpha = 0.05) {
 #' at the population-level: The generalized linear mixed model. 
 #' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #' 
-#' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models; 
-#' \code{\link[brglm]{brglm}} for fitting a GLM using bias-reduction;
+#' @seealso \code{\link[stats]{glm}} for Generalized Linear Models; 
+#' \code{\link[brglm]{brglm}} for fitting a GLM using bias reduction;
 #' \code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object;
 #' \code{\link{PsychShape}} for plotting a psychometric function given its PSE and JND.
 #' 
@@ -116,7 +116,6 @@ PsychDelta <- function(model, alpha = 0.05) {
 #'                         
 #' @importFrom brglm brglm
 #' @importFrom stats glm predict terms
-#' @importFrom graphics lines segments
 #' @export
 #'
 PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
@@ -152,7 +151,7 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 
 #' Plotting Psychometric Functions given PSE and JND
 #'
-#' \code{PsychShape()} plots a psychometric function with known PSE and JND
+#' Plot a psychometric function with known PSE and JND
 #' on an existing plot.
 #'
 #' @param pse,jnd point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.
@@ -189,28 +188,26 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' @importFrom stats plogis
 #' @export
 #' 
-PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = "probit", ps.col = "black", ps.lwd = 1,
+PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = c("probit", "logit"), ps.col = "black", ps.lwd = 1,
                        ps.lty = "solid") {
   x = NA
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
     curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,
           add = TRUE, lwd = ps.lwd, lty = ps.lty)
+  } else if (ps.link == "logit") {
+    slope = log(3) * (1/jnd)
+    curve(expr = plogis(x, location = pse, scale = 1/slope), from = x.range[1], to = x.range[2],
+          col = ps.col, add = TRUE, lwd = ps.lwd, lty = ps.lty)
   } else {
-    if (ps.link == "logit") {
-      slope = log(3) * (1/jnd)
-      curve(expr = plogis(x, location = pse, scale = 1/slope), from = x.range[1], to = x.range[2],
-            col = ps.col, add = TRUE, lwd = ps.lwd, lty = ps.lty)
-    } else {
-      warning("The function only works with probit and logit link function")
-    }
+    warning("The function only works with probit and logit link function")
   }
   return(0)
 }
 
 #' Plotting Psychometric Functions given GLM
 #'
-#' \code{PsychPlot()} plots a psychometric function given an object of class \code{\link[stats]{glm}}. 
+#' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
 #'
 #' @param mod 
 #' @param addTo 
@@ -261,18 +258,14 @@ PsychPlot <- function(mod, addTo = NULL, showData = TRUE,
   if(isTRUE(showData)){
     plot$data <- geom_point(inherit.aes = FALSE, data = data, aes_string(xname, 'y', color = 'ps.lab'))
   }
-  #plot$scale.linetype <- scale_linetype_manual(name="", values = ps.type, labels=ps.lab) 
-  #plot$scale.color <-scale_color_manual(name ="", values = ps.color, labels=ps.lab)
-  
   
   if(mod$family[["link"]] == "probit"){
     psych <- PsychDelta(mod)
-    plot$segment <- geom_segment(inherit.aes = FALSE, data = longData, 
+    plot$segment <- geom_segment(inherit.aes = FALSE, data = NULL, 
                                  aes(x = psych["pse", "Inferior"], xend = psych["pse", "Superior"], 
                                      y = 0.5, yend = 0.5, color = ps.lab),
                                  size = ps.size)
   } 
-  
   print(p + plot)
   
 }

@@ -13,11 +13,11 @@ PsychFunction(ps.formula, ps.link, ps.data, br = F)
 
 \item{ps.data}{a data frame including the variables in the model.}
 
-\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} is used if fitted values are equal to 0 or 1.}
+\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1.}
 }
 \value{
 \code{\link{PsychFunction}} returns a list including the fitted model,
-the estimate of PSE and JND and a flag to indicate if \code{brglm} was called.
+the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
 }
 \description{
 Fit psychometric functions using either
@@ -27,7 +27,7 @@ confidence intervals with Delta Method.
 \details{
 Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
 predictor. Std. Errors and 95\% confidence intervals
-of PSE and JND are estimated via Delta Methods, see Faraggi et al. (2003). Currently only working with \code{"probit"}
+of PSE and JND are estimated via Delta Methods (Faraggi et al., 2003). Currently only working with \emph{probit} 
 link function.
 }
 \examples{
@@ -46,8 +46,8 @@ at the population-level: The generalized linear mixed model.
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
-\code{\link[stats]{glm}} for for Generalized Linear Models; 
-\code{\link[brglm]{brglm}} for fitting a GLM using bias-reduction;
+\code{\link[stats]{glm}} for Generalized Linear Models; 
+\code{\link[brglm]{brglm}} for fitting a GLM using bias reduction;
 \code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object;
 \code{\link{PsychShape}} for plotting a psychometric function given its PSE and JND.
 }

@@ -27,7 +27,7 @@ PsychPlot(
 \item{ps.lab}{label.}
 }
 \description{
-\code{PsychPlot()} plots a psychometric function given an object of class \code{\link[stats]{glm}}.
+Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
 }
 \details{
 

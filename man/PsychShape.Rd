@@ -8,7 +8,7 @@ PsychShape(
   pse = 0,
   jnd,
   x.range = c(NA, NA),
-  ps.link = "probit",
+  ps.link = c("probit", "logit"),
   ps.col = "black",
   ps.lwd = 1,
   ps.lty = "solid"
@@ -28,7 +28,7 @@ PsychShape(
 \item{ps.lty}{line type.}
 }
 \description{
-\code{PsychShape()} plots a psychometric function with known PSE and JND
+Plot a psychometric function with known PSE and JND
 on an existing plot.
 }
 \details{
