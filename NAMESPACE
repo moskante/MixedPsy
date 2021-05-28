@@ -2,6 +2,7 @@
 
 export(MixDelta)
 export(MixPlot)
+export(MixPlot_1.0)
 export(MixTreatment)
 export(PsySimulate)
 export(PsychDelta)

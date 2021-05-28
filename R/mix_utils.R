@@ -136,9 +136,11 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 MixTreatment <- function(xplode.obj, alpha = 0.05) {
   
   datafr = xplode.obj$model.frame
-  resp = split(datafr[[1]], col(datafr[[1]]))
-  names(resp) = xplode.obj$response.colnames
-  datafr = cbind(datafr, data.frame(resp))
+  if(is.matrix(datafr[[1]])){
+    resp = split(datafr[[1]], col(datafr[[1]]))
+    names(resp) = xplode.obj$response.colnames
+    datafr = cbind(datafr, data.frame(resp))
+  }
   
   treat.lev = nlevels(xplode.obj$model.frame[, xplode.obj$factor.col])
   temp.models = delta.par = temp.xplode = vector("list", treat.lev)
@@ -156,107 +158,92 @@ MixTreatment <- function(xplode.obj, alpha = 0.05) {
   return(delta.par)
 }
 
-#' Plotting univariable GLMM
+#' Plotting Psychometric Functions given GLMM
 #'
-#' Plot binomial data and the fitted GLMM (object of class xplode).
+#' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
+#'
+#' @param xplode 
+#' @param showData
 #' 
-#' @param xplode.obj an object of class xplode
-#' @param pf integer: for multivariable GLMM including one factorial predictor,
-#' the level number to be plotted 
-#' @param p05line logical, should be an horizontal and a vertical line added? 
-#' the horizontal line is fixed at P(Y = 1) = 0.5.
-#' @param x.ref if p05line = T, this is the position of the vertical line on the x axis
-#' @param x.range a vector of length two specifying the range for model predictions
-#' @param col logical, if TRUE a different color will be used for different clusters/participants
-#' @param x.label,y.label label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
-#' y.label = "Predicted Response"
-#'   
-#' @note The function is currently only working with GLMM including maximum three 
-#' random effects (random intercept, random slope and covariance of the two)
-#'  
-#' @return a data.frame object including the intercept and slope for each participant
-#' (algebraic sum of the fixed effects and the modes of the random effects) and the 
-#' color number for the plot. 
+#' @details 
+#'
+#' @references
+#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+#' at the population-level: The generalized linear mixed model. 
+#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #' 
-#' @seealso \code{\link{xplode}} objects of class \code{xplode.obj}.
-#' 
-#' @keywords DeltaMethod GLMM Plotting
+#' Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
+#' Springer Science & Business Media.
+#'
+#' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
+#' \code{\link{PsychFunction}} for estimation of PSE and JND.
 #'
 #' @examples
-#' library(lme4)
-#' data(vibro_exp3)
-#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
-#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-#'               data = vibro_exp3[vibro_exp3$vibration == 0,])
-#' define.mod <- list(pf1 = list(intercept = 1, slope = 2))
-#' xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
-#' myplot <- MixPlot(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
-#'                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
 #'
+#' @import ggplot2
 #' @export
 #' 
-MixPlot <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
-                    col = F, x.label = "Stimulus Intensity", y.label = "Predicted Response"){
+
+MixPlot <- function(xplode.obj, showData = TRUE){
   
-  #numebr of subjects
-  nsubjects = xplode.obj$Groups
+  # GLMM
+  xname = xplode.obj$cont.colname
+  yname = xplode.obj$response.colnames[1]
   
-  #only one condition
-  if(xplode.obj$n.psych.fun > 1){
-    newdata = subset.data.frame(xplode.obj$model.frame,
-                                xplode.obj$model.frame[ ,xplode.obj$factor.col] == xplode.obj$factor.levels[pf])
+  factorname <- xplode.obj$factor.colname
+  if(is.null(factorname)){
+    factorlevels <- NA
   }else{
-    newdata = xplode.obj$model.frame
+    factorlevels <- xplode.obj$factor.levels
   }
-  newdata$size = rowSums(newdata[,1])
   
-  #colors and pch 
-  if(col == T){
-    if(length(palette()) < nsubjects){palette(rainbow(nsubjects))}		
-    newdata$pointcolors = newdata[,xplode.obj$Groups.colnames]
-    curvecolors = 1:nsubjects
+  groupname = xplode.obj$Groups.colnames
+  grouplevels = xplode.obj$Groups.levels
+  
+  temp.data = as.data.frame(xplode.obj$model.frame)
+  if(is.matrix(temp.data[[1]])){
+    resp = split(temp.data[[1]], col(temp.data[[1]]))
+    names(resp) = xplode.obj$response.colnames
+    temp.data = cbind(temp.data, data.frame(resp))
+  }
+  temp.data$size = xplode.obj$size
+  
+  temp.model = glmer(formula = xplode.obj$formula, family = binomial("probit"), data = temp.data,
+                           nAGQ = 1)
+  
+  longData = expand.grid(cont = pretty(temp.data[[xname]], 1000),
+                          group = grouplevels, 
+                          factor = factorlevels)
+  names(longData) = c(xname,groupname,factorname)
+  longData$y = predict(object = temp.model, newdata = longData, type = "response")
+  
+  
+  p = ggplot(longData, aes_string(xname,"y")) 
+  plot = list()
+  if(is.null(factorname)){
+    colorname = groupname
+    plot$line = geom_line(aes_string(color = colorname)) 
   }else{
-    newdata$pointcolors = 1
-    curvecolors = rep(1, nsubjects)
+    colorname = factorname
+    plot$line = geom_line(aes_string(color = colorname)) 
+    plot$facet = facet_wrap(c(groupname))
   }
   
-  #BLUPS (random modes)
-  fixef.pf = cbind(xplode.obj$psychometrics[[pf]]$intercept["Estimate"],
-                   xplode.obj$psychometrics[[pf]]$slope["Estimate"])
-  
-  if(xplode.obj$multirand == FALSE){
-    estimates = data.frame(matrix(numeric(), nrow = nrow(xplode.obj$ranef[[1]]), ncol = 3))
-    estimates[,1] = xplode.obj$ranef[[1]] + fixef.pf[1]
-    estimates[,2] = rep(fixef.pf[2], times = nrow(estimates))
-    estimates[,3] = curvecolors
-  }else{
-    estimates = t(apply(X = xplode.obj$ranef[[1]], MARGIN = 1, FUN = function(X){X + fixef.pf}))
-    estimates = data.frame(cbind(estimates, curvecolors))
+  if(isTRUE(showData)){
+    plot$data = geom_point(data = temp.data, aes_string(xname, paste0(yname,"/size"), color = colorname))
   }
   
-  #see xplode$moddel.frame
-  plot(y =  newdata[,1][,1]/newdata$size,
-       x = newdata[,xplode.obj$cont.col],  xlim = x.range,
-       xlab = x.label, ylim = c(0,1), ylab = y.label,
-       col = newdata$pointcolors)		 													
+  print(p + plot)
   
-  if (p05line == T){
-    abline(h = 0.5, col = "lightgrey", lty = "dashed")
-    abline(v = x.ref, col = "lightgrey", lty = "dashed")
-  }
-  
-  CurveProbit(estimates, x.range[1], x.range[2])	
-  
-  palette("default")	
-  return(estimates)
 }
+
 
 #' PSE/JND for GLMM Using Bootstrap Methods
 #'
 #' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
 #' Difference (JND) and the related Standard Errors by means of Bootstrap Method.
 #' 
-#' @param mer.obj An object of class \code{"\linkS4class{merMod}"}.
+#' @param mer.obj An object of class \code{\linkS4class{merMod}}.
 #' @param B integer: the number of bootstrap samples.
 #' @param FUN An optional, custom made function to specify the required parameters to be estimated.
 #' if NULL, \code{pseMer()} will estimate the PSE and the JND of a univariable GLMM.

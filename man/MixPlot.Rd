@@ -2,64 +2,33 @@
 % Please edit documentation in R/mix_utils.R
 \name{MixPlot}
 \alias{MixPlot}
-\title{Plotting univariable GLMM}
+\title{Plotting Psychometric Functions given GLMM}
 \usage{
-MixPlot(
-  xplode.obj,
-  pf = 1,
-  p05line = F,
-  x.range,
-  x.ref,
-  col = F,
-  x.label = "Stimulus Intensity",
-  y.label = "Predicted Response"
-)
+MixPlot(xplode.obj, showData = TRUE)
 }
 \arguments{
-\item{xplode.obj}{an object of class xplode}
+\item{showData}{}
 
-\item{pf}{integer: for multivariable GLMM including one factorial predictor,
-the level number to be plotted}
-
-\item{p05line}{logical, should be an horizontal and a vertical line added? 
-the horizontal line is fixed at P(Y = 1) = 0.5.}
-
-\item{x.range}{a vector of length two specifying the range for model predictions}
-
-\item{x.ref}{if p05line = T, this is the position of the vertical line on the x axis}
-
-\item{col}{logical, if TRUE a different color will be used for different clusters/participants}
-
-\item{x.label, y.label}{label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
-y.label = "Predicted Response"}
-}
-\value{
-a data.frame object including the intercept and slope for each participant
-(algebraic sum of the fixed effects and the modes of the random effects) and the 
-color number for the plot.
+\item{xplode}{}
 }
 \description{
-Plot binomial data and the fitted GLMM (object of class xplode).
+Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
 }
-\note{
-The function is currently only working with GLMM including maximum three 
-random effects (random intercept, random slope and covariance of the two)
-}
-\examples{
-library(lme4)
-data(vibro_exp3)
-formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
-mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-              data = vibro_exp3[vibro_exp3$vibration == 0,])
-define.mod <- list(pf1 = list(intercept = 1, slope = 2))
-xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
-myplot <- MixPlot(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
-                  col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+\details{
 
 }
-\seealso{
-\code{\link{xplode}} objects of class \code{xplode.obj}.
+\examples{
+
 }
-\keyword{DeltaMethod}
-\keyword{GLMM}
-\keyword{Plotting}
+\references{
+Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
+at the population-level: The generalized linear mixed model. 
+Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+
+Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
+Springer Science & Business Media.
+}
+\seealso{
+\code{\link[stats]{glm}} for for Generalized Linear Models.
+\code{\link{PsychFunction}} for estimation of PSE and JND.
+}
