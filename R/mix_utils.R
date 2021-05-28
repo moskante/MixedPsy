@@ -200,15 +200,18 @@ MixPlot <- function(xplode.obj, showData = TRUE){
   groupname = xplode.obj$Groups.colnames
   grouplevels = xplode.obj$Groups.levels
   
+  temp.formula = xplode.obj$formula
+  
   temp.data = as.data.frame(xplode.obj$model.frame)
   if(is.matrix(temp.data[[1]])){
     resp = split(temp.data[[1]], col(temp.data[[1]]))
-    names(resp) = xplode.obj$response.colnames
+    names(resp) = c("y1", "y2")
     temp.data = cbind(temp.data, data.frame(resp))
+    temp.formula = update(temp.formula, cbind(y1,y2) ~ .)
   }
   temp.data$size = xplode.obj$size
   
-  temp.model = glmer(formula = xplode.obj$formula, family = binomial("probit"), data = temp.data,
+  temp.model = glmer(formula = temp.formula, family = binomial("probit"), data = temp.data,
                            nAGQ = 1)
   
   longData = expand.grid(cont = pretty(temp.data[[xname]], 1000),
@@ -230,7 +233,7 @@ MixPlot <- function(xplode.obj, showData = TRUE){
   }
   
   if(isTRUE(showData)){
-    plot$data = geom_point(data = temp.data, aes_string(xname, paste0(yname,"/size"), color = colorname))
+    plot$data = geom_point(data = temp.data, aes_string(xname, "y1/size", color = colorname))
   }
   
   print(p + plot)
