@@ -136,10 +136,13 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 MixTreatment <- function(xplode.obj, alpha = 0.05) {
   
   datafr = xplode.obj$model.frame
+  temp.formula = xplode.obj$formula
+  
   if(is.matrix(datafr[[1]])){
     resp = split(datafr[[1]], col(datafr[[1]]))
-    names(resp) = xplode.obj$response.colnames
+    names(resp) = c("y1", "y2")
     datafr = cbind(datafr, data.frame(resp))
+    temp.formula = update(temp.formula, cbind(y1,y2) ~ .)
   }
   
   treat.lev = nlevels(xplode.obj$model.frame[, xplode.obj$factor.col])
@@ -149,7 +152,7 @@ MixTreatment <- function(xplode.obj, alpha = 0.05) {
   for (i in 1:treat.lev) {
     contrasts(datafr[, which(names(datafr) == xplode.obj$factor.colname)]) = contr.treatment(treat.lev,
                                                                                              base = i)
-    temp.models[[i]] = glmer(formula = xplode.obj$formula, family = binomial("probit"), data = datafr,
+    temp.models[[i]] = glmer(formula = temp.formula, family = binomial("probit"), data = datafr,
                              nAGQ = 1)
     temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname,
                               define.pf = xplode.obj$define.pf)
