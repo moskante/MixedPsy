@@ -163,9 +163,9 @@ MixTreatment <- function(xplode.obj, alpha = 0.05) {
 
 #' Plotting Psychometric Functions given GLMM
 #'
-#' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
+#' Plot binomial data and the fitted GLMM from an object of class \code{\link{xplode}}.
 #'
-#' @param xplode 
+#' @param xplode.obj an object of class \code{\link{xplode}} 
 #' @param showData
 #' 
 #' @details 
@@ -175,13 +175,18 @@ MixTreatment <- function(xplode.obj, alpha = 0.05) {
 #' at the population-level: The generalized linear mixed model. 
 #' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #' 
-#' Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
-#' Springer Science & Business Media.
-#'
-#' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models.
-#' \code{\link{PsychFunction}} for estimation of PSE and JND.
-#'
+#' @seealso \code{\link{xplode}} for objects of class \code{xplode}.
+#' 
 #' @examples
+#' library(lme4)
+#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
+#'               data = vibro_exp3[vibro_exp3$vibration == 0,])
+#' define.mod <- list(pf1 = list(intercept = 1, slope = 2))
+#' xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
+#' myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
+#'                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+#'                   
 #'
 #' @import ggplot2
 #' @export
@@ -348,14 +353,14 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
   summary = matrix(NA, nrow = np, ncol = 3,
                    dimnames = list(parname, c("Estimate", "Inferior","Superior")))
   
-  boot.samp <- lme4::bootMer(mer.obj, myfun, nsim = B)
+  boot.samp <- bootMer(mer.obj, myfun, nsim = B)
   summary[, 1] = boot.samp$t0
   
   jndpseconf = vector(mode = "list", length = np)
   my.conf = 1 - alpha
   
   for (i in 1:np) {
-    jndpseconf[[i]] <- boot::boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
+    jndpseconf[[i]] <- boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
     if("perc" %in% ci.type){
       print(paste(parname[i], " 95% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
       summary[i, 2] = jndpseconf[[i]]$percent[4]
@@ -366,7 +371,7 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
   if (beep == T) {
     beepr::beep()
   }
-  out = list(summary, boot.samp, jndpseconf)
+  out = list(summary = summary, boot.samp = boot.samp, CI = jndpseconf)
   return(out)
 }
 

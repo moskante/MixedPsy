@@ -207,30 +207,3 @@ kombo = function(vector) {
   }
   return(temp)
 }
-
-#' @importFrom graphics curve
-#' @importFrom stats pnorm
-#FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
-CurveProbit = function(X, x.from, x.to){
-  BETAplus = which(X[,2] > 0) 
-  Xplus = X[BETAplus,]
-  Xminus = X[-BETAplus,]
-  x = NA
-  
-  if(nrow(Xplus) > 0){	
-    apply(X = Xplus, MARGIN = 1,
-          FUN = function(X) {curve(expr = pnorm(x, mean = -X[1]/X[2], sd = 1/X[2] ),
-                                   from = x.from, to = x.to,
-                                   col = X[3],
-                                   add = T)}
-    )}
-  
-  if(nrow(Xminus) > 0){
-    apply(X = Xminus, MARGIN = 1,
-          FUN = function(X) {curve(expr = 1 - pnorm(x, mean = -X[1]/X[2], sd = 1/abs(X[2] )),
-                                   from = x.from, to = x.to,
-                                   col = X[3],
-                                   add = T)}
-    )}
-  return(BETAplus)
-}

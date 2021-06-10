@@ -88,20 +88,15 @@ GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates
 #' @param x.label,y.label label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
 #' y.label = "Predicted Response"
 #'   
-#' @note The function is currently only working with GLMM including maximum three 
+#' @note The function in the first version of `MixedPsy` only worked with GLMM including maximum three 
 #' random effects (random intercept, random slope and covariance of the two)
 #'  
 #' @return a data.frame object including the intercept and slope for each participant
 #' (algebraic sum of the fixed effects and the modes of the random effects) and the 
 #' color number for the plot. 
 #' 
-#' @seealso \code{\link{xplode}} objects of class \code{xplode.obj}.
-#' 
-#' @keywords DeltaMethod GLMM Plotting
-#'
 #' @examples
 #' library(lme4)
-#' data(vibro_exp3)
 #' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
 #' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
 #'               data = vibro_exp3[vibro_exp3$vibration == 0,])
@@ -109,8 +104,9 @@ GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates
 #' xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
 #' myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
 #'                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+#' @keywords DeltaMethod GLMM Plotting
 #'
-#' @export
+#'
 #' 
 MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
                     col = F, x.label = "Stimulus Intensity", y.label = "Predicted Response"){
@@ -166,4 +162,31 @@ MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
   
   palette("default")	
   return(estimates)
+}
+
+#' @importFrom graphics curve
+#' @importFrom stats pnorm
+#FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
+CurveProbit = function(X, x.from, x.to){
+  BETAplus = which(X[,2] > 0) 
+  Xplus = X[BETAplus,]
+  Xminus = X[-BETAplus,]
+  x = NA
+  
+  if(nrow(Xplus) > 0){	
+    apply(X = Xplus, MARGIN = 1,
+          FUN = function(X) {curve(expr = pnorm(x, mean = -X[1]/X[2], sd = 1/X[2] ),
+                                   from = x.from, to = x.to,
+                                   col = X[3],
+                                   add = T)}
+    )}
+  
+  if(nrow(Xminus) > 0){
+    apply(X = Xminus, MARGIN = 1,
+          FUN = function(X) {curve(expr = 1 - pnorm(x, mean = -X[1]/X[2], sd = 1/abs(X[2] )),
+                                   from = x.from, to = x.to,
+                                   col = X[3],
+                                   add = T)}
+    )}
+  return(BETAplus)
 }

@@ -7,28 +7,33 @@
 MixPlot(xplode.obj, showData = TRUE)
 }
 \arguments{
-\item{showData}{}
+\item{xplode.obj}{an object of class \code{\link{xplode}}}
 
-\item{xplode}{}
+\item{showData}{}
 }
 \description{
-Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
+Plot binomial data and the fitted GLMM from an object of class \code{\link{xplode}}.
 }
 \details{
 
 }
 \examples{
+library(lme4)
+formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
+              data = vibro_exp3[vibro_exp3$vibration == 0,])
+define.mod <- list(pf1 = list(intercept = 1, slope = 2))
+xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
+myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
+                  col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+                  
 
 }
 \references{
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
-
-Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
-Springer Science & Business Media.
 }
 \seealso{
-\code{\link[stats]{glm}} for for Generalized Linear Models.
-\code{\link{PsychFunction}} for estimation of PSE and JND.
+\code{\link{xplode}} for objects of class \code{xplode}.
 }
