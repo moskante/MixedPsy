@@ -329,6 +329,7 @@ MixPlot <- function(xplode.obj, showData = TRUE){
 #' @importFrom Matrix nearPD
 #' @importFrom boot boot.ci
 #' @importFrom beepr beep
+#' @importFrom tcltk tkProgressBar
 
 pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05, 
                    ci.type = c("norm", "basic", "perc"), beep = F) {
@@ -353,12 +354,13 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
   summary = matrix(NA, nrow = np, ncol = 3,
                    dimnames = list(parname, c("Estimate", "Inferior","Superior")))
   
-  boot.samp <- bootMer(mer.obj, myfun, nsim = B)
+  
+  boot.samp <- bootMer(mer.obj, myfun, nsim = B, .progress = "txt")
   summary[, 1] = boot.samp$t0
   
   jndpseconf = vector(mode = "list", length = np)
   my.conf = 1 - alpha
-  
+  print("\n")
   for (i in 1:np) {
     jndpseconf[[i]] <- boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
     if("perc" %in% ci.type){
