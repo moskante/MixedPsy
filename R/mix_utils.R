@@ -365,7 +365,7 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
   
   jndpseconf = vector(mode = "list", length = np)
   my.conf = 1 - alpha
-  print("\n")
+  cat("\n")
   for (i in 1:np) {
     jndpseconf[[i]] <- boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
     if("perc" %in% ci.type){
