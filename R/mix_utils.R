@@ -59,14 +59,14 @@ MixFunction <- function(xplode.obj, alpha = 0.05) {
   } else {
     
     # copy all the variables in temporary objects
-    pse <- -(xplode.obj$psychometrics[[1]]$intercept[1]/xplode.obj$psychometrics[[1]]$slope[1])
-    slope <- xplode.obj$psychometrics[[1]]$slope[1]
+    pse <- -(xplode.obj$psychometrics$intercept[1]/xplode.obj$psychometrics$slope[1])
+    slope <- xplode.obj$psychometrics$slope[1]
     
-    var.intercept <- xplode.obj$psychometrics[[1]]$intercept[2]
-    var.slope <- xplode.obj$psychometrics[[1]]$slope[2]
+    var.intercept <- xplode.obj$psychometrics$intercept[2]
+    var.slope <- xplode.obj$psychometrics$slope[2]
     
     # cov(alpha, slope): for all pfs, is approximated to the cov(alpha1, slope1)
-    cov.intercept.slope <- xplode.obj$psychometrics$pf1$cov
+    cov.intercept.slope <- xplode.obj$psychometrics$cov
     
     # compute all the other variables
     var.pse <- (1/slope^2) * (var.intercept + (2 * pse * cov.intercept.slope) + (pse^2 * var.slope))  #PSE
@@ -155,8 +155,7 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
                                                                                                base = i)
       temp.models[[i]] = glmer(formula = temp.formula, family = binomial("probit"), data = datafr,
                                nAGQ = 1)
-      temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname,
-                                define.pf = xplode.obj$define.pf)
+      temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname)
       delta.par[[i]] = MixFunction(temp.xplode[[i]], alpha = alpha)
     }
   }else{
@@ -183,13 +182,11 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 #' 
 #' @examples
 #' library(lme4)
-#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+#' formula.mod <- cbind(faster, slower) ~ speed *vibration + (1 + speed| subject)
 #' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-#'               data = vibro_exp3[vibro_exp3$vibration == 0,])
-#' define.mod <- list(pf1 = list(intercept = 1, slope = 2))
-#' xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
-#' myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
-#'                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+#'               data = vibro_exp3)
+#' xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
+#' myplot <- MixPlot(xplode.mod)
 #'                   
 #'
 #' @import ggplot2

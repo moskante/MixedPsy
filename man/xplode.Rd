@@ -4,13 +4,7 @@
 \alias{xplode}
 \title{Extract values from a fitted GLMM object}
 \usage{
-xplode(
-  model,
-  name.cont = NA,
-  name.factor = NA,
-  names.response = NA,
-  define.pf = list(pf1 = list(intercept = 1, slope = 2))
-)
+xplode(model, name.cont = NA, name.factor = NA, names.response = NA)
 }
 \arguments{
 \item{model}{The GLMM fitted with \code{glmer}. An object of class
@@ -24,9 +18,6 @@ predictor, as in the formula object of the fitted model}
 
 \item{names.response}{Optional. A string providing the name of name of the
 response variable, as in the formula object of the fitted model}
-
-\item{define.pf}{Optional. Specifies which parameter pertains to the intercept
-and which to the slope in the formula object.}
 }
 \value{
 An object of class \code{"\linkS4class{merMod}"} to be used with other
