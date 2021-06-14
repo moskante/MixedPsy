@@ -7,7 +7,7 @@
 #' @details \code{MixDelta} estimates PSE and JND of a univariable psychometric
 #' function given an object of class \code{\link[lme4]{merMod}}.
 #' The method only applies to GLMMs with only one continuous predictor and a 
-#' \emph{probit} link function. Use \code{\link{MixTreatment}} for multivariable GLMMs with a factorial 
+#' \emph{probit} link function. Use \code{\link{MixDelta}} for multivariable GLMMs with a factorial 
 #' and a continuous predictor. \code{MixDelta} assumes that the first model coefficient is the intercept
 #' and the second is the slope. The JND estimate assumes a \emph{probit} link function.
 #'
@@ -31,7 +31,7 @@
 #' Pacific Grove, CA: Duxbury Press
 #'
 #' @seealso
-#'  \code{\link{MixTreatment}} for a generalization of the parameter estimation for multivariable GLMM. 
+#'  \code{\link{MixDelta}} for a generalization of the parameter estimation for multivariable GLMM. 
 #'  \code{\link{pseMer}} for bootstrap-based confidence intervals. 
 #'  \code{\link{xplode}} for objects of class \code{\link{xplode.obj}}. 
 #'
@@ -49,9 +49,8 @@
 #' 
 #' @importFrom stats qnorm
 #' @importFrom grDevices palette
-#' @export
 #'
-MixDelta <- function(xplode.obj, alpha = 0.05) {
+MixFunction <- function(xplode.obj, alpha = 0.05) {
   
   # check if link = probit
   if (xplode.obj$family$link != "probit") {
@@ -102,7 +101,7 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 #' one continuous predictor and one factorial predictor.
 #' @param alpha significance level of the confidence intervals. Default is 0.05. 
 #'
-#' @details The function \code{MixTreatment} is based on a recursive use of
+#' @details The function \code{MixDelta} is based on a recursive use of
 #' \code{glmer} and \code{PsychDelta} to multivariable GLMM including
 #' continuous and factorial predictors. The same caveats of \code{PsychDelta}
 #' apply (e.g., confidence interval based on normality assumption).
@@ -128,12 +127,12 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 #' formula.mod <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
 #' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = vibro_exp3)
 #' xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
-#' MixTreatment(xplode.mod)
+#' MixDelta(xplode.mod)
 #'
 #' @importFrom stats binomial contrasts<- contr.treatment
 #' @export
 #'
-MixTreatment <- function(xplode.obj, alpha = 0.05) {
+MixDelta <- function(xplode.obj, alpha = 0.05) {
   
   datafr = xplode.obj$model.frame
   temp.formula = xplode.obj$formula
@@ -145,18 +144,23 @@ MixTreatment <- function(xplode.obj, alpha = 0.05) {
     temp.formula = update(temp.formula, cbind(y1,y2) ~ .)
   }
   
-  treat.lev = nlevels(xplode.obj$model.frame[, xplode.obj$factor.col])
-  temp.models = delta.par = temp.xplode = vector("list", treat.lev)
-  names(delta.par) = xplode.obj$factor.parnames
+  treat.lev = length(xplode.obj$factor.levels)
   
-  for (i in 1:treat.lev) {
-    contrasts(datafr[, which(names(datafr) == xplode.obj$factor.colname)]) = contr.treatment(treat.lev,
-                                                                                             base = i)
-    temp.models[[i]] = glmer(formula = temp.formula, family = binomial("probit"), data = datafr,
-                             nAGQ = 1)
-    temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname,
-                              define.pf = xplode.obj$define.pf)
-    delta.par[[i]] = MixDelta(temp.xplode[[i]], alpha = alpha)
+  if (treat.lev > 0){
+    temp.models = delta.par = temp.xplode = vector("list", treat.lev)
+    names(delta.par) = xplode.obj$factor.parnames
+    
+    for (i in 1:treat.lev) {
+      contrasts(datafr[, which(names(datafr) == xplode.obj$factor.colname)]) = contr.treatment(treat.lev,
+                                                                                               base = i)
+      temp.models[[i]] = glmer(formula = temp.formula, family = binomial("probit"), data = datafr,
+                               nAGQ = 1)
+      temp.xplode[[i]] = xplode(temp.models[[i]], name.cont = xplode.obj$cont.colname, name.factor = xplode.obj$factor.colname,
+                                define.pf = xplode.obj$define.pf)
+      delta.par[[i]] = MixFunction(temp.xplode[[i]], alpha = alpha)
+    }
+  }else{
+    delta.par <- MixFunction(xplode.obj, alpha = alpha)
   }
   return(delta.par)
 }

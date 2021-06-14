@@ -56,6 +56,6 @@ MixDelta(xplode.mod1)
 \seealso{
 \code{\link[lme4]{merMod-class}} and \code{\link[lme4]{glmer}} from package 
 \code{\link[lme4]{lme4}} for objects of class ``\code{merMod}''.
-\code{\link{MixDelta}}, \code{\link{MixTreatment}} for use of objects of class \code{xplode.obj}.
+\code{\link{MixDelta}}, \code{\link{MixDelta}} for use of objects of class \code{xplode.obj}.
 }
 \keyword{GLMM}

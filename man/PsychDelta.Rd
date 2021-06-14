@@ -51,9 +51,8 @@ Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models (without
 random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
-Models (including random effects). \code{MixDelta} and \code{MixTreatment}
-for univarible and multivariable GLMM, respectively (object of class
-\code{"\linkS4class{merMod}"}). \code{\link{pseMer}} for bootstrap-based
+Models (including random effects). \code{MixDelta} for GLMMs, (object of class
+\code{\linkS4class{merMod}}). \code{\link{pseMer}} for bootstrap-based
 confidence intervals.
 }
 \keyword{DeltaMethod}
