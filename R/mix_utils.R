@@ -169,7 +169,8 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 #' Plot binomial data and the fitted GLMM from an object of class \code{\link{xplode}}.
 #'
 #' @param xplode.obj an object of class \code{\link{xplode}} 
-#' @param showData
+#' @param showData 
+#' @param facet_by 
 #' 
 #' @details 
 #'
@@ -193,7 +194,8 @@ MixDelta <- function(xplode.obj, alpha = 0.05) {
 #' @export
 #' 
 
-MixPlot <- function(xplode.obj, showData = TRUE){
+MixPlot <- function(xplode.obj, facet_by = NULL, showData = TRUE){
+  
   
   # GLMM
   xname = xplode.obj$cont.colname
@@ -234,13 +236,15 @@ MixPlot <- function(xplode.obj, showData = TRUE){
   plot = list()
   if(is.null(factorname)){
     colorname = groupname
-    plot$line = geom_line(aes_string(color = colorname)) 
-  }else{
+  }else if (is.null(facet_by) || facet_by ==  groupname){
     colorname = factorname
-    plot$line = geom_line(aes_string(color = colorname)) 
     plot$facet = facet_wrap(c(groupname))
+  }else if(facet_by ==  factorname){
+    colorname = groupname
+    plot$facet = facet_wrap(c(factorname))
   }
   
+  plot$line = geom_line(aes_string(color = colorname))
   if(isTRUE(showData)){
     plot$data = geom_point(data = temp.data, aes_string(xname, "y1/size", color = colorname))
   }

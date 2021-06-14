@@ -4,10 +4,12 @@
 \alias{MixPlot}
 \title{Plotting Psychometric Functions given GLMM}
 \usage{
-MixPlot(xplode.obj, showData = TRUE)
+MixPlot(xplode.obj, facet_by = NULL, showData = TRUE)
 }
 \arguments{
 \item{xplode.obj}{an object of class \code{\link{xplode}}}
+
+\item{facet_by}{}
 
 \item{showData}{}
 }
