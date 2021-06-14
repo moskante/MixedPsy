@@ -5,3 +5,5 @@ inst/doc
 ^.*\.Rproj$
 *.Rproj
 vignettes/
+todo.md
+reinstall.R
