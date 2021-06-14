@@ -19,13 +19,11 @@ Plot binomial data and the fitted GLMM from an object of class \code{\link{xplod
 }
 \examples{
 library(lme4)
-formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+formula.mod <- cbind(faster, slower) ~ speed *vibration + (1 + speed| subject)
 mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-              data = vibro_exp3[vibro_exp3$vibration == 0,])
-define.mod <- list(pf1 = list(intercept = 1, slope = 2))
-xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
-myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
-                  col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+              data = vibro_exp3)
+xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
+myplot <- MixPlot(xplode.mod)
                   
 
 }
