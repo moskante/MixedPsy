@@ -12,8 +12,8 @@
 #' item is the covariance, third item is the slope.
 #' @param nsubjects Number of subjects to simulate data for. Default is 8.
 #' @param ntrials Number of trials for each stimulus level. Default is 40.
+#' @param nintervals Number of stimulus levels. Default is 9.
 #' @param xint Range of the stimulus interval. Default is c(40,120)
-#' @param pps Number of stimulus levels. Default is 9.
 #' @param constant If set to FALSE, stimulus levels are randomly generated,
 #' uniformly distributed values within the selected interval.
 #' If constant = TRUE, the X interval is divided in  intervals of constant
@@ -30,87 +30,49 @@
 #' @importFrom stats rbinom runif
 #' @export
 #'
-PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, pps = 9, 
-    ntrials = 40, xint = c(40, 120), constant = F) {
+PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, ntrials = 40, nintervals = 9, xint = c(40, 120), constant = F) {
     
     
     if (constant == T) {
-        xval = seq(from = min(xint), to = max(xint), by = (max(xint) - min(xint))/(pps - 1))
+        xval = seq(from = min(xint), to = max(xint), by = (max(xint) - min(xint))/(nintervals - 1))
     } else {
-        xval = sort(runif(n = pps, min = min(xint), max = max(xint)))
+        xval = sort(runif(n = nintervals, min = min(xint), max = max(xint)))
     }
     
     
     if (nsubjects == 1) {
-        
-        r.interc <- rep(fixeff[1], pps)
-        r.slope <- rep(fixeff[2], pps)
-        
-        
-        GRID <- data.frame(cbind(xval, r.interc, r.slope))
-        names(GRID) <- c("X", "alpha", "beta")
-        
-        probab <- apply(GRID, MARGIN = 1, FUN = function(X) {
-            pnorm(q = X[1], mean = -X[2]/X[3], sd = 1/X[3])
-        })
-        probab <- data.frame(rep(ntrials, pps), probab)
-        names(probab) <- c("size", "prob")
-        
-        
-        response <- apply(probab, MARGIN = 1, FUN = function(X) rbinom(n = 1, prob = X[2], size = X[1]))
-        
-        datafr <- data.frame(cbind(GRID[, 1:3], response, probab[, 1], as.factor(rep(1, pps))))
-        
-        names(datafr) <- c("X", "Intercept", "Slope", "Longer", "Total", "Subject")
-        return(datafr)
-        
-    } else {
-        
+        GRID <- data.frame(X = xval, Intercept = fixeff[1], Slope = fixeff[2], Total = ntrials, Subject = 1)
+    }else{
+        #Variance and covariance matrix of the random effects
         vcov.matrix = matrix(raneff[c(1, 2, 2, 3)], nrow = 2)
-        mer.vcov = nearPD(vcov.matrix)  #Variance and covariance matrix of the random effects
         # nearPD: near positive defined matrix
-        buffer <- matrix(numeric(), nrow = nsubjects, ncol = 2)
+        mer.vcov = nearPD(vcov.matrix)$mat  
+        
         # independent samples from multivariate normal distribution
-        for (i in 1:nsubjects) {
-            buffer[i, 1:2] <- rmnorm(n = 1, mean = rep(0, 2), varcov = as.matrix(mer.vcov$mat))
-        }
+        buffer <- rmnorm(n = nsubjects, mean = rep(0, 2), varcov = mer.vcov)
+        colnames(buffer) <- c("sample.interc", "sample.slope")
         
-        row.dataframe = pps * nsubjects  #The number of rows of the dataframe
-        r.interc <- matrix(data = numeric(), nrow = row.dataframe, ncol = 5, dimnames = list(c(NULL), 
-            c("Subj", "Mean", "Str.Dev", "Sample.Val", "Fix.Eff")))
-        r.interc[, 1] <- sort(rep(1:nsubjects, pps))
-        r.interc[, 2] <- rep(0, row.dataframe)
-        r.interc[, 3] <- rep(raneff[1], row.dataframe)
-        r.interc[, 4] <- rep(buffer[, 1], each = pps)
-        r.interc[, 5] <- rep(fixeff[1], row.dataframe)
+        buffer <- data.frame(buffer, Subject = seq(1:nsubjects))
         
-        r.slope <- matrix(data = numeric(), nrow = row.dataframe, ncol = 5, dimnames = list(c(NULL), 
-            c("Subj", "Mean", "Str.Dev", "Sample.Val", "Fix.Eff")))
-        r.slope[, 1] <- sort(rep(1:nsubjects, pps))
-        r.slope[, 2] <- rep(0, row.dataframe)
-        r.slope[, 3] <- rep(raneff[3], row.dataframe)  #random slope -> raneff[2] is covariance
-        r.slope[, 4] <- rep(buffer[, 2], each = pps)
-        r.slope[, 5] <- rep(fixeff[2], row.dataframe)
+        buffer$Intercept <- buffer$sample.interc + fixeff[1]
+        buffer$Slope <- buffer$sample.slope + fixeff[2]
         
+        buffer$X <- list(xval)
         
-        xval2 = rep(xval, nsubjects)
-        GRID <- data.frame(cbind(xval2, r.interc[, 4] + r.interc[, 5], r.slope[, 4] + r.slope[, 5]))
-        names(GRID) <- c("X", "alpha", "beta")
-        
-        
-        probab <- apply(GRID, MARGIN = 1, FUN = function(X) {
-            pnorm(q = X[1], mean = -X[2]/X[3], sd = 1/X[3])
+        GRID <- data.frame(lapply(buffer,unlist), Total = ntrials)
+        GRID <- GRID[order(GRID$Subject, GRID$X),]
+    }
+    
+    
+        GRID$prob <- apply(GRID, MARGIN = 1, FUN = function(X) {
+            pnorm(q = X["X"], mean = -X["Intercept"]/X["Slope"], sd = abs(1/X["Slope"]))
         })
-        probab <- data.frame(rep(ntrials, row.dataframe), probab)
-        names(probab) <- c("size", "prob")
+        GRID$Longer <- apply(GRID, MARGIN = 1, FUN = function(X) rbinom(n = 1, prob = X["prob"], size = X["Total"]))
         
         
-        response <- apply(probab, MARGIN = 1, FUN = function(X) rbinom(n = 1, prob = X[2], size = X[1]))
-        
-        
-        datafr <- data.frame(cbind(GRID[, 1:3], response, probab[, 1], as.factor(r.interc[, 1])))
-        names(datafr) <- c("X", "Intercept", "Slope", "Longer", "Total", "Subject")
+        keep <- c("X", "Intercept", "Slope", "Longer", "Total", "Subject")
+        datafr <- GRID[keep]
         
         return(datafr)
-    }
+   
 }

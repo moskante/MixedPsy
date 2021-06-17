@@ -8,8 +8,8 @@ PsySimulate(
   fixeff = c(-7, 0.0875),
   raneff = c(2.4, -0.002, 2e-06),
   nsubjects = 8,
-  pps = 9,
   ntrials = 40,
+  nintervals = 9,
   xint = c(40, 120),
   constant = F
 )
@@ -23,9 +23,9 @@ item is the covariance, third item is the slope.}
 
 \item{nsubjects}{Number of subjects to simulate data for. Default is 8.}
 
-\item{pps}{Number of stimulus levels. Default is 9.}
-
 \item{ntrials}{Number of trials for each stimulus level. Default is 40.}
+
+\item{nintervals}{Number of stimulus levels. Default is 9.}
 
 \item{xint}{Range of the stimulus interval. Default is c(40,120)}
 
