@@ -154,11 +154,11 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' on an existing plot.
 #'
 #' @param pse,jnd point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.
-#' @param ps.link a link function for the binomial family of error distribution (see Details).
 #' @param x.range a vector of length two specifying the range of the function.
-#' @param ps.col color of the line to be plotted.
-#' @param ps.lwd line width.
-#' @param ps.lty line type.
+#' @param ps.link a link function for the binomial family of error distribution (see Details).
+#' @ps.type
+#' @ps.size
+#' @ps.color
 #'
 #' @details \code{PsychShape()} can be used to visualize the predicted results of a
 #' psychophysical experiment or to plot a fitted psychometric function whose
@@ -177,31 +177,38 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' \code{\link{PsychFunction}} for estimation of PSE and JND.
 #'
 #' @examples
-#' y = c(0,1)
-#' x = c(-40, 40)
-#' plot(y ~ x, type = "n", bty = "n", lab = c(5,3,7))
-#' PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.col = "gray", ps.lwd = 3)
-#' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black")
-#' PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
+#' p <- PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.color = "gray", ps.size = 3)
+#' p1 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black", addTo = p)
+#' p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.type = "dashed", addTo = NULL)
 #'
 #' @importFrom stats plogis
+#' @import ggplot2
 #' @export
 #' 
-PsychShape <- function(pse = 0, jnd, x.range = c(NA, NA), ps.link = c("probit", "logit"), ps.col = "black", ps.lwd = 1,
-                       ps.lty = "solid") {
-  x = NA
+PsychShape <- function(pse = 0, jnd = 1, x.range = c(NA, NA), ps.link = c("probit", "logit"), 
+                       ps.type = "solid", ps.size = 1, ps.color = "black", addTo = NULL) {
+  if(is.null(addTo)){
+    p <- ggplot()
+  }else{ 
+    p <- addTo}
+  
+  x = pretty(x.range, 100)
   if (ps.link == "probit") {
     slope = qnorm(0.75) * (1/jnd)
-    curve(expr = pnorm(x, mean = pse, sd = 1/slope), from = x.range[1], to = x.range[2], col = ps.col,
-          add = TRUE, lwd = ps.lwd, lty = ps.lty)
+    y <- pnorm(x, mean = pse, sd = 1/slope)
+    
   } else if (ps.link == "logit") {
     slope = log(3) * (1/jnd)
-    curve(expr = plogis(x, location = pse, scale = 1/slope), from = x.range[1], to = x.range[2],
-          col = ps.col, add = TRUE, lwd = ps.lwd, lty = ps.lty)
+    y = plogis(x, location = pse, scale = 1/slope)
   } else {
     warning("The function only works with probit and logit link function")
   }
-  return(0)
+  data <- data.frame(x,y)
+  plot <- list()
+  plot$ps <- geom_line(inherit.aes = FALSE, data = data, aes_string("x", "y"), 
+                       linetype = ps.type, size = ps.size, color = ps.color)  
+  
+  print(p + plot)
 }
 
 #' Plotting Psychometric Functions given GLM

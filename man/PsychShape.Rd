@@ -6,12 +6,13 @@
 \usage{
 PsychShape(
   pse = 0,
-  jnd,
+  jnd = 1,
   x.range = c(NA, NA),
   ps.link = c("probit", "logit"),
-  ps.col = "black",
-  ps.lwd = 1,
-  ps.lty = "solid"
+  ps.type = "solid",
+  ps.size = 1,
+  ps.color = "black",
+  addTo = NULL
 )
 }
 \arguments{
@@ -20,12 +21,6 @@ PsychShape(
 \item{x.range}{a vector of length two specifying the range of the function.}
 
 \item{ps.link}{a link function for the binomial family of error distribution (see Details).}
-
-\item{ps.col}{color of the line to be plotted.}
-
-\item{ps.lwd}{line width.}
-
-\item{ps.lty}{line type.}
 }
 \description{
 Plot a psychometric function with known PSE and JND
@@ -38,12 +33,9 @@ values of pse and jnd are known. Currently only working with probit and logit
 link function.
 }
 \examples{
-y = c(0,1)
-x = c(-40, 40)
-plot(y ~ x, type = "n", bty = "n", lab = c(5,3,7))
-PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.col = "gray", ps.lwd = 3)
-PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black")
-PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.lwd = 3)
+p <- PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.color = "gray", ps.size = 3)
+p1 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black", addTo = p)
+p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.type = "dashed", addTo = NULL)
 
 }
 \references{
