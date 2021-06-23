@@ -73,41 +73,41 @@ GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates
 	return(list(dataframe, estimates))
 }
 
-#' Plotting univariable GLMM
-#'
-#' Plot binomial data and the fitted GLMM (object of class xplode).
-#' 
-#' @param xplode.obj an object of class xplode
-#' @param pf integer: for multivariable GLMM including one factorial predictor,
-#' the level number to be plotted 
-#' @param p05line logical, should be an horizontal and a vertical line added? 
-#' the horizontal line is fixed at P(Y = 1) = 0.5.
-#' @param x.ref if p05line = T, this is the position of the vertical line on the x axis
-#' @param x.range a vector of length two specifying the range for model predictions
-#' @param col logical, if TRUE a different color will be used for different clusters/participants
-#' @param x.label,y.label label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
-#' y.label = "Predicted Response"
-#'   
-#' @note The function in the first version of `MixedPsy` only worked with GLMM including maximum three 
-#' random effects (random intercept, random slope and covariance of the two)
-#'  
-#' @return a data.frame object including the intercept and slope for each participant
-#' (algebraic sum of the fixed effects and the modes of the random effects) and the 
-#' color number for the plot. 
-#' 
-#' @examples
-#' library(lme4)
-#' formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
-#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-#'               data = vibro_exp3[vibro_exp3$vibration == 0,])
-#' define.mod <- list(pf1 = list(intercept = 1, slope = 2))
-#' xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
-#' myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
-#'                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
-#' @keywords DeltaMethod GLMM Plotting
-#'
-#'
-#' 
+# Plotting univariable GLMM
+#
+# Plot binomial data and the fitted GLMM (object of class xplode).
+# 
+# @param xplode.obj an object of class xplode
+# @param pf integer: for multivariable GLMM including one factorial predictor,
+# the level number to be plotted 
+# @param p05line logical, should be an horizontal and a vertical line added? 
+# the horizontal line is fixed at P(Y = 1) = 0.5.
+# @param x.ref if p05line = T, this is the position of the vertical line on the x axis
+# @param x.range a vector of length two specifying the range for model predictions
+# @param col logical, if TRUE a different color will be used for different clusters/participants
+# @param x.label,y.label label for the x and the y axes. If not specified, x.labels = ""Stimulus Intensity", 
+# y.label = "Predicted Response"
+#   
+# @note The function in the first version of `MixedPsy` only worked with GLMM including maximum three 
+# random effects (random intercept, random slope and covariance of the two)
+#  
+# @return a data.frame object including the intercept and slope for each participant
+# (algebraic sum of the fixed effects and the modes of the random effects) and the 
+# color number for the plot. 
+# 
+# @examples
+# library(lme4)
+# formula.mod <- cbind(faster, slower) ~ speed + (1 + speed| subject)
+# mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
+#               data = vibro_exp3[vibro_exp3$vibration == 0,])
+# define.mod <- list(pf1 = list(intercept = 1, slope = 2))
+# xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
+# myplot <- MixPlot_1.0(xplode.mod, pf = 1,  p05line = FALSE, x.ref = 8.5, x.range = c(1,16),
+#                   col = TRUE, x.label = "Stimulus Speed", y.label = "Predicted Response")
+# @keywords DeltaMethod GLMM Plotting
+#
+#
+# 
 MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
                     col = F, x.label = "Stimulus Intensity", y.label = "Predicted Response"){
   

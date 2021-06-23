@@ -63,16 +63,17 @@ PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), 
         GRID <- GRID[order(GRID$Subject, GRID$X),]
     }
     
+    GRID$prob <- apply(GRID, MARGIN = 1, FUN = function(X) {
+        pnorm(q = X["X"], mean = -X["Intercept"]/X["Slope"], sd = abs(1/X["Slope"]))
+    })
     
-        GRID$prob <- apply(GRID, MARGIN = 1, FUN = function(X) {
-            pnorm(q = X["X"], mean = -X["Intercept"]/X["Slope"], sd = abs(1/X["Slope"]))
-        })
-        GRID$Longer <- apply(GRID, MARGIN = 1, FUN = function(X) rbinom(n = 1, prob = X["prob"], size = X["Total"]))
-        
-        
-        keep <- c("X", "Intercept", "Slope", "Longer", "Total", "Subject")
-        datafr <- GRID[keep]
-        
-        return(datafr)
-   
+    
+    GRID$Longer <- apply(GRID, MARGIN = 1, FUN = function(X) rbinom(n = 1, prob = ifelse(X["Slope"] > 0, X["prob"], 1-X["prob"]), size = X["Total"]))
+    
+    
+    keep <- c("X", "Intercept", "Slope", "Longer", "Total", "Subject")
+    datafr <- GRID[keep]
+    
+    return(datafr)
+    
 }

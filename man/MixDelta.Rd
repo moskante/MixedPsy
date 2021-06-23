@@ -4,7 +4,7 @@
 \alias{MixDelta}
 \title{PSE/JND for Multivariable GLMM with Delta Methods}
 \usage{
-MixDelta(xplode.obj, alpha = 0.05)
+MixDelta(xplode.obj, alpha = 0.05, p = 0.75)
 }
 \arguments{
 \item{xplode.obj}{an object of class \code{xplode.obj}. The fitted model
@@ -12,6 +12,8 @@ MixDelta(xplode.obj, alpha = 0.05)
 one continuous predictor and one factorial predictor.}
 
 \item{alpha}{significance level of the confidence intervals. Default is 0.05.}
+
+\item{p}{probability for JND (default 75\%)}
 }
 \value{
 A list, whose lenght is equal to the levels of the factorial predictor, i.

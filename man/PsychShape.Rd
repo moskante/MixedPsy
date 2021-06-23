@@ -7,6 +7,7 @@
 PsychShape(
   pse = 0,
   jnd = 1,
+  p = 0.75,
   x.range = c(NA, NA),
   ps.link = c("probit", "logit"),
   ps.type = "solid",
@@ -18,9 +19,17 @@ PsychShape(
 \arguments{
 \item{pse, jnd}{point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.}
 
+\item{p}{probability for JND (default 75\%)}
+
 \item{x.range}{a vector of length two specifying the range of the function.}
 
 \item{ps.link}{a link function for the binomial family of error distribution (see Details).}
+
+\item{ps.type}{type}
+
+\item{ps.size}{size}
+
+\item{ps.color}{color}
 }
 \description{
 Plot a psychometric function with known PSE and JND

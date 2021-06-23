@@ -14,11 +14,11 @@ PsychPlot(
 )
 }
 \arguments{
-\item{mod}{}
+\item{mod}{mod}
 
-\item{addTo}{}
+\item{addTo}{addTo}
 
-\item{showData}{}
+\item{showData}{show}
 
 \item{ps.type}{line type.}
 

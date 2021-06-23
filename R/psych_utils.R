@@ -8,7 +8,8 @@
 #'
 #' @param model the fitted psychometric function. An object of class \code{"glm"}.
 #' @param alpha significance level of the confidence interval.Default is 0.05.
-#'
+#' @param p probability for JND (default 75\%)
+#' 
 #' @details \code{PsychDelta} estimates PSE and JND of a psychometric
 #' function (object of class \code{"glm"}).
 #' 
@@ -47,7 +48,7 @@
 #' @importFrom stats vcov
 #' @export
 #'
-PsychDelta <- function(model, alpha = 0.05) {
+PsychDelta <- function(model, alpha = 0.05, p = 0.75) {
 
     pse <- -model$coef[1]/model$coef[2]
     BETA <- model$coef[2]
@@ -60,8 +61,8 @@ PsychDelta <- function(model, alpha = 0.05) {
     inferior.pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var.pse))
     superior.pse <- pse + (qnorm(1 - (alpha/2)) * sqrt(var.pse))
 
-    jnd <- qnorm(0.75) * (1/BETA)
-    var.jnd <- (qnorm(0.75) * (-1/BETA^2))^2 * var.beta  #JND
+    jnd <- qnorm(p) * (1/BETA)
+    var.jnd <- (qnorm(p) * (-1/BETA^2))^2 * var.beta  #JND
     inferior.jnd <- jnd - (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
     superior.jnd <- jnd + (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
 
@@ -154,11 +155,12 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' on an existing plot.
 #'
 #' @param pse,jnd point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.
+#' @param p probability for JND (default 75\%)
 #' @param x.range a vector of length two specifying the range of the function.
 #' @param ps.link a link function for the binomial family of error distribution (see Details).
-#' @ps.type
-#' @ps.size
-#' @ps.color
+#' @param ps.type type
+#' @param ps.size size
+#' @param ps.color color
 #'
 #' @details \code{PsychShape()} can be used to visualize the predicted results of a
 #' psychophysical experiment or to plot a fitted psychometric function whose
@@ -185,7 +187,7 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' @import ggplot2
 #' @export
 #' 
-PsychShape <- function(pse = 0, jnd = 1, x.range = c(NA, NA), ps.link = c("probit", "logit"), 
+PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link = c("probit", "logit"), 
                        ps.type = "solid", ps.size = 1, ps.color = "black", addTo = NULL) {
   if(is.null(addTo)){
     p <- ggplot()
@@ -194,7 +196,7 @@ PsychShape <- function(pse = 0, jnd = 1, x.range = c(NA, NA), ps.link = c("probi
   
   x = pretty(x.range, 100)
   if (ps.link == "probit") {
-    slope = qnorm(0.75) * (1/jnd)
+    slope = qnorm(p) * (1/jnd)
     y <- pnorm(x, mean = pse, sd = 1/slope)
     
   } else if (ps.link == "logit") {
@@ -215,9 +217,9 @@ PsychShape <- function(pse = 0, jnd = 1, x.range = c(NA, NA), ps.link = c("probi
 #'
 #' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
 #'
-#' @param mod 
-#' @param addTo 
-#' @param showData 
+#' @param mod mod
+#' @param addTo addTo
+#' @param showData show
 #' @param ps.type line type.
 #' @param ps.size line size.
 #' @param ps.lab label.

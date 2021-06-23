@@ -4,12 +4,14 @@
 \alias{PsychDelta}
 \title{PSE/JND from GLM Using Delta Method}
 \usage{
-PsychDelta(model, alpha = 0.05)
+PsychDelta(model, alpha = 0.05, p = 0.75)
 }
 \arguments{
 \item{model}{the fitted psychometric function. An object of class \code{"glm"}.}
 
 \item{alpha}{significance level of the confidence interval.Default is 0.05.}
+
+\item{p}{probability for JND (default 75\%)}
 }
 \value{
 \code{PsychDelta} returns a matrix including Estimate, Standard Error,
