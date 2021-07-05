@@ -4,14 +4,14 @@
 \alias{PsychDelta}
 \title{PSE/JND from GLM Using Delta Method}
 \usage{
-PsychDelta(model, alpha = 0.05, p = 0.75)
+PsychDelta(model.obj, alpha = 0.05, p = 0.75)
 }
 \arguments{
-\item{model}{the fitted psychometric function. An object of class \code{"glm"}.}
+\item{model.obj}{the fitted psychometric function. An object of class \code{\link[stats]{glm}}.}
 
-\item{alpha}{significance level of the confidence interval.Default is 0.05.}
+\item{alpha}{significance level of the confidence interval.Default is 0.05 (95\% confidence interval).}
 
-\item{p}{probability for JND (default 75\%)}
+\item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 }
 \value{
 \code{PsychDelta} returns a matrix including Estimate, Standard Error,
@@ -20,8 +20,9 @@ are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 }
 \description{
 Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-Difference (JND) and the related Standard Errors by means of Delta Method.
-The method only applies to GLMs (psychometric functions) with one continuous 
+Difference (JND) and the related Standard Errors of an individual participant 
+by means of Delta Method.
+The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
 predictor and a \emph{probit} link function.
 }
 \details{
@@ -36,7 +37,6 @@ link function.
 \examples{
 #load 1 participant from simulated data
 data.S1 <- subset(simul_data, Subject == "S1")
-#fit a glm (probit link)
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 family = binomial(link = "probit"), data = data.S1)
 PsychDelta(model.glm)
@@ -51,12 +51,9 @@ at the population-level: The generalized linear mixed model.
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
-\code{\link[stats]{glm}} for for Generalized Linear Models (without
-random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
-Models (including random effects). \code{MixDelta} for GLMMs, (object of class
-\code{\linkS4class{merMod}}). \code{\link{pseMer}} for bootstrap-based
-confidence intervals.
+\code{\link[stats]{glm}} for fitting a Generalized Linear Model to a single-subject response. \code{\link[lme4]{glmer}} 
+for Generalized Linear Mixed Models (including fixed and random effects). \code{MixDelta} for estimating PSE and JND at a population level 
+with delta method.
 }
 \keyword{DeltaMethod}
 \keyword{GLM}
-\keyword{Univariable}

@@ -8,7 +8,7 @@ MixDelta(xplode.obj, alpha = 0.05, p = 0.75)
 }
 \arguments{
 \item{xplode.obj}{an object of class \code{xplode.obj}. The fitted model
-(object of class \code{\link[lme4]{glmerMod}}) includes
+(object of class \code{\link[lme4]{merMod}}, specifically of subclass \code{glmerMod}) includes
 one continuous predictor and one (optional) factorial predictor.}
 
 \item{alpha}{significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).}

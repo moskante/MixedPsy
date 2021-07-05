@@ -7,12 +7,12 @@
 \format{
 A data frame with 126 rows (14 observations x 9 participants) and 5 variables:
 \describe{
-\item{speed}{Numeric, speed of the moving surface (in cm/s, range \code{c(1,16)})}
-\item{vibration}{Factor representing the vibration frequency of the masking stimulus. Two levels: 32 (vibration in the experimental condition, in Hz) 
+\item{speed}{numeric, speed of the moving surface (in cm/s, range \code{c(1,16)})}
+\item{vibration}{factor representing the vibration frequency of the masking stimulus. Two levels: 32 (vibration in the experimental condition, in Hz) 
 or 0 (no vibration - control condition)}
-\item{faster}{Proportion of trials in which the comparison stimulus was judged as faster than the reference}
-\item{slower}{Proportion of trials in which the comparison stimulus was judged as slower than the reference}
-\item{subject}{Participant's identification code}
+\item{faster}{proportion of trials in which the comparison stimulus was judged as faster than the reference}
+\item{slower}{proportion of trials in which the comparison stimulus was judged as slower than the reference}
+\item{subject}{participant's identification code}
 }
 }
 \source{

@@ -30,7 +30,6 @@ the factorial predictor are coded by color.
 }
 \examples{
 library(lme4)
-
 mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
 xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 

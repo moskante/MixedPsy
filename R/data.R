@@ -1,16 +1,16 @@
 #' A simulated psychophysical dataset
 #'
-#' A dataset containing simulated data for 8 subjects. Created using 
+#' A dataset containing simulated responses to a foced-choice task for eight clusters. Created using 
 #' \code{PsySimulate()}. The variables are as follows:
 #'
 #' @format A data frame with 72 rows (9 observaxions x 8 simulated participants) and 6 variables:
 #' \describe{
-#' \item{X}{Samples in the continuous interval (range \code{c(40,120)})}
-#' \item{Intercept}{Simulated participant's intercept (combination of random and fixed effect)}
-#' \item{Slope}{Simulated participant's slope (combination of random and fixed effect)}
-#' \item{Longer}{Number of trials in which response is judged "longer" than standard}
-#' \item{Total}{Total number of trials for sample in X}
-#' \item{Subject}{Simulated participant's identification code (S1 to S8)}
+#' \item{X}{samples in the continuous interval (range \code{c(40,120)})}
+#' \item{Intercept}{simulated participant's intercept (combination of random and fixed effect)}
+#' \item{Slope}{simulated participant's slope (combination of random and fixed effect)}
+#' \item{Longer}{number of trials in which response is judged "longer" than standard}
+#' \item{Total}{total number of trials for sample in X}
+#' \item{Subject}{simulated participant's identification code (S1 to S8)}
 #' }
 #' 
 #' @seealso \code{\link{PsySimulate}} for simulating dataframes with custom parameters.
@@ -26,12 +26,12 @@
 #'
 #' @format A data frame with 126 rows (14 observations x 9 participants) and 5 variables:
 #' \describe{
-#' \item{speed}{Numeric, speed of the moving surface (in cm/s, range \code{c(1,16)})}
-#' \item{vibration}{Factor representing the vibration frequency of the masking stimulus. Two levels: 32 (vibration in the experimental condition, in Hz) 
+#' \item{speed}{numeric, speed of the moving surface (in cm/s, range \code{c(1,16)})}
+#' \item{vibration}{factor representing the vibration frequency of the masking stimulus. Two levels: 32 (vibration in the experimental condition, in Hz) 
 #' or 0 (no vibration - control condition)}
-#' \item{faster}{Proportion of trials in which the comparison stimulus was judged as faster than the reference}
-#' \item{slower}{Proportion of trials in which the comparison stimulus was judged as slower than the reference}
-#' \item{subject}{Participant's identification code}
+#' \item{faster}{proportion of trials in which the comparison stimulus was judged as faster than the reference}
+#' \item{slower}{proportion of trials in which the comparison stimulus was judged as slower than the reference}
+#' \item{subject}{participant's identification code}
 #' }
 #' 
 #' @source Original data were published in Dallmann et al. (2015).

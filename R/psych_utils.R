@@ -1,14 +1,14 @@
 #' PSE/JND from GLM Using Delta Method
 #'
 #' Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-#' Difference (JND) and the related Standard Errors by means of Delta Method.
-#' The method only applies to GLMs (psychometric functions) with one continuous 
+#' Difference (JND) and the related Standard Errors of an individual participant 
+#' by means of Delta Method.
+#' The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
 #' predictor and a \emph{probit} link function.
 #'
-#'
-#' @param model the fitted psychometric function. An object of class \code{"glm"}.
-#' @param alpha significance level of the confidence interval.Default is 0.05.
-#' @param p probability for JND (default 75\%)
+#' @param model.obj the fitted psychometric function. An object of class \code{\link[stats]{glm}}.
+#' @param alpha significance level of the confidence interval.Default is 0.05 (95\% confidence interval).
+#' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
 #' 
 #' @details \code{PsychDelta} estimates PSE and JND of a psychometric
 #' function (object of class \code{"glm"}).
@@ -29,33 +29,28 @@
 #' at the population-level: The generalized linear mixed model. 
 #' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #'
-#' @seealso \code{\link[stats]{glm}} for for Generalized Linear Models (without
-#' random effects) and \code{\link[lme4]{glmer}} for Generalized Linear Mixed
-#' Models (including random effects). \code{MixDelta} for GLMMs, (object of class
-#' \code{\linkS4class{merMod}}). \code{\link{pseMer}} for bootstrap-based
-#' confidence intervals.
+#' @seealso \code{\link[stats]{glm}} for fitting a Generalized Linear Model to a single-subject response. \code{\link[lme4]{glmer}} 
+#' for Generalized Linear Mixed Models (including fixed and random effects). \code{MixDelta} for estimating PSE and JND at a population level 
+#' with delta method. 
 #' 
-#' @keywords Univariable GLM DeltaMethod
+#' @keywords DeltaMethod GLM 
 #'
 #' @examples
-#' #load 1 participant from simulated data
 #' data.S1 <- subset(simul_data, Subject == "S1")
-#' #fit a glm (probit link)
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = data.S1)
 #' PsychDelta(model.glm)
 #' 
-#' @importFrom stats vcov
 #' @export
 #'
-PsychDelta <- function(model, alpha = 0.05, p = 0.75) {
+PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 
-    pse <- -model$coef[1]/model$coef[2]
-    BETA <- model$coef[2]
+    pse <- -model.obj$coef[1]/model.obj$coef[2]
+    BETA <- model.obj$coef[2]
 
-    var.alpha <- vcov(model)[1, 1]
-    var.beta <- vcov(model)[2, 2]
-    cov.alpha.beta <- vcov(model)[2, 1]
+    var.alpha <- vcov(model.obj)[1, 1]
+    var.beta <- vcov(model.obj)[2, 2]
+    cov.alpha.beta <- vcov(model.obj)[2, 1]
 
     var.pse <- (1/BETA^2) * (var.alpha + (2 * pse * cov.alpha.beta) + (pse^2 * var.beta))  #PSE
     inferior.pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var.pse))
@@ -74,16 +69,16 @@ PsychDelta <- function(model, alpha = 0.05, p = 0.75) {
 }
 
 
-#' Fitting Psychometric Functions
+#' Psychometric Function and PSE/JND parameters from single-subject response
 #'
-#' Fit psychometric functions using either
-#' \code{glm()} or \code{brglm()}; estimate PSE, JND, and the related
-#' confidence intervals with Delta Method.
+#' Fit psychometric functions using \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
+#' Estimate PSE, JND, and related confidence intervals with Delta Method. 
 #'
 #' @param ps.formula an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}
 #' @param ps.link link function for the binomial family of error distribution. Default is \code{"probit"}.
-#' @param ps.data a data frame including the variables in the model.
-#' @param br  logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1.
+#' @param ps.data a data frame including the variables used in the model.
+#' @param br  logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1. 
+#' Default is FALSE.
 #'
 #' @details Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
 #' predictor. Std. Errors and 95\% confidence intervals
@@ -93,6 +88,9 @@ PsychDelta <- function(model, alpha = 0.05, p = 0.75) {
 #' @return \code{\link{PsychFunction}} returns a list including the fitted model,
 #' the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
 #'
+#' @note \code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without explicit call to \code{\link[stat]{glm}}. 
+#' Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
+#' 
 #' @references
 #' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
 #' response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
@@ -101,12 +99,12 @@ PsychDelta <- function(model, alpha = 0.05, p = 0.75) {
 #' at the population-level: The generalized linear mixed model. 
 #' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #' 
-#' @seealso \code{\link[stats]{glm}} for Generalized Linear Models; 
-#' \code{\link[brglm]{brglm}} for fitting a GLM using bias reduction;
-#' \code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object;
+#' @seealso \code{\link[stats]{glm}} for Generalized Linear Models. 
+#' \code{\link[brglm]{brglm}} for fitting a GLM using bias reduction.
+#' \code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object.
 #' \code{\link{PsychShape}} for plotting a psychometric function given its PSE and JND.
 #' 
-#' @keywords Psychometric GLM DeltaMethod
+#' @keywords GLM DeltaMethod
 #'
 #' @examples
 #' # simulate data from a single participant

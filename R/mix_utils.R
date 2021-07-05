@@ -95,7 +95,7 @@ MixFunction <- function(xplode.obj, alpha, p) {
 #' and one (optional) factorial predictor. 
 #' 
 #' @param xplode.obj an object of class \code{xplode.obj}. The fitted model
-#' (object of class \code{\link[lme4]{glmerMod}}) includes
+#' (object of class \code{\link[lme4]{merMod}}, specifically of subclass \code{glmerMod}) includes
 #' one continuous predictor and one (optional) factorial predictor.
 #' @param alpha significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).
 #' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
@@ -195,7 +195,6 @@ MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
 #' 
 #' @examples
 #' library(lme4)
-#' 
 #' mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
 #' xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 #' 
