@@ -6,7 +6,7 @@ GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates
    		p05line = F, x.ref = mean(dataframe[,X.col]),
    	 	x.from = min(dataframe[,X.col]), x.to = max(dataframe[,X.col]), col = F){
 	
-	#numebr of subjects
+	#number of subjects
 	nsubjects = nlevels(factor(dataframe[, Subject.col]))
 	
 	#colors and pch		
