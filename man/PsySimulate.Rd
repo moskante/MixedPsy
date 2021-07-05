@@ -11,7 +11,7 @@ PsySimulate(
   ntrials = 40,
   nintervals = 9,
   xint = c(40, 120),
-  constant = F
+  constant = T
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ item is the covariance, third item is the slope.}
 \item{constant}{If set to FALSE, stimulus levels are randomly generated,
 uniformly distributed values within the selected interval.
 If constant = TRUE, the X interval is divided in  intervals of constant
-length. Default is FALSE.}
+length. Default is TRUE.}
 }
 \value{
 The simulated dataset

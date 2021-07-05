@@ -5,14 +5,14 @@
 \alias{simul_data}
 \title{A simulated psychophysical dataset}
 \format{
-A data frame with 72 rows and 6 variables:
+A data frame with 72 rows (9 observaxions x 8 simulated participants) and 6 variables:
 \describe{
-\item{X}{Samples of the X interval \code{c(40,120)}}
-\item{Intercept}{Intercept of the psychometric function}
-\item{Slope}{Slope of the psychometric function}
+\item{X}{Samples in the continuous interval (range \code{c(40,120)})}
+\item{Intercept}{Simulated participant's intercept (combination of random and fixed effect)}
+\item{Slope}{Simulated participant's slope (combination of random and fixed effect)}
 \item{Longer}{Number of trials in which response is judged "longer" than standard}
-\item{Total}{Total number of trials for each sample of X interval}
-\item{Subject}{Subject code (S1 to S8)}
+\item{Total}{Total number of trials for sample in X}
+\item{Subject}{Simulated participant's identification code (S1 to S8)}
 }
 }
 \usage{
@@ -20,9 +20,9 @@ data(simul_data)
 }
 \description{
 A dataset containing simulated data for 8 subjects. Created using 
-\code{PsySimulate(constant = T)}. The variables are as follows:
+\code{PsySimulate()}. The variables are as follows:
 }
 \seealso{
-PsySimulate() for simulating dataframes.
+\code{\link{PsySimulate}} for simulating dataframes with custom parameters.
 }
 \keyword{datasets}

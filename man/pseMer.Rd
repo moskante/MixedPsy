@@ -2,7 +2,7 @@
 % Please edit documentation in R/mix_utils.R
 \name{pseMer}
 \alias{pseMer}
-\title{PSE/JND for GLMM Using Bootstrap Methods}
+\title{PSE/JND from GLMM Estimates Using Bootstrap Method}
 \usage{
 pseMer(
   mer.obj,
@@ -14,42 +14,42 @@ pseMer(
 )
 }
 \arguments{
-\item{mer.obj}{An object of class \code{\linkS4class{merMod}}.}
+\item{mer.obj}{an object of class \code{\linkS4class{merMod}}.}
 
-\item{B}{integer: the number of bootstrap samples.}
+\item{B}{integer. Number of bootstrap samples.}
 
-\item{FUN}{An optional, custom made function to specify the required parameters to be estimated.
-if NULL, \code{pseMer()} will estimate the PSE and the JND of a univariable GLMM.}
+\item{FUN}{an optional, custom made function to specify the required parameters to be estimated.
+if NULL, \code{pseMer()} estimates PSE and JND of a univariable GLMM with a single intercept and slope.}
 
-\item{alpha}{Significance level of the confidence interval.}
+\item{alpha}{significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).}
 
-\item{ci.type}{A vector of character strings representing the type of intervals required. The value 
+\item{ci.type}{vector of character strings representing the type of intervals required. The value 
 should be any subset of the values c("norm","basic", "stud", "perc", "bca") or simply "all" which will 
 compute all five types of intervals. "perc" should be always included for the summary table.}
 
-\item{beep}{Logical. If TRUE, a "ping" sound alerts that the simulation is complete.}
+\item{beep}{logical. If TRUE, a "ping" sound alerts that the simulation is complete. Default is FALSE.}
 }
 \value{
 \code{pseMer} returns a list of length 3 including a summary table (Estimate, Standard Error,
 Inferior and Superior Confidence Interval of the parameters) and the output of  \code{\link[lme4]{bootMer}} 
-and \code{\link[boot]{boot.ci}} functions, for further analises. Confidence Intervals in the summary table are
+and \code{\link[boot]{boot.ci}} functions, for further analyses. Confidence Intervals in the summary table are
 based on the percentile method.
 }
 \description{
 Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
-Difference (JND) and the related Standard Errors by means of Bootstrap Method.
+Difference (JND) and the related Standard Errors by means of Bootstrap Method, 
+given an object of class \code{\link[lme4]{merMod}}.
 }
 \details{
-\code{pseMer} estimates PSE and JND (and additional user defined paremters) from a 
-fitted GLMM model (class \code{"\linkS4class{merMod}"}). 
-The "ping" sound is provided by \code{\link[beepr]{beep}} function from the \code{beepr} package.
+\code{pseMer} estimates PSE and JND (and additional user defined parameters) from a 
+fitted GLMM model (class \code{"\linkS4class{merMod}"}).
 }
 \note{
 A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
 based on the algorithm in Moscatelli et al. (2012). The current function is a simple wrapper
 of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
 
-Increasing the nuber of bootstrap samples (\code{B}) makes the estimate more reliable. 
+Increasing the number of bootstrap samples (\code{B}) makes the estimate more reliable. 
 However, this will also increase the duration of the computation.
 }
 \examples{
@@ -97,5 +97,3 @@ Models Using lme4. Journal of Statistical Software, 67(1), 51. https://doi.org/1
 }
 \keyword{Bootstrap}
 \keyword{GLMM}
-\keyword{Multivariable}
-\keyword{Univariable}

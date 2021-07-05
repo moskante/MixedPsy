@@ -1,8 +1,8 @@
 # PSE/JND for univariable GLMM with Delta Method
 #
 # Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-# Difference (JND) and the related Standard Errors for a univariate distribution 
-# (i.e. only one continuous predictor) by means of delta method.
+# Difference (JND) and the related Standard Errors for a GLMM with
+# only one continuous predictor (fixed intercept and slope), by means of delta method.
 # 
 # @details \code{MixDelta} estimates PSE and JND of a univariable psychometric
 # function given an object of class \code{\link[lme4]{merMod}}.
@@ -86,51 +86,58 @@ MixFunction <- function(xplode.obj, alpha, p) {
   return(output)
 }
 
-#' PSE/JND for Multivariable GLMM with Delta Methods
+#' PSE/JND from GLMM Estimates using Delta Method
 #'
-#' Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-#' Difference (JND) and the related Standard Errors for a multivariate distribution
-#' (i.e. one continuous and one factorial predictor) by means of 
-#' delta method.
-#' The method applies to multivariable GLMM having a \emph{probit} link function.
-#' The function is based on a recursive use of \code{\link[lme4]{glmer}} and
-#' \code{\link{MixDelta}}
-#'
+#' Estimate Points of Subjective Equivalence (PSE), Just Noticeable
+#' Differences (JND) and the related Standard Errors from a GLMM by means of 
+#' delta method. 
+#' The method applies to models with a \emph{probit} link function, one continuous predictor,
+#' and one (optional) factorial predictor. 
+#' 
 #' @param xplode.obj an object of class \code{xplode.obj}. The fitted model
-#' (object of class \code{\link[lme4]{merMod}}) from \code{xplode.obj} includes
-#' one continuous predictor and one factorial predictor.
-#' @param alpha significance level of the confidence intervals. Default is 0.05. 
-#' @param p probability for JND (default 75\%)
+#' (object of class \code{\link[lme4]{glmerMod}}) includes
+#' one continuous predictor and one (optional) factorial predictor.
+#' @param alpha significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).
+#' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
 #'
-#' @details The function \code{MixDelta} is based on a recursive use of
-#' \code{glmer} and \code{PsychDelta} to multivariable GLMM including
-#' continuous and factorial predictors. The same caveats of \code{PsychDelta}
-#' apply (e.g., confidence interval based on normality assumption).
+#' @details When the model includes a factorial predictor, the function is based on a recursive use of
+#' \code{\link[lme4]{glmer}} and re-order of levels of the factorial predictor. 
+#' The JND estimate assumes a \emph{probit} link function.
 #'
-#' @return A list, whose lenght is equal to the levels of the factorial predictor, i.
-#' Each cell of the list is equal to the output of \code{delta.psy.probit} applied to
-#' a multivariable model whose baseline is level i of the factorial predictor.
+#' @return A matrix including Estimate, Standard Error, and Confidence Intervals of PSE and JND. If a factorial predictor 
+#' is included in the model, the function returns a list, each item containing a matrix for the estimates relative to a level of the predictor.
+#' 
+#' @note The delta method is based on the assumption of asymptotic normal distribution of the parameters estimates. 
+#' This may result in an incorrect variance estimation. For a more reliable (but more time-consuming) estimation 
+#' based on bootstrap method, use \code{\link{pseMer}}.
 #'
 #' @references
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
 #' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 #'
-#' @seealso \code{\link[lme4]{glmer}} for Generalized Linear Mixed Models. 
-#' \code{\link{MixDelta}} for PSE and JND estimation from a univariable GLMM using delta method. 
+#' Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). 
+#' Pacific Grove, CA: Duxbury Press
+
+#' @seealso \code{\link[lme4]{glmer}} for fitting Generalized Linear Mixed Models. 
+#' \code{\link{xplode}} for interfacing values from a fitted GLMM to \code{MixedPsy} functions. 
 #' \code{\link{pseMer}} for bootstrap-based confidence intervals of psychometric parameters. 
 #'
-#' @keywords DeltaMethod Multivariable GLMM
+#' @keywords DeltaMethod GLMM
 #'
 #' @examples
 #' library(lme4)
-#' data(vibro_exp3)
-#' formula.mod <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
-#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = vibro_exp3)
-#' xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
-#' MixDelta(xplode.mod)
+#' 
+#' #univariable GLMM (one continuous predictor)
+#' mod.uni = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject), family = binomial(link = "probit"), data = simul_data)
+#' xplode.uni = xplode(model = mod.uni, name.cont = "X")
+#' MixDelta(xplode.uni)
 #'
-#' @importFrom stats binomial contrasts<- contr.treatment
+#' #multivariable GLMM (one continuous and one factorial predictor)
+#' mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+#' xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
+#' MixDelta(xplode.multi)
+#'
 #' @export
 #'
 MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
@@ -165,40 +172,45 @@ MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
   return(delta.par)
 }
 
-#' Plotting Psychometric Functions given GLMM
+#' Plot Individual Responses from GLMM
 #'
-#' Plot binomial data and the fitted GLMM from an object of class \code{\link{xplode}}.
-#'
-#' @param xplode.obj an object of class \code{\link{xplode}} 
-#' @param showData 
-#' @param facet_by 
+#' Plot response curve for each individual in a population sample, given a GLMM with one continuous predictor 
+#' and one (optional) factorial predictor. If the factorial predictor is specified, the response is plotted separately for each
+#' individual and each predictor level. 
 #' 
-#' @details 
-#'
-#' @references
-#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
-#' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' @param xplode.obj an object of class \code{\link{xplode}}.
+#' @param facet_by optional. A string specifying the name of the faceting variable (either the participant identification 
+#' or the factorial predictor). 
+#' @param showData logical, defines if proportion of binomial responses for each stimulus level are presented. Default is TRUE.
+#' 
+#' @details If the model includes only a continuous predictor, the figure consist of a single panel, and each individual's 
+#' response is assigned a different color. If a factorial predictor is included in the model, the faceting variable can be either the 
+#' participant identification or the factorial predictor. By default, each panel shows an individual's response, different levels of 
+#' the factorial predictor are coded by color.
+#' 
+#' @return \code{MixPlot} returns a \code{\link[ggplot2]{ggplot}} object. 
 #' 
 #' @seealso \code{\link{xplode}} for objects of class \code{xplode}.
+#' \code{\link[ggplot2]{ggplot2}} for creating data visualizations. 
 #' 
 #' @examples
 #' library(lme4)
-#' formula.mod <- cbind(faster, slower) ~ speed *vibration + (1 + speed| subject)
-#' mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-#'               data = vibro_exp3)
-#' xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
-#' myplot <- MixPlot(xplode.mod)
-#'                   
+#' 
+#' mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+#' xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
+#' 
+#' MixPlot(xplode.multi)
+#' #alternative visualization
+#' MixPlot(xplode.multi, facet_by = "vibration", showData = FALSE)
 #'
+#' @keywords GLMM Plot
+#' 
 #' @import ggplot2
 #' @export
 #' 
 
-MixPlot <- function(xplode.obj, facet_by = NULL, showData = TRUE){
-  
-  
-  # GLMM
+MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
+
   xname = xplode.obj$cont.colname
   yname = xplode.obj$response.colnames[1]
   
@@ -255,35 +267,35 @@ MixPlot <- function(xplode.obj, facet_by = NULL, showData = TRUE){
 }
 
 
-#' PSE/JND for GLMM Using Bootstrap Methods
+#' PSE/JND from GLMM Estimates Using Bootstrap Method
 #'
 #' Estimates the Point of Subjective Equivalence (PSE), the Just Noticeable
-#' Difference (JND) and the related Standard Errors by means of Bootstrap Method.
+#' Difference (JND) and the related Standard Errors by means of Bootstrap Method, 
+#' given an object of class \code{\link[lme4]{merMod}}.
 #' 
-#' @param mer.obj An object of class \code{\linkS4class{merMod}}.
-#' @param B integer: the number of bootstrap samples.
-#' @param FUN An optional, custom made function to specify the required parameters to be estimated.
-#' if NULL, \code{pseMer()} will estimate the PSE and the JND of a univariable GLMM.
-#' @param alpha Significance level of the confidence interval.
-#' @param ci.type A vector of character strings representing the type of intervals required. The value 
+#' @param mer.obj an object of class \code{\linkS4class{merMod}}.
+#' @param B integer. Number of bootstrap samples.
+#' @param FUN an optional, custom made function to specify the required parameters to be estimated.
+#' if NULL, \code{pseMer()} estimates PSE and JND of a univariable GLMM with a single intercept and slope.
+#' @param alpha significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).
+#' @param ci.type vector of character strings representing the type of intervals required. The value 
 #' should be any subset of the values c("norm","basic", "stud", "perc", "bca") or simply "all" which will 
 #' compute all five types of intervals. "perc" should be always included for the summary table.
-#' @param beep Logical. If TRUE, a "ping" sound alerts that the simulation is complete.
+#' @param beep logical. If TRUE, a "ping" sound alerts that the simulation is complete. Default is FALSE.
 #'
 #' @return \code{pseMer} returns a list of length 3 including a summary table (Estimate, Standard Error,
 #' Inferior and Superior Confidence Interval of the parameters) and the output of  \code{\link[lme4]{bootMer}} 
-#' and \code{\link[boot]{boot.ci}} functions, for further analises. Confidence Intervals in the summary table are
+#' and \code{\link[boot]{boot.ci}} functions, for further analyses. Confidence Intervals in the summary table are
 #' based on the percentile method.
 #'
-#' @details \code{pseMer} estimates PSE and JND (and additional user defined paremters) from a 
+#' @details \code{pseMer} estimates PSE and JND (and additional user defined parameters) from a 
 #' fitted GLMM model (class \code{"\linkS4class{merMod}"}). 
-#' The "ping" sound is provided by \code{\link[beepr]{beep}} function from the \code{beepr} package.
 #' 
 #' @note A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
 #' based on the algorithm in Moscatelli et al. (2012). The current function is a simple wrapper
 #' of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
 #' 
-#' Increasing the nuber of bootstrap samples (\code{B}) makes the estimate more reliable. 
+#' Increasing the number of bootstrap samples (\code{B}) makes the estimate more reliable. 
 #' However, this will also increase the duration of the computation.
 #'
 #' @references
@@ -297,7 +309,7 @@ MixPlot <- function(xplode.obj, facet_by = NULL, showData = TRUE){
 #' @seealso
 #' \code{\link[lme4]{bootMer}} from \code{lme4} package and \code{\link[boot]{boot.ci}} from \code{boot} package. 
 #' 
-#' @keywords Univariable Multivariable GLMM Bootstrap
+#' @keywords Bootstrap GLMM
 #'
 #' @examples
 #' ## Example 1: estimate pse/jnd of a univariable GLMM
@@ -370,7 +382,7 @@ pseMer <- function(mer.obj, B = 200, FUN = NULL, alpha = 0.05,
   for (i in 1:np) {
     jndpseconf[[i]] <- boot.ci(boot.samp, conf = my.conf, type = ci.type, index = i)
     if("perc" %in% ci.type){
-      print(paste(parname[i], " 95% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
+      print(paste(parname[i], " ", 100*(1-alpha),"% CI:", jndpseconf[[i]]$percent[4], "  ", jndpseconf[[i]]$percent[5]))
       summary[i, 2] = jndpseconf[[i]]$percent[4]
       summary[i, 3] = jndpseconf[[i]]$percent[5]
     }

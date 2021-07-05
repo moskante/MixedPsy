@@ -2,58 +2,66 @@
 % Please edit documentation in R/mix_utils.R
 \name{MixDelta}
 \alias{MixDelta}
-\title{PSE/JND for Multivariable GLMM with Delta Methods}
+\title{PSE/JND from GLMM Estimates using Delta Method}
 \usage{
 MixDelta(xplode.obj, alpha = 0.05, p = 0.75)
 }
 \arguments{
 \item{xplode.obj}{an object of class \code{xplode.obj}. The fitted model
-(object of class \code{\link[lme4]{merMod}}) from \code{xplode.obj} includes
-one continuous predictor and one factorial predictor.}
+(object of class \code{\link[lme4]{glmerMod}}) includes
+one continuous predictor and one (optional) factorial predictor.}
 
-\item{alpha}{significance level of the confidence intervals. Default is 0.05.}
+\item{alpha}{significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).}
 
-\item{p}{probability for JND (default 75\%)}
+\item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 }
 \value{
-A list, whose lenght is equal to the levels of the factorial predictor, i.
-Each cell of the list is equal to the output of \code{delta.psy.probit} applied to
-a multivariable model whose baseline is level i of the factorial predictor.
+A matrix including Estimate, Standard Error, and Confidence Intervals of PSE and JND. If a factorial predictor 
+is included in the model, the function returns a list, each item containing a matrix for the estimates relative to a level of the predictor.
 }
 \description{
-Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-Difference (JND) and the related Standard Errors for a multivariate distribution
-(i.e. one continuous and one factorial predictor) by means of 
-delta method.
-The method applies to multivariable GLMM having a \emph{probit} link function.
-The function is based on a recursive use of \code{\link[lme4]{glmer}} and
-\code{\link{MixDelta}}
+Estimate Points of Subjective Equivalence (PSE), Just Noticeable
+Differences (JND) and the related Standard Errors from a GLMM by means of 
+delta method. 
+The method applies to models with a \emph{probit} link function, one continuous predictor,
+and one (optional) factorial predictor.
 }
 \details{
-The function \code{MixDelta} is based on a recursive use of
-\code{glmer} and \code{PsychDelta} to multivariable GLMM including
-continuous and factorial predictors. The same caveats of \code{PsychDelta}
-apply (e.g., confidence interval based on normality assumption).
+When the model includes a factorial predictor, the function is based on a recursive use of
+\code{\link[lme4]{glmer}} and re-order of levels of the factorial predictor. 
+The JND estimate assumes a \emph{probit} link function.
+}
+\note{
+The delta method is based on the assumption of asymptotic normal distribution of the parameters estimates. 
+This may result in an incorrect variance estimation. For a more reliable (but more time-consuming) estimation 
+based on bootstrap method, use \code{\link{pseMer}}.
 }
 \examples{
 library(lme4)
-data(vibro_exp3)
-formula.mod <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
-mod <- glmer(formula = formula.mod, family = binomial(link = "probit"), data = vibro_exp3)
-xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
-MixDelta(xplode.mod)
+
+#univariable GLMM (one continuous predictor)
+mod.uni = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject), family = binomial(link = "probit"), data = simul_data)
+xplode.uni = xplode(model = mod.uni, name.cont = "X")
+MixDelta(xplode.uni)
+
+#multivariable GLMM (one continuous and one factorial predictor)
+mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
+MixDelta(xplode.multi)
 
 }
 \references{
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+
+Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). 
+Pacific Grove, CA: Duxbury Press
 }
 \seealso{
-\code{\link[lme4]{glmer}} for Generalized Linear Mixed Models. 
-\code{\link{MixDelta}} for PSE and JND estimation from a univariable GLMM using delta method. 
+\code{\link[lme4]{glmer}} for fitting Generalized Linear Mixed Models. 
+\code{\link{xplode}} for interfacing values from a fitted GLMM to \code{MixedPsy} functions. 
 \code{\link{pseMer}} for bootstrap-based confidence intervals of psychometric parameters.
 }
 \keyword{DeltaMethod}
 \keyword{GLMM}
-\keyword{Multivariable}

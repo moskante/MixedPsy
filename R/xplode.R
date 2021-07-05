@@ -19,7 +19,7 @@
 #'  to use a different order, this requires to specify which parameter pertains to
 #'  the intercept and which to the slope, by changing \code{define.pf}.
 #'
-#' @return An object of class \code{"\linkS4class{merMod}"} to be used with other
+#' @return An object of class \code{\linkS4class{merMod}} to be used with other
 #'  \code{MixedPsy} functions.
 #'  
 #' @keywords GLMM

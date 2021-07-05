@@ -2,38 +2,46 @@
 % Please edit documentation in R/mix_utils.R
 \name{MixPlot}
 \alias{MixPlot}
-\title{Plotting Psychometric Functions given GLMM}
+\title{Plot Individual Responses from GLMM}
 \usage{
 MixPlot(xplode.obj, facet_by = NULL, showData = TRUE)
 }
 \arguments{
-\item{xplode.obj}{an object of class \code{\link{xplode}}}
+\item{xplode.obj}{an object of class \code{\link{xplode}}.}
 
-\item{facet_by}{}
+\item{facet_by}{optional. A string specifying the name of the faceting variable (either the participant identification 
+or the factorial predictor).}
 
-\item{showData}{}
+\item{showData}{logical, defines if proportion of binomial responses for each stimulus level are presented. Default is TRUE.}
+}
+\value{
+\code{MixPlot} returns a \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Plot binomial data and the fitted GLMM from an object of class \code{\link{xplode}}.
+Plot response curve for each individual in a population sample, given a GLMM with one continuous predictor 
+and one (optional) factorial predictor. If the factorial predictor is specified, the response is plotted separately for each
+individual and each predictor level.
 }
 \details{
-
+If the model includes only a continuous predictor, the figure consist of a single panel, and each individual's 
+response is assigned a different color. If a factorial predictor is included in the model, the faceting variable can be either the 
+participant identification or the factorial predictor. By default, each panel shows an individual's response, different levels of 
+the factorial predictor are coded by color.
 }
 \examples{
 library(lme4)
-formula.mod <- cbind(faster, slower) ~ speed *vibration + (1 + speed| subject)
-mod <- glmer(formula = formula.mod, family = binomial(link = "probit"),
-              data = vibro_exp3)
-xplode.mod <- xplode(model = mod, name.cont = "speed", name.factor = "vibration")
-myplot <- MixPlot(xplode.mod)
-                  
 
-}
-\references{
-Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
-at the population-level: The generalized linear mixed model. 
-Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
+
+MixPlot(xplode.multi)
+#alternative visualization
+MixPlot(xplode.multi, facet_by = "vibration", showData = FALSE)
+
 }
 \seealso{
 \code{\link{xplode}} for objects of class \code{xplode}.
+\code{\link[ggplot2]{ggplot2}} for creating data visualizations.
 }
+\keyword{GLMM}
+\keyword{Plot}

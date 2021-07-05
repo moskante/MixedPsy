@@ -20,7 +20,7 @@ predictor, as in the formula object of the fitted model}
 response variable, as in the formula object of the fitted model}
 }
 \value{
-An object of class \code{"\linkS4class{merMod}"} to be used with other
+An object of class \code{\linkS4class{merMod}} to be used with other
  \code{MixedPsy} functions.
 }
 \description{

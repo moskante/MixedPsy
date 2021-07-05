@@ -17,7 +17,7 @@
 #' @param constant If set to FALSE, stimulus levels are randomly generated,
 #' uniformly distributed values within the selected interval.
 #' If constant = TRUE, the X interval is divided in  intervals of constant
-#' length. Default is FALSE.
+#' length. Default is TRUE.
 #'
 #' @return The simulated dataset
 #'
@@ -30,7 +30,7 @@
 #' @importFrom stats rbinom runif
 #' @export
 #'
-PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, ntrials = 40, nintervals = 9, xint = c(40, 120), constant = F) {
+PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, ntrials = 40, nintervals = 9, xint = c(40, 120), constant = T) {
     
     
     if (constant == T) {
