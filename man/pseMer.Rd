@@ -42,7 +42,7 @@ given an object of class \code{\link[lme4]{merMod}}.
 }
 \details{
 \code{pseMer} estimates PSE and JND (and additional user defined parameters) from a 
-fitted GLMM model (class \code{"\linkS4class{merMod}"}).
+fitted GLMM model (class \code{\linkS4class{merMod}}).
 }
 \note{
 A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
@@ -75,7 +75,7 @@ jndpse[4] = qnorm(0.75)/(fixef(mer.obj)[2]+ fixef(mer.obj)[4]) #jnd_32
 return(jndpse)
 }
  
-\donttest{BootEstim.muli = pseMer(mod2, B = 100, FUN = fun2mod)}
+\donttest{BootEstim.multi = pseMer(mod.multi, B = 100, FUN = fun2mod)}
 
 }
 \references{

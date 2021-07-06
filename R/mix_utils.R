@@ -339,7 +339,7 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
 #' return(jndpse)
 #' }
 #'  
-#' \donttest{BootEstim.muli = pseMer(mod2, B = 100, FUN = fun2mod)}
+#' \donttest{BootEstim.multi = pseMer(mod.multi, B = 100, FUN = fun2mod)}
 #' 
 #' @export
 #' @importFrom lme4 bootMer
