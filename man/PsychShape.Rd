@@ -2,7 +2,7 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychShape}
 \alias{PsychShape}
-\title{Plotting Psychometric Functions given PSE and JND}
+\title{Plot Psychometric Functions given PSE and JND}
 \usage{
 PsychShape(
   pse = 0,
@@ -19,21 +19,21 @@ PsychShape(
 \arguments{
 \item{pse, jnd}{point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.}
 
-\item{p}{probability for JND (default 75\%)}
+\item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 
-\item{x.range}{a vector of length two specifying the range of the function.}
+\item{x.range}{vector of length two specifying the range of the psychometric function.}
 
-\item{ps.link}{a link function for the binomial family of error distribution (see Details).}
+\item{ps.link}{a link function for the binomial family of error distribution.}
 
-\item{ps.type}{type}
+\item{ps.type, ps.size, ps.color}{type, size, and color of the plotted line (see \code{"ggplot2-spec"}).}
 
-\item{ps.size}{size}
-
-\item{ps.color}{color}
+\item{addTo}{specifies an existing \code{ggplot} object where the new line should be plotted. If no object is given, the function is drawn on a new plot.}
+}
+\value{
+\code{PsychShape} returns a \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Plot a psychometric function with known PSE and JND
-on an existing plot.
+Plot a psychometric function with known PSE and JND on a new or existing \code{ggplot} object.
 }
 \details{
 \code{PsychShape()} can be used to visualize the predicted results of a
@@ -57,5 +57,8 @@ Springer Science & Business Media.
 }
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models.
-\code{\link{PsychFunction}} for estimation of PSE and JND.
+\code{\link{PsychFunction}} and \code{\link{PsychDelta}} for estimation of PSE and JND from response data.
+\code{\link{PsychPlot}} for plotting a a psychometric function from a GLM.
 }
+\keyword{GLM}
+\keyword{Plot}

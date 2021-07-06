@@ -19,15 +19,15 @@ Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
 are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 }
 \description{
-Estimate the Point of Subjective Equivalence (PSE), the Just Noticeable
-Difference (JND) and the related Standard Errors of an individual participant 
+Estimate Point of Subjective Equivalence (PSE), Just Noticeable
+Difference (JND), and related Standard Errors of an individual participant 
 by means of Delta Method.
 The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
 predictor and a \emph{probit} link function.
 }
 \details{
 \code{PsychDelta} estimates PSE and JND of a psychometric
-function (object of class \code{"glm"}).
+function (object of class \code{glm}).
 }
 \note{
 The function assumes that the first model coefficient is the intercept
@@ -35,7 +35,6 @@ and the second is the slope. The estimate of the JND assumes a \emph{probit}
 link function.
 }
 \examples{
-#load 1 participant from simulated data
 data.S1 <- subset(simul_data, Subject == "S1")
 model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 family = binomial(link = "probit"), data = data.S1)
@@ -45,6 +44,9 @@ PsychDelta(model.glm)
 \references{
 Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
 response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
+
+Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
+Springer Science & Business Media.
 
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 

@@ -2,39 +2,40 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychFunction}
 \alias{PsychFunction}
-\title{Fitting Psychometric Functions}
+\title{Psychometric Function and PSE/JND Parameters from Single-Subject Response}
 \usage{
 PsychFunction(ps.formula, ps.link, ps.data, br = F)
 }
 \arguments{
 \item{ps.formula}{an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}}
 
-\item{ps.link}{link function for the binomial family of error distribution. Default is \code{"probit"}.}
+\item{ps.link}{link function for the binomial family of error distribution. Default is \code{probit}.}
 
-\item{ps.data}{a data frame including the variables in the model.}
+\item{ps.data}{a data frame including the variables used in the model.}
 
-\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1.}
+\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1. 
+Default is FALSE.}
 }
 \value{
-\code{\link{PsychFunction}} returns a list including the fitted model,
+\code{PsychFunction} returns a list including the fitted model,
 the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
 }
 \description{
-Fit psychometric functions using either
-\code{glm()} or \code{brglm()}; estimate PSE, JND, and the related
-confidence intervals with Delta Method.
+Fit psychometric functions using \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
+Estimate PSE, JND, and related confidence intervals with Delta Method.
 }
 \details{
 Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
-predictor. Std. Errors and 95\% confidence intervals
-of PSE and JND are estimated via Delta Methods (Faraggi et al., 2003). Currently only working with \emph{probit} 
-link function.
+predictor. Std. Errors and 95\% confidence intervals of PSE and JND are estimated via Delta Methods. 
+Currently only working with \emph{probit} link function.
+}
+\note{
+\code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stat]{glm}}. 
+Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
 }
 \examples{
-# simulate data from a single participant
-data.S1 <- PsySimulate(fixeff = c(-7.5, 0.0875), nsubject = 1, constant = TRUE)
-fit.S1 = PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X,
-                        ps.link = "probit", ps.data = data.S1)
+data.S1 <- subset(simul_data, Subject == "S1")
+psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
                         
 }
 \references{
@@ -46,11 +47,11 @@ at the population-level: The generalized linear mixed model.
 Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
 }
 \seealso{
-\code{\link[stats]{glm}} for Generalized Linear Models; 
-\code{\link[brglm]{brglm}} for fitting a GLM using bias reduction;
-\code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object;
-\code{\link{PsychShape}} for plotting a psychometric function given its PSE and JND.
+\code{\link[stats]{glm}} for Generalized Linear Models. 
+\code{\link[brglm]{brglm}} for fitting a GLM using bias reduction.
+\code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object.
+\code{\link{PsychPlot}} for plotting a a psychometric function from a GLM. 
+\code{\link{PsychShape}} for plotting a psychometric function given PSE and JND.
 }
 \keyword{DeltaMethod}
 \keyword{GLM}
-\keyword{Psychometric}

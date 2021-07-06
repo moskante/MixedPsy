@@ -2,10 +2,10 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychPlot}
 \alias{PsychPlot}
-\title{Plotting Psychometric Functions given GLM}
+\title{Plot Psychometric Function from GLM}
 \usage{
 PsychPlot(
-  mod,
+  model.obj,
   addTo = NULL,
   showData = TRUE,
   ps.type = "solid",
@@ -14,25 +14,32 @@ PsychPlot(
 )
 }
 \arguments{
-\item{mod}{mod}
+\item{model.obj}{the fitted psychometric function. An object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.}
 
-\item{addTo}{addTo}
+\item{addTo}{specifies an existing \code{ggplot} object where the new line should be plotted. If no object is given, the function is drawn on a new plot.}
 
-\item{showData}{show}
+\item{showData}{logical, defines if proportion of binomial responses for each stimulus level are presented. Default is TRUE.}
 
-\item{ps.type}{line type.}
+\item{ps.type, ps.size}{type and size of the plotted line (see \code{"ggplot2-spec"}).}
 
-\item{ps.size}{line size.}
-
-\item{ps.lab}{label.}
+\item{ps.lab}{label assigned to the psychometric curve. The label is coded by the color aesthetic.}
+}
+\value{
+\code{PsychPlot} returns a \code{\link[ggplot2]{ggplot}} object.
 }
 \description{
-Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
-}
-\details{
-
+Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
+The plot can be drawn on a new or existing \code{ggplot} object.
 }
 \examples{
+data.S1 <- subset(simul_data, Subject == "S1")
+psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
+plotP1 <- PsychPlot(psych.S1$model, showData = TRUE, ps.lab = "S1") 
+
+data.S2 <- subset(simul_data, Subject == "S2")
+glm.S2 <- glm(formula = cbind(Longer, Total - Longer) ~ X, 
+           family = binomial(link = "probit"), data = data.S2)
+plotP2 <- PsychPlot(glm.S2, addTo = plotP1, ps.lab = "S2")
 
 }
 \references{
@@ -46,4 +53,7 @@ Springer Science & Business Media.
 \seealso{
 \code{\link[stats]{glm}} for for Generalized Linear Models.
 \code{\link{PsychFunction}} for estimation of PSE and JND.
+\code{\link{MixPlot}} for plotting individual responses from a GLMM.
 }
+\keyword{GLM}
+\keyword{Plot}

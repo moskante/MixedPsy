@@ -40,7 +40,8 @@ MixPlot(xplode.multi, facet_by = "vibration", showData = FALSE)
 }
 \seealso{
 \code{\link{xplode}} for objects of class \code{xplode}.
-\code{\link[ggplot2]{ggplot2}} for creating data visualizations.
+\code{\link[ggplot2]{ggplot2}} for creating data visualizations. 
+\code{\link{PsychPlot}} for plotting a a psychometric function from a GLM.
 }
 \keyword{GLMM}
 \keyword{Plot}
