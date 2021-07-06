@@ -111,7 +111,8 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #'
 #' @examples
 #' data.S1 <- subset(simul_data, Subject == "S1")
-#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
+#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
+#' ps.link = "probit", ps.data = data.S1)
 #'                         
 #' @importFrom brglm brglm
 #' @export
@@ -174,7 +175,8 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #'
 #' @examples
 #' data.S1 <- subset(simul_data, Subject == "S1")
-#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
+#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
+#' ps.link = "probit", ps.data = data.S1)
 #' plotP1 <- PsychPlot(psych.S1$model, showData = TRUE, ps.lab = "S1") 
 #' 
 #' data.S2 <- subset(simul_data, Subject == "S2")
@@ -182,7 +184,7 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #'            family = binomial(link = "probit"), data = data.S2)
 #' plotP2 <- PsychPlot(glm.S2, addTo = plotP1, ps.lab = "S2")
 #'
-#' @keywords GLM Plot
+#' @keywords GLM plot
 #' 
 #' @import ggplot2
 #' @export
@@ -256,12 +258,13 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
 #' @examples
 #' p <- PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.color = "gray", ps.size = 3)
 #' p1 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black", addTo = p)
-#' p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.type = "dashed", addTo = NULL)
+#' p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", 
+#' ps.type = "dashed", addTo = NULL)
 #'
 #' @import ggplot2
 #' @export
 #' 
-#' @keywords GLM Plot
+#' @keywords GLM plot
 #' 
 PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link = c("probit", "logit"), 
                        ps.type = "solid", ps.size = 1, ps.color = "black", addTo = NULL) {

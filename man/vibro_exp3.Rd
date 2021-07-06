@@ -3,7 +3,7 @@
 \docType{data}
 \name{vibro_exp3}
 \alias{vibro_exp3}
-\title{Data from tactile discrimination task - EXP3}
+\title{Data from tactile discrimination task - (Dallmann et al., 2015).}
 \format{
 A data frame with 126 rows (14 observations x 9 participants) and 5 variables:
 \describe{

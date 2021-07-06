@@ -4,10 +4,10 @@
 \alias{xplode}
 \title{Extract values from a fitted GLMM object}
 \usage{
-xplode(model, name.cont = NA, name.factor = NA, names.response = NA)
+xplode(model.obj, name.cont = NA, name.factor = NA, names.response = NA)
 }
 \arguments{
-\item{model}{The GLMM fitted with \code{glmer}. An object of class
+\item{model.obj}{The GLMM fitted with \code{glmer}. An object of class
 \code{"\linkS4class{merMod}"}.}
 
 \item{name.cont}{A string providing the name of the continuous predictor,
@@ -19,34 +19,25 @@ predictor, as in the formula object of the fitted model}
 \item{names.response}{Optional. A string providing the name of name of the
 response variable, as in the formula object of the fitted model}
 }
-\value{
-An object of class \code{\linkS4class{merMod}} to be used with other
- \code{MixedPsy} functions.
-}
 \description{
-Extract values from an object of class \code{"\linkS4class{merMod}"}
+Extract values from an object of class \code{\linkS4class{merMod}}
 (more specifically, from an object of subclass \code{glmerMod}).
 }
 \details{
-For simplicity, several \code{MixedPsy} functions take as input an
- object of class \code{xplode} instead of an object of class
- \code{"\linkS4class{merMod}"}. Most of these functions assume by default that
- the continuous predictor is entered first in the formula object. It is possible
- to use a different order, this requires to specify which parameter pertains to
- the intercept and which to the slope, by changing \code{define.pf}.
+For simplicity and maintenance reasons, several \code{MixedPsy} functions take as input an
+ object of class \code{xplode} instead of an object of class \code{\linkS4class{merMod}}.
 }
 \examples{
 library(lme4)
-datafr = PsySimulate(nsubjects = 10)
-mod1 = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
-family = binomial(link = "probit"), data = datafr)
-xplode.mod1 = xplode(model = mod1, name.cont = "X")
-MixDelta(xplode.mod1)
+multi.mod <- glmer(cbind(faster, slower) ~ speed * vibration  + (1 + speed| subject), 
+family = binomial(link = "probit"), data = vibro_exp3)
+xplode.mod <- xplode(multi.mod, name.cont = "speed", name.factor = "vibration")
+MixPlot(xplode.mod)
+MixDelta(xplode.mod)
 
 }
 \seealso{
-\code{\link[lme4]{merMod-class}} and \code{\link[lme4]{glmer}} from package 
-\code{\link[lme4]{lme4}} for objects of class ``\code{merMod}''.
-\code{\link{MixDelta}}, \code{\link{MixDelta}} for use of objects of class \code{xplode.obj}.
+\code{\link[lme4]{merMod-class}} and \code{\link[lme4]{glmer}}.
+\code{\link{MixDelta}}, \code{\link{MixPlot}} for use of objects of class \code{xplode}.
 }
 \keyword{GLMM}

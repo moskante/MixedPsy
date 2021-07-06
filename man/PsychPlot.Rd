@@ -33,7 +33,8 @@ The plot can be drawn on a new or existing \code{ggplot} object.
 }
 \examples{
 data.S1 <- subset(simul_data, Subject == "S1")
-psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
+psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
+ps.link = "probit", ps.data = data.S1)
 plotP1 <- PsychPlot(psych.S1$model, showData = TRUE, ps.lab = "S1") 
 
 data.S2 <- subset(simul_data, Subject == "S2")
@@ -56,4 +57,4 @@ Springer Science & Business Media.
 \code{\link{MixPlot}} for plotting individual responses from a GLMM.
 }
 \keyword{GLM}
-\keyword{Plot}
+\keyword{plot}

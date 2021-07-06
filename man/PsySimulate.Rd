@@ -15,37 +15,44 @@ PsySimulate(
 )
 }
 \arguments{
-\item{fixeff}{Array of fixed effects. First item is the intercept, second
+\item{fixeff}{array of fixed effects. First item is the intercept, second
 item is the slope.}
 
-\item{raneff}{Array of random effects. First item is the intercept, second
+\item{raneff}{array of random effects. First item is the intercept, second
 item is the covariance, third item is the slope.}
 
-\item{nsubjects}{Number of subjects to simulate data for. Default is 8.}
+\item{nsubjects}{number of subjects to simulate. Default is 8.}
 
-\item{ntrials}{Number of trials for each stimulus level. Default is 40.}
+\item{ntrials}{number of trials for each stimulus level. Default is 40.}
 
-\item{nintervals}{Number of stimulus levels. Default is 9.}
+\item{nintervals}{number of stimulus levels. Default is 9.}
 
-\item{xint}{Range of the stimulus interval. Default is c(40,120)}
+\item{xint}{range of the stimulus interval. Default is c(40,120)}
 
-\item{constant}{If set to FALSE, stimulus levels are randomly generated,
+\item{constant}{logical. If set to FALSE, stimulus levels are randomly generated,
 uniformly distributed values within the selected interval.
-If constant = TRUE, the X interval is divided in  intervals of constant
+otherwise, the X interval is divided in  intervals of constant
 length. Default is TRUE.}
 }
 \value{
-The simulated dataset
+\code{PsySimulate} returns a simulated dataset. If no input arguments are specified, the function returns 
+a dataset with the same characteristics as \code{\link{simul_data}}.
 }
 \description{
-Given the arrays of fixed and random effects, as well as the covariance,
-and the characteristic of the simulated experiment (i.e., ) the function
-simulates a dataset in which for each subject the following information is
-provided: the slope and intercept value of the psychometric function, and
-the simulated responses to the stimulus levels that fit that function.
+The function simulates data of a typical psychophysics experiment. For each simulated 
+participant, the function returns the following information: individual slope and intercept 
+coefficients, given the fixed and random effects parameters provided as input; summary of 
+the simulated binomial response to a range of intensity levels between a specified range.
 }
 \examples{
-#simulate dataset (one subject)
-datafr.S1 <- PsySimulate(nsubject = 1, constant = TRUE)
+datafr.S1 <- PsySimulate(fixeff = c(0, 1), xint = c(-5,5), 
+nsubject = 1, ntrials = 60, nintervals = 10, constant = FALSE)
+g <- ggplot(datafr.S1, aes(X,Longer/Total)) + geom_point()
 
+PsychShape(pse = 0, jnd = qnorm(0.75)/1, ps.link = "probit", 
+x.range = c(-5,5), addTo = g, ps.color = "red")
+
+}
+\seealso{
+\code{\link{PsychShape}} for plotting a psychometric function given PSE and JND.
 }

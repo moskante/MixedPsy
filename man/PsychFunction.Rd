@@ -35,7 +35,8 @@ Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of
 }
 \examples{
 data.S1 <- subset(simul_data, Subject == "S1")
-psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, ps.link = "probit", ps.data = data.S1)
+psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
+ps.link = "probit", ps.data = data.S1)
                         
 }
 \references{

@@ -30,7 +30,8 @@ the factorial predictor are coded by color.
 }
 \examples{
 library(lme4)
-mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), 
+family = binomial(link = "probit"), data = vibro_exp3)
 xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 
 MixPlot(xplode.multi)
@@ -44,4 +45,4 @@ MixPlot(xplode.multi, facet_by = "vibration", showData = FALSE)
 \code{\link{PsychPlot}} for plotting a a psychometric function from a GLM.
 }
 \keyword{GLMM}
-\keyword{Plot}
+\keyword{plot}

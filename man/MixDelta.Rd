@@ -45,7 +45,8 @@ xplode.uni = xplode(model = mod.uni, name.cont = "X")
 MixDelta(xplode.uni)
 
 #multivariable GLMM (one continuous and one factorial predictor)
-mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), family = binomial(link = "probit"), data = vibro_exp3)
+mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), 
+family = binomial(link = "probit"), data = vibro_exp3)
 xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 MixDelta(xplode.multi)
 

@@ -8,8 +8,7 @@
 A data frame with 72 rows (9 observaxions x 8 simulated participants) and 6 variables:
 \describe{
 \item{X}{samples in the continuous interval (range \code{c(40,120)})}
-\item{Intercept}{simulated participant's intercept (combination of random and fixed effect)}
-\item{Slope}{simulated participant's slope (combination of random and fixed effect)}
+\item{Intercept,Slope}{simulated participant's coefficients (combination of random and fixed effect)}
 \item{Longer}{number of trials in which response is judged "longer" than standard}
 \item{Total}{total number of trials for sample in X}
 \item{Subject}{simulated participant's identification code (S1 to S8)}

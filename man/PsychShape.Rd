@@ -44,7 +44,8 @@ link function.
 \examples{
 p <- PsychShape(pse = 0, jnd = 6, x.range = c(-40, 40), ps.color = "gray", ps.size = 3)
 p1 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "black", addTo = p)
-p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", ps.type = "dashed", addTo = NULL)
+p2 <- PsychShape(pse = 6, jnd = 6, x.range = c(-40, 40), ps.col = "red", ps.link = "logit", 
+ps.type = "dashed", addTo = NULL)
 
 }
 \references{
@@ -61,4 +62,4 @@ Springer Science & Business Media.
 \code{\link{PsychPlot}} for plotting a a psychometric function from a GLM.
 }
 \keyword{GLM}
-\keyword{Plot}
+\keyword{plot}
