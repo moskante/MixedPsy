@@ -19,20 +19,20 @@ pseMer(
 \item{B}{integer. Number of bootstrap samples.}
 
 \item{FUN}{an optional, custom made function to specify the required parameters to be estimated.
-if NULL, \code{pseMer()} estimates PSE and JND of a univariable GLMM with a single intercept and slope.}
+If NULL, \code{pseMer} estimates PSE and 50\%JND of a univariable GLMM with a single intercept and slope.}
 
-\item{alpha}{significance level of the confidence intervals. Default is 0.05 (value for 95\% confidence interval).}
+\item{alpha}{significance level of the confidence intervals. Default is 0.05 (95\% confidence interval).}
 
 \item{ci.type}{vector of character strings representing the type of intervals required. The value 
-should be any subset of the values c("norm","basic", "stud", "perc", "bca") or simply "all" which will 
-compute all five types of intervals. "perc" should be always included for the summary table.}
+should be any subset of the values accepted by \code{\link[boot]{boot.ci}}: c("norm","basic", "stud", "perc", "bca"). 
+Specify "all" for all five types of intervals. "perc" should be always included for the summary table.}
 
 \item{beep}{logical. If TRUE, a "ping" sound alerts that the simulation is complete. Default is FALSE.}
 }
 \value{
-\code{pseMer} returns a list of length 3 including a summary table (Estimate, Standard Error,
-Inferior and Superior Confidence Interval of the parameters) and the output of  \code{\link[lme4]{bootMer}} 
-and \code{\link[boot]{boot.ci}} functions, for further analyses. Confidence Intervals in the summary table are
+\code{pseMer} returns a list of length 3 including a summary table (estimate,
+inferior and superior bounds of the confidence interval), the output of \code{\link[lme4]{bootMer}}, and that of 
+\code{\link[boot]{boot.ci}}, for further analyses. Confidence intervals in the summary table are
 based on the percentile method.
 }
 \description{
@@ -46,42 +46,36 @@ fitted GLMM model (class \code{"\linkS4class{merMod}"}).
 }
 \note{
 A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
-based on the algorithm in Moscatelli et al. (2012). The current function is a simple wrapper
-of \code{lme4::bootMer()} and \code{boot::boot.ci()} functions.
+based on the algorithm in Moscatelli et al. (2012). The current function is a wrapper
+of function \code{\link[lme4]{bootMer}} and \code{\link[boot]{boot.ci}}. 
 
 Increasing the number of bootstrap samples (\code{B}) makes the estimate more reliable. 
 However, this will also increase the duration of the computation.
 }
 \examples{
-## Example 1: estimate pse/jnd of a univariable GLMM
 library(lme4)
-data(vibro_exp3)
-formula.mod1 <- cbind(faster, slower) ~ speed + (1 + speed| subject)
-mod1 <- glmer(formula = formula.mod1, family = binomial(link = "probit"), 
-              data = vibro_exp3[vibro_exp3$vibration == 0,])
-\dontshow{BootEstim.1a <- pseMer(mod1, B = 5, ci.type = c("perc"))}
-\donttest{BootEstim.1 <- pseMer(mod1, B = 100, ci.type = c("perc"))}
+#example 1: univariable GLMM
+mod.uni = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject),
+family = binomial(link = "probit"), data = simul_data)
+\dontshow{BootEstim.1 <- pseMer(mod.uni, B = 5, ci.type = c("perc"))}
+\donttest{BootEstim.uni <- pseMer(mod.uni, B = 100, ci.type = c("perc"))}
 
-## Example 2: specify custom parameters for bootstrap estimation of a 
-# multivariate model
-
-formula.mod2 <- cbind(faster, slower) ~ speed * vibration + (1 + speed| subject)
-mod2 <- glmer(formula = formula.mod2, family = binomial(link = "probit"), 
-               data = vibro_exp3)
+#example 2: specify custom parameters for multivariable model
+mod.multi <- glmer(cbind(faster, slower) ~ speed * vibration + (1 + speed| subject), 
+family = binomial(link = "probit"), data = vibro_exp3)
               
 fun2mod = function(mer.obj){
-#allocate space: 4 parameters (jnd_0Hz, jnd_32Hz, pse_0Hz, pse_32Hz) j
+#allocate space: 4 parameters (jnd_A, jnd_B, pse_A, pse_B)
 jndpse = vector(mode = "numeric", length = 4)
-names(jndpse) = c("jnd_0Hz","jnd_32Hz", "pse_0Hz", "pse_32Hz")
-jndpse[1] = qnorm(0.75)/fixef(mer.obj)[2] #jnd_0Hz
-jndpse[2] = qnorm(0.75)/(fixef(mer.obj)[2] + fixef(mer.obj)[4]) #jnd_32Hz
-jndpse[3] = -fixef(mer.obj)[1]/fixef(mer.obj)[2] #pse_0Hz
-jndpse[4] = -(fixef(mer.obj)[1] + fixef(mer.obj)[3])/(fixef(mer.obj)[2] 
-               + fixef(mer.obj)[4]) #pse_32Hz
+names(jndpse) = c("pse_0", "pse_32","jnd_0", "jnd_32")
+jndpse[1] = -fixef(mer.obj)[1]/fixef(mer.obj)[2] #pse_0
+jndpse[2] = -(fixef(mer.obj)[1]+fixef(mer.obj)[3])/(fixef(mer.obj)[2]+ fixef(mer.obj)[4]) #pse_0
+jndpse[3] = qnorm(0.75)/fixef(mer.obj)[2] #jnd_0
+jndpse[4] = qnorm(0.75)/(fixef(mer.obj)[2]+ fixef(mer.obj)[4]) #jnd_32
 return(jndpse)
 }
-
-\donttest{BootEstim.2 = pseMer(mod2, B = 100, FUN = fun2mod)}
+ 
+\donttest{BootEstim.muli = pseMer(mod2, B = 100, FUN = fun2mod)}
 
 }
 \references{
@@ -93,7 +87,8 @@ Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-E
 Models Using lme4. Journal of Statistical Software, 67(1), 51. https://doi.org/10.18637/jss.v067.i01
 }
 \seealso{
-\code{\link[lme4]{bootMer}} from \code{lme4} package and \code{\link[boot]{boot.ci}} from \code{boot} package.
+\code{\link[lme4]{bootMer}} and \code{\link[boot]{boot.ci}} for estimation of confidence intervals with the bootstrap method. 
+\code{\link{MixDelta}} for confidence intervals with delta method.
 }
 \keyword{Bootstrap}
 \keyword{GLMM}

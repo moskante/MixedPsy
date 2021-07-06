@@ -14,8 +14,8 @@ PsychDelta(model.obj, alpha = 0.05, p = 0.75)
 \item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 }
 \value{
-\code{PsychDelta} returns a matrix including Estimate, Standard Error,
-Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
+\code{PsychDelta} returns a matrix including estimate, standard error,
+inferior and superior bounds of the confidence interval of PSE and JND. Confidence Intervals
 are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 }
 \description{

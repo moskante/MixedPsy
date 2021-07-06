@@ -1,5 +1,5 @@
-#' @importFrom grDevices palette rainbow
-#' @importFrom graphics abline plot
+# @importFrom grDevices palette rainbow
+# @importFrom graphics abline plot
 #' 
 GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates, lme4 = F, model,
    		x.label = "Stimulus Intensity", y.label = "Predicted Response",
@@ -164,8 +164,7 @@ MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
   return(estimates)
 }
 
-#' @importFrom graphics curve
-#' @importFrom stats pnorm
+# @importFrom graphics curve
 #FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
 CurveProbit = function(X, x.from, x.to){
   BETAplus = which(X[,2] > 0) 

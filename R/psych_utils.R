@@ -13,8 +13,8 @@
 #' @details \code{PsychDelta} estimates PSE and JND of a psychometric
 #' function (object of class \code{glm}).
 #' 
-#' @return \code{PsychDelta} returns a matrix including Estimate, Standard Error,
-#' Inferior and Superior Confidence Interval of PSE and JND. Confidence Intervals
+#' @return \code{PsychDelta} returns a matrix including estimate, standard error,
+#' inferior and superior bounds of the confidence interval of PSE and JND. Confidence Intervals
 #' are computed as: \eqn{Estimate +/- z(1-(\alpha/2)) * Std.Error}.
 #'
 #' @note The function assumes that the first model coefficient is the intercept

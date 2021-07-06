@@ -16,8 +16,9 @@ one continuous predictor and one (optional) factorial predictor.}
 \item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 }
 \value{
-A matrix including Estimate, Standard Error, and Confidence Intervals of PSE and JND. If a factorial predictor 
-is included in the model, the function returns a list, each item containing a matrix for the estimates relative to a level of the predictor.
+A matrix including estimate, standard error, inferior and superior bounds of the confidence interval of PSE and JND. 
+If a factorial predictor is included in the model, the function returns a list, each item containing a matrix 
+for the estimates relative to a level of the predictor.
 }
 \description{
 Estimate Points of Subjective Equivalence (PSE), Just Noticeable
@@ -40,7 +41,8 @@ based on bootstrap method, use \code{\link{pseMer}}.
 library(lme4)
 
 #univariable GLMM (one continuous predictor)
-mod.uni = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject), family = binomial(link = "probit"), data = simul_data)
+mod.uni = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject), 
+family = binomial(link = "probit"), data = simul_data)
 xplode.uni = xplode(model = mod.uni, name.cont = "X")
 MixDelta(xplode.uni)
 
