@@ -249,7 +249,10 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
   longData$y = predict(object = temp.model, newdata = longData, type = "response")
   
   
-  p = ggplot(longData, aes_string(xname,"y")) 
+  p = ggplot(longData, aes_string(xname,"y")) +
+    theme_bw() + 
+    theme(panel.grid = element_blank(), strip.background = element_blank())
+  
   plot = list()
   if(is.null(factorname)){
     colorname = groupname
