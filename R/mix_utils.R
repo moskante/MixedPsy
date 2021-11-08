@@ -25,7 +25,7 @@
 # @references
 # Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 # at the population-level: The generalized linear mixed model. 
-# Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+# Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 # 
 # Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). 
 # Pacific Grove, CA: Duxbury Press
@@ -47,8 +47,7 @@
 # xplode.mod <- xplode(model = mod, name.cont = "speed", define.pf = define.mod)
 # pse.jnd <- MixDelta(xplode.mod)
 # 
-# @importFrom stats qnorm
-# @importFrom grDevices palette
+#' @importFrom stats qnorm
 #
 MixFunction <- function(xplode.obj, alpha, p) {
   
@@ -115,7 +114,7 @@ MixFunction <- function(xplode.obj, alpha, p) {
 #' @references
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #'
 #' Casella, G., & Berger, R. L. (2002). Statistical inference (2nd ed.). 
 #' Pacific Grove, CA: Duxbury Press
@@ -141,6 +140,7 @@ MixFunction <- function(xplode.obj, alpha, p) {
 #' xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 #' MixDelta(xplode.multi)
 #'
+#' @importFrom stats update contrasts contr.treatment binomial
 #' @export
 #'
 MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
@@ -210,6 +210,8 @@ MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
 #' @keywords GLMM plot
 #' 
 #' @import ggplot2
+#' @importFrom stats update binomial predict
+#' 
 #' @export
 #' 
 
@@ -308,7 +310,7 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
 #' @references
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #' 
 #' Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-Effects 
 #' Models Using lme4. Journal of Statistical Software, 67(1), 51. https://doi.org/10.18637/jss.v067.i01

@@ -30,7 +30,7 @@
 #'
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #'
 #' @seealso \code{\link[stats]{glm}} for fitting a Generalized Linear Model to a single-subject response. \code{\link[lme4]{glmer}} 
 #' for Generalized Linear Mixed Models (including fixed and random effects). \code{MixDelta} for estimating PSE and JND at a population level 
@@ -43,6 +43,8 @@
 #' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
 #' family = binomial(link = "probit"), data = data.S1)
 #' PsychDelta(model.glm)
+#' 
+#' @importFrom stats vcov qnorm
 #' 
 #' @export
 #'
@@ -99,7 +101,7 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #'
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #' 
 #' @seealso \code{\link[stats]{glm}} for Generalized Linear Models. 
 #' \code{\link[brglm]{brglm}} for fitting a GLM using bias reduction.
@@ -115,6 +117,7 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #' ps.link = "probit", ps.data = data.S1)
 #'                         
 #' @importFrom brglm brglm
+#' @importFrom stats terms glm binomial
 #' @export
 #'
 PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
@@ -164,7 +167,7 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' @references
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #' 
 #' Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
 #' Springer Science & Business Media.
@@ -187,6 +190,8 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #' @keywords GLM plot
 #' 
 #' @import ggplot2
+#' @importFrom stats predict
+#' 
 #' @export
 #' 
 PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
@@ -246,7 +251,7 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
 #' @references
 #' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 #' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 #' 
 #' Knoblauch, K., & Maloney, L. T. (2012). Modeling psychophysical data in R (Vol. 32). 
 #' Springer Science & Business Media.
@@ -262,6 +267,8 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
 #' ps.type = "dashed", addTo = NULL)
 #'
 #' @import ggplot2
+#' @importFrom stats qnorm pnorm plogis
+#' 
 #' @export
 #' 
 #' @keywords GLM plot

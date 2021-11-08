@@ -81,7 +81,7 @@ return(jndpse)
 \references{
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 
-Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 
 Bates, D., Mächler, M., Bolker, B., & Walker, S. (2015). Fitting Linear Mixed-Effects 
 Models Using lme4. Journal of Statistical Software, 67(1), 51. https://doi.org/10.18637/jss.v067.i01

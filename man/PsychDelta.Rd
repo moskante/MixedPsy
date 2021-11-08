@@ -50,7 +50,7 @@ Springer Science & Business Media.
 
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 
-Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 }
 \seealso{
 \code{\link[stats]{glm}} for fitting a Generalized Linear Model to a single-subject response. \code{\link[lme4]{glmer}} 

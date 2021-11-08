@@ -1,5 +1,6 @@
-# @importFrom grDevices palette rainbow
-# @importFrom graphics abline plot
+#' @importFrom grDevices palette rainbow
+#' @importFrom graphics abline plot
+#' @importFrom stats pnorm
 #' 
 GLMMplot = function(dataframe, X.col, Yes.col, Total.col, Subject.col, estimates, lme4 = F, model,
    		x.label = "Stimulus Intensity", y.label = "Predicted Response",
@@ -166,6 +167,7 @@ MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
 
 #' @importFrom graphics curve abline
 #' @importFrom grDevices palette rainbow
+#' @importFrom stats pnorm
 #FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
 CurveProbit = function(X, x.from, x.to){
   BETAplus = which(X[,2] > 0) 
@@ -191,6 +193,7 @@ CurveProbit = function(X, x.from, x.to){
   return(BETAplus)
 }
 
+#' @importFrom utils combn
 #FUNCTION: rearranges vector, Example: a = c(1,2,3,6) ka = kombo(a). used in xplode
 kombo = function(vector) {
   n = length(vector)

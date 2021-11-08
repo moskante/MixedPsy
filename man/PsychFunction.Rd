@@ -45,7 +45,7 @@ response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.100
 
 Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
 at the population-level: The generalized linear mixed model. 
-Journal of Vision, 12(11):26, 1-17. https://doi.org/10.1167/12.11.26
+Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 }
 \seealso{
 \code{\link[stats]{glm}} for Generalized Linear Models. 

@@ -34,6 +34,7 @@
 #'
 #' @importFrom mnormt rmnorm
 #' @importFrom Matrix nearPD
+#' @importFrom stats runif pnorm rbinom 
 #' @export
 #'
 PsySimulate <- function(fixeff = c(-7, 0.0875), raneff = c(2.4, -0.002, 2e-06), nsubjects = 8, ntrials = 40, nintervals = 9, xint = c(40, 120), constant = T) {

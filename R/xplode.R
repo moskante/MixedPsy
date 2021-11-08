@@ -30,6 +30,8 @@
 #' MixDelta(xplode.mod)
 #'
 #' @import lme4
+#' @importFrom stats vcov model.frame nobs model.response model.matrix formula
+#' 
 #' @export
 #' 
 xplode = function(model.obj, name.cont = NA, name.factor = NA, names.response = NA) {
