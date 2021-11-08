@@ -30,7 +30,7 @@ predictor. Std. Errors and 95\% confidence intervals of PSE and JND are estimate
 Currently only working with \emph{probit} link function.
 }
 \note{
-\code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stat]{glm}}. 
+\code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stats]{glm}}. 
 Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
 }
 \examples{

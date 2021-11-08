@@ -47,6 +47,7 @@ the simulated binomial response to a range of intensity levels between a specifi
 \examples{
 datafr.S1 <- PsySimulate(fixeff = c(0, 1), xint = c(-5,5), 
 nsubject = 1, ntrials = 60, nintervals = 10, constant = FALSE)
+library(ggplot2)
 g <- ggplot(datafr.S1, aes(X,Longer/Total)) + geom_point()
 
 PsychShape(pse = 0, jnd = qnorm(0.75)/1, ps.link = "probit", 
