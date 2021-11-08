@@ -11,7 +11,7 @@ Description: Tools for the analysis of psychophysical data in R. This package al
     and the Just Noticeable Difference (JND), either from a psychometric function or from a Generalized Linear Mixed Model (GLMM). 
     Additionally, the package allows plotting the fitted models and the response data, simulating psychometric functions of different shapes, and simulating data sets.
     For a description of the use of GLMMs applied to psychophysical data, refer to Moscatelli et al. (2012), <doi:10.1167/12.11.26>.
-Depends: R (>= 3.1.0)
+Depends: R (>= 3.5.0)
 Imports:
   beepr,
   boot,
