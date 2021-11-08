@@ -164,7 +164,8 @@ MixPlot_1.0 <- function(xplode.obj, pf = 1, p05line = F, x.range, x.ref,
   return(estimates)
 }
 
-# @importFrom graphics curve
+#' @importFrom graphics curve abline
+#' @importFrom grDevices palette rainbow
 #FUNCTION: Draws a curve corresponding to a probit link function (beta > 0 and beta < 0)
 CurveProbit = function(X, x.from, x.to){
   BETAplus = which(X[,2] > 0) 

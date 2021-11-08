@@ -266,7 +266,7 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
 #' 
 #' @keywords GLM plot
 #' 
-PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link = c("probit", "logit"), 
+PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link = c("probit"), 
                        ps.type = "solid", ps.size = 1, ps.color = "black", addTo = NULL) {
   if(is.null(addTo)){
     pl <- ggplot()

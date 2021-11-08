@@ -9,7 +9,7 @@ PsychShape(
   jnd = 1,
   p = 0.75,
   x.range = c(NA, NA),
-  ps.link = c("probit", "logit"),
+  ps.link = c("probit"),
   ps.type = "solid",
   ps.size = 1,
   ps.color = "black",
