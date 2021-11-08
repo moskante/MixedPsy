@@ -117,9 +117,15 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #' @importFrom brglm brglm
 #' @export
 #'
+<<<<<<< HEAD
 PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
   
   myfit = list()
+=======
+PsychFunction <- function(ps.formula, ps.link, ps.data, x.range = c(NA, NA), ps.x = NA, ps.lines = F,
+                          ps.col = "black", ps.lty = "dashed", ps.lwd = 1, br = F) {
+  myfit = vector("list", 3)
+>>>>>>> master
   ps.terms = terms(ps.formula)
   model.glm = glm(formula = ps.formula, family = binomial(link = ps.link), 
                   data = ps.data)
@@ -137,7 +143,15 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
   myfit$model = model.glm
   
   if (ps.link == "probit") {
+<<<<<<< HEAD
     myfit$estimate = PsychDelta(model.glm)
+=======
+    myfit[[2]] = PsychDelta(model.glm)
+    if (ps.lines == T) {
+      segments(x0 = myfit[[2]][1, 3], y0 = 0.5, x1 = myfit[[2]][1, 4], y1 = 0.5, col = ps.col,
+               lty = ps.lty, lwd = ps.lwd)
+    }
+>>>>>>> master
   } else {
     myfit$estimate = NA
     warning("Use the probit link function to get the estimate of the PSE and the JND")
@@ -148,6 +162,7 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
   return(myfit)
 }
 
+<<<<<<< HEAD
 #' Plot Psychometric Function from GLM
 #'
 #' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
@@ -223,6 +238,19 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
   } 
   print(p + plot)
   
+=======
+  if (ps.lines == T) {
+    if (is.na(ps.x)) {
+      ps.x <- data.frame(seq(x.range[1], x.range[2], length.out = 1000))
+      names(ps.x) = attr(ps.terms, "term.labels")
+    }
+    lines(x = seq(x.range[1], x.range[2], length.out = 1000),
+          y = predict(object = model.glm, newdata = data.frame(ps.x), type = "response"),
+          col = ps.col, lty = ps.lty, lwd = ps.lwd)
+    
+  }
+  return(myfit)
+>>>>>>> master
 }
 
 #' Plot Psychometric Functions given PSE and JND
