@@ -90,7 +90,7 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #' @return \code{PsychFunction} returns a list including the fitted model,
 #' the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
 #'
-#' @note \code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stat]{glm}}. 
+#' @note \code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stats]{glm}}. 
 #' Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
 #' 
 #' @references
