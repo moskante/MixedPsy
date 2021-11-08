@@ -5,7 +5,7 @@
 \alias{simul_data}
 \title{A simulated psychophysical dataset}
 \format{
-A data frame with 72 rows (9 observaxions x 8 simulated participants) and 6 variables:
+A data frame with 72 rows (9 observations x 8 simulated participants) and 6 variables:
 \describe{
 \item{X}{samples in the continuous interval (range \code{c(40,120)})}
 \item{Intercept,Slope}{simulated participant's coefficients (combination of random and fixed effect)}
@@ -18,7 +18,7 @@ A data frame with 72 rows (9 observaxions x 8 simulated participants) and 6 vari
 data(simul_data)
 }
 \description{
-A dataset containing simulated responses to a foced-choice task for eight clusters. Created using 
+A dataset containing simulated responses to a forced-choice task for eight clusters. Created using 
 \code{PsySimulate()}. The variables are as follows:
 }
 \seealso{
