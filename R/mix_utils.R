@@ -140,7 +140,7 @@ MixFunction <- function(xplode.obj, alpha, p) {
 #' xplode.multi <- xplode(model = mod.multi, name.cont = "speed", name.factor = "vibration")
 #' MixDelta(xplode.multi)
 #'
-#' @importFrom stats update contrasts contr.treatment binomial
+#' @importFrom stats update contrasts contr.treatment binomial contrasts<-
 #' @export
 #'
 MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
