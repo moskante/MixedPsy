@@ -2,57 +2,44 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychFunction}
 \alias{PsychFunction}
-\title{Psychometric Function and PSE/JND Parameters from Single-Subject Response}
+\title{Fit Psychometric Function from Single-Subject Response}
 \usage{
-PsychFunction(ps.formula, ps.link, ps.data, br = F)
+PsychFunction(
+  formula = NULL,
+  response = NULL,
+  stimuli = NULL,
+  model = "glm",
+  link = "probit",
+  data,
+  guess = FALSE,
+  lapse = FALSE
+)
 }
 \arguments{
-\item{ps.formula}{an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}}
+\item{formula}{A formula specifying the model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided.}
 
-\item{ps.link}{link function for the binomial family of error distribution. Default is \code{probit}.}
+\item{response}{A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.}
 
-\item{ps.data}{a data frame including the variables used in the model.}
+\item{stimuli}{A character vector with the name of the stimulus variable. It must be provided for gnlm.}
 
-\item{br}{logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1. 
-Default is FALSE.}
+\item{model}{A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.}
+
+\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions (for binomial family). For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
+
+\item{data}{A data frame containing the variables used in the model.}
+
+\item{guess}{Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.}
+
+\item{lapse}{Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.}
 }
 \value{
-\code{PsychFunction} returns a list including the fitted model,
-the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
+A list containing the fitted models and additional information. Only used if model = 'gnlm'.
 }
 \description{
-Fit psychometric functions using \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
-Estimate PSE, JND, and related confidence intervals with Delta Method.
-}
-\details{
-Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
-predictor. Std. Errors and 95\% confidence intervals of PSE and JND are estimated via Delta Methods. 
-Currently only working with \emph{probit} link function.
-}
-\note{
-\code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stats]{glm}}. 
-Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
+This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
 }
 \examples{
-data.S1 <- subset(simul_data, Subject == "S1")
-psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
-ps.link = "probit", ps.data = data.S1)
-                        
+\dontrun{
+PsychFunction_new(formula = y ~ x, data = my_data)
 }
-\references{
-Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
-response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
-
-Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
-at the population-level: The generalized linear mixed model. 
-Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
 }
-\seealso{
-\code{\link[stats]{glm}} for Generalized Linear Models. 
-\code{\link[brglm]{brglm}} for fitting a GLM using bias reduction.
-\code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object.
-\code{\link{PsychPlot}} for plotting a a psychometric function from a GLM. 
-\code{\link{PsychShape}} for plotting a psychometric function given PSE and JND.
-}
-\keyword{DeltaMethod}
-\keyword{GLM}

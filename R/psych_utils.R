@@ -74,82 +74,6 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 }
 
 
-#' Psychometric Function and PSE/JND Parameters from Single-Subject Response
-#'
-#' Fit psychometric functions using \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
-#' Estimate PSE, JND, and related confidence intervals with Delta Method. 
-#'
-#' @param ps.formula an object of class \code{\link[stats]{formula}}, such as \code{cbind(yes, no) ~ X}
-#' @param ps.link link function for the binomial family of error distribution. Default is \code{probit}.
-#' @param ps.data a data frame including the variables used in the model.
-#' @param br  logical. If TRUE, \code{\link[brglm]{brglm}} for bias reduction is used if values are equal to 0 or 1. 
-#' Default is FALSE.
-#'
-#' @details Estimates are computed only for GLM of the type \code{F(Y) ~ X}, where X is a continuous
-#' predictor. Std. Errors and 95\% confidence intervals of PSE and JND are estimated via Delta Methods. 
-#' Currently only working with \emph{probit} link function.
-#'
-#' @return \code{PsychFunction} returns a list including the fitted model,
-#' the estimate of PSE and JND and a flag to indicate if \code{\link[brglm]{brglm}} was called.
-#'
-#' @note \code{PsychFunction} returns the same parameter estimate as \code{\link{PsychDelta}}, without an explicit call to \code{\link[stats]{glm}}. 
-#' Moreover, it allows to fit the model using \code{\link[brglm]{brglm}} in case of complete or quasi separation.
-#' 
-#' @references
-#' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
-#' response dose. Statistics in medicine, 22(12), 1977-1988. https://doi.org/10.1002/sim.1368
-#'
-#' Moscatelli, A., Mezzetti, M., & Lacquaniti, F. (2012). Modeling psychophysical data 
-#' at the population-level: The generalized linear mixed model. 
-#' Journal of Vision, 12(11):26, 1-17. doi:10.1167/12.11.26
-#' 
-#' @seealso \code{\link[stats]{glm}} for Generalized Linear Models. 
-#' \code{\link[brglm]{brglm}} for fitting a GLM using bias reduction.
-#' \code{\link{PsychPlot}} for plotting a psychometric function given a \code{\link[stats]{glm}} (or \code{\link[brglm]{brglm}}) object.
-#' \code{\link{PsychPlot}} for plotting a a psychometric function from a GLM. 
-#' \code{\link{PsychShape}} for plotting a psychometric function given PSE and JND. 
-#' 
-#' @keywords GLM DeltaMethod
-#'
-#' @examples
-#' data.S1 <- subset(simul_data, Subject == "S1")
-#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
-#' ps.link = "probit", ps.data = data.S1)
-#'                         
-#' @importFrom brglm brglm
-#' @importFrom stats terms glm binomial
-#' @export
-#'
-PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
-  
-  myfit = list()
-  ps.terms = terms(ps.formula)
-  model.glm = glm(formula = ps.formula, family = binomial(link = ps.link), 
-                  data = ps.data)
-  
-  eps = 1e-15
-  brflag = ifelse(1 - max(model.glm$fitted.values) <= eps & 
-                    trunc(min(model.glm$fitted.values)) == 0, T, F)
-  
-  if (br == T & brflag == T) {
-    model.glm = brglm(formula = ps.formula, family = binomial(link = ps.link), 
-                      data = ps.data)
-    warning("Binomial-response GLMs fitted using the bias-reduction method (brglm)")
-  }
-  
-  myfit$model = model.glm
-  
-  if (ps.link == "probit") {
-    myfit$estimate = PsychDelta(model.glm)
-  } else {
-    myfit$estimate = NA
-    warning("Use the probit link function to get the estimate of the PSE and the JND")
-  }
-  
-  myfit$info <- list(brflag = brflag)
-  
-  return(myfit)
-}
 
 #' Plot Psychometric Function from GLM
 #'
@@ -178,9 +102,9 @@ PsychFunction <-  function (ps.formula, ps.link, ps.data, br = F) {
 #'
 #' @examples
 #' data.S1 <- subset(simul_data, Subject == "S1")
-#' psych.S1 <- PsychFunction(ps.formula = cbind(Longer, Total - Longer) ~ X, 
-#' ps.link = "probit", ps.data = data.S1)
-#' plotP1 <- PsychPlot(psych.S1$model, showData = TRUE, ps.lab = "S1") 
+#' psych.S1 <- PsychFunction(formula = cbind(Longer, Total - Longer) ~ X, 
+#' link = "probit", data = data.S1)
+#' plotP1 <- PsychPlot(psych.S1$glm, showData = TRUE, ps.lab = "S1") 
 #' 
 #' data.S2 <- subset(simul_data, Subject == "S2")
 #' glm.S2 <- glm(formula = cbind(Longer, Total - Longer) ~ X, 
@@ -229,6 +153,7 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
   print(p + plot)
   
 }
+
 
 #' Plot Psychometric Functions given PSE and JND
 #'
@@ -299,3 +224,96 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
   print(pl + plot)
 }
 
+
+#' Fit Psychometric Function from Single-Subject Response
+#'
+#' This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
+#'
+#' @param formula A formula specifying the model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided. 
+#' @param response A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.
+#' @param stimuli A character vector with the name of the stimulus variable. It must be provided for gnlm.
+#' @param model A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.
+#' @param link A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions (for binomial family). For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.
+#' @param data A data frame containing the variables used in the model.
+#' @param guess Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.
+#' @param lapse Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.
+#'
+#' @return A list containing the fitted models and additional information. Only used if model = 'gnlm'.
+#'
+#' @examples
+#' \dontrun{
+#' PsychFunction_new(formula = y ~ x, data = my_data)
+#' }
+#' @export
+PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE){
+  
+  stopifnot(is.character(model), is.character(link), is.data.frame(data))
+  
+  myfit = list()
+  
+  model_glm <- PsychFunction_glm(formula, response, stimuli, model = "glm", link, data)
+  
+  myfit$glm <- model_glm$model
+  myfit$recommend_br <- model_glm$flag    
+  
+  if(model == "brglm"){
+    myfit$brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
+  }else if(model == "gnlm"){
+    myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, stimuli, data, guess, lapse)
+  }
+  
+  return(myfit)
+}
+
+
+#' Internal Function: Fit Generalized Linear Models
+#'
+#' This function fits a generalized linear model for psychometric functions using glm or brglm.
+#'
+#' @param formula A formula specifying the model. If NULL, 'response' and 'stimuli' must be provided.
+#' @param response A character vector of response variables.
+#' @param stimuli A character vector of stimulus variables.
+#' @param model A character string specifying the model ('glm', 'brglm').
+#' @param link A character string specifying the link function ('probit', 'logit', 'weibull').
+#' @param data A data frame containing the variables specified in the formula.
+#'
+#' @return A list containing the fitted model and additional information.
+#'
+#' @importFrom brglm brglm
+#' @export
+PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
+  # Function body
+}
+
+#' Internal Function: Fit Generalized Nonlinear Models
+#'
+#' This function fits a generalized nonlinear model for psychometric functions.
+#'
+#' @param model_glm A glm object obtained from PsychFunction_glm.
+#' @param link A character string specifying the link function ('probit', 'logit', 'weibull').
+#' @param response A character vector of response variables.
+#' @param stimuli A character vector of stimulus variables.
+#' @param data A data frame containing the variables specified in the formula.
+#' @param guess Logical or numeric value indicating whether to include a guessing parameter.
+#' @param lapse Logical or numeric value indicating whether to include a lapse parameter.
+#' @importFrom gnlm gnlr
+#' @return A gnlr object representing the fitted model.
+#'
+PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, lapse){
+  # Function body
+}
+
+#' Internal Function: Switch mu Function
+#'
+#' This function switches between different mu functions based on the provided parameters.
+#'
+#' @param func_name A character string specifying the mu function ('probit', 'logit', 'weibull').
+#' @param gamma A numeric or logical value indicating the gamma parameter.
+#' @param lambda A numeric or logical value indicating the lambda parameter.
+#'
+#' @return A function representing the selected mu function.
+#'
+#' @export
+switch_mu_function <- function(func_name, gamma, lambda) {
+  # Function body
+}
