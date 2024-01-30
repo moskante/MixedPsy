@@ -49,28 +49,28 @@
 #' @export
 #'
 PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
-
-    pse <- -model.obj$coef[1]/model.obj$coef[2]
-    BETA <- model.obj$coef[2]
-
-    var.alpha <- vcov(model.obj)[1, 1]
-    var.beta <- vcov(model.obj)[2, 2]
-    cov.alpha.beta <- vcov(model.obj)[2, 1]
-
-    var.pse <- (1/BETA^2) * (var.alpha + (2 * pse * cov.alpha.beta) + (pse^2 * var.beta))  #PSE
-    inferior.pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var.pse))
-    superior.pse <- pse + (qnorm(1 - (alpha/2)) * sqrt(var.pse))
-
-    jnd <- qnorm(p) * (1/BETA)
-    var.jnd <- (qnorm(p) * (-1/BETA^2))^2 * var.beta  #JND
-    inferior.jnd <- jnd - (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
-    superior.jnd <- jnd + (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
-
-    output <- matrix(rbind(c(pse, sqrt(var.pse), inferior.pse, superior.pse), c(jnd, sqrt(var.jnd),
-        inferior.jnd, superior.jnd)), nrow = 2, dimnames = list(param <- c("pse", "jnd"), statistics <- c("Estimate",
-        "Std. Error", "Inferior", "Superior")))
-
-    return(output)
+  
+  pse <- -model.obj$coef[1]/model.obj$coef[2]
+  BETA <- model.obj$coef[2]
+  
+  var.alpha <- vcov(model.obj)[1, 1]
+  var.beta <- vcov(model.obj)[2, 2]
+  cov.alpha.beta <- vcov(model.obj)[2, 1]
+  
+  var.pse <- (1/BETA^2) * (var.alpha + (2 * pse * cov.alpha.beta) + (pse^2 * var.beta))  #PSE
+  inferior.pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var.pse))
+  superior.pse <- pse + (qnorm(1 - (alpha/2)) * sqrt(var.pse))
+  
+  jnd <- qnorm(p) * (1/BETA)
+  var.jnd <- (qnorm(p) * (-1/BETA^2))^2 * var.beta  #JND
+  inferior.jnd <- jnd - (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
+  superior.jnd <- jnd + (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
+  
+  output <- matrix(rbind(c(pse, sqrt(var.pse), inferior.pse, superior.pse), c(jnd, sqrt(var.jnd),
+                                                                              inferior.jnd, superior.jnd)), nrow = 2, dimnames = list(param <- c("pse", "jnd"), statistics <- c("Estimate",
+                                                                                                                                                                                "Std. Error", "Inferior", "Superior")))
+  
+  return(output)
 }
 
 
@@ -266,6 +266,8 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
 }
 
 
+
+
 #' Internal Function: Fit Generalized Linear Models
 #'
 #' This function fits a generalized linear model for psychometric functions using glm or brglm.
@@ -280,9 +282,31 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
 #' @return A list containing the fitted model and additional information.
 #'
 #' @importFrom brglm brglm
-#' @export
+#' @importFrom stats glm
+#' @importFrom stats as.formula
+#' 
 PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
-  # Function body
+  if (is.null(formula)){
+    stopifnot(is.character(response), is.character(stimuli))
+    formula_string <- paste("cbind(", response[1], ",", response[2], ")", "~", stimuli)
+    formula <- as.formula(formula_string)  
+  }
+  if (link == "weibull"){
+    print("Warning: weibull is not a possible link function for glm. probit was used instead")
+    link = "probit"
+  }
+  model_glm <- glm(formula, family = binomial(link = link), 
+                   data = data)
+  
+  eps <- 1e-15
+  brflag <- ifelse(1 - max(model_glm$fitted.values) <= eps & 
+                     trunc(min(model_glm$fitted.values)) == 0, TRUE, FALSE)
+  if (model == "brglm" ) { #& brflag == TRUE
+    model_glm <- brglm(formula, family = binomial(link = link), 
+                       data = data)
+  }
+  
+  return(list(model = model_glm, flag = brflag))
 }
 
 #' Internal Function: Fit Generalized Nonlinear Models
@@ -300,7 +324,32 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @return A gnlr object representing the fitted model.
 #'
 PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, lapse){
-  # Function body
+  source(system.file("R/global.R", package = "MixedPsy"))
+  # to do: warning if formula is defined instead of response and stimuli - or get response and stimuli from formula but give a warning.
+  response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
+  setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
+  
+  glm_coeff <- summary(model_glm)$coefficients[,1]
+  start_estimate <- c(-glm_coeff[1]/glm_coeff[2], ifelse(link == "weibull", 2, 1/glm_coeff[2]))
+  
+  lambda <- if (isTRUE(lapse)) runif(1, min = 0, max = 0.05) else if (is.numeric(lapse)) lapse else FALSE
+  gamma <- if (isTRUE(guess)) runif(1, min = 0, max = 0.05) else if (is.numeric(guess)) guess else FALSE
+  
+  if (is.numeric(gamma) && !is.numeric(lambda)){
+    start_estimate <- c(start_estimate, gamma)
+  }else if (!is.numeric(gamma) && is.numeric(lambda)){
+    start_estimate <- c(start_estimate, lambda)
+  }else if(is.numeric(gamma) && is.numeric(lambda)){
+    start_estimate <- c(start_estimate, gamma, lambda)
+  }
+  
+  switch_function <- switch_mu_function(func_name = link, gamma, lambda)
+  
+  model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
+                     mu = switch_function, pmu = start_estimate)
+  
+  rmGlobalVar()
+  return(model_gnlm)
 }
 
 #' Internal Function: Switch mu Function
@@ -312,8 +361,28 @@ PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, 
 #' @param lambda A numeric or logical value indicating the lambda parameter.
 #'
 #' @return A function representing the selected mu function.
-#'
-#' @export
+#' @importFrom stats pweibull
+#' 
 switch_mu_function <- function(func_name, gamma, lambda) {
-  # Function body
+  if (isFALSE(gamma) && isFALSE(lambda)){
+    switch(func_name,
+           probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (is.numeric(gamma) && isFALSE(lambda)){
+    switch(func_name,
+           probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (isFALSE(gamma) && is.numeric(lambda)){
+    switch(func_name,
+           probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if(is.numeric(gamma) && is.numeric(lambda)){
+    switch(func_name,
+           probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }
 }
