@@ -238,7 +238,7 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
 #' @param guess Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.
 #' @param lapse Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.
 #'
-#' @return A list containing the fitted models and additional information. Only used if model = 'gnlm'.
+#' @return A list containing the fitted models and additional information. 
 #'
 #' @examples
 #' \dontrun{
@@ -257,7 +257,8 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
   myfit$recommend_br <- model_glm$flag    
   
   if(model == "brglm"){
-    myfit$brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
+    model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
+    myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
     myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, stimuli, data, guess, lapse)
   }
@@ -321,10 +322,11 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @param guess Logical or numeric value indicating whether to include a guessing parameter.
 #' @param lapse Logical or numeric value indicating whether to include a lapse parameter.
 #' @importFrom gnlm gnlr
+#' @importFrom here here
 #' @return A gnlr object representing the fitted model.
 #'
 PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, lapse){
-  source(system.file("R/global.R", package = "MixedPsy"))
+  #source(here("R", "global.R"))
   # to do: warning if formula is defined instead of response and stimuli - or get response and stimuli from formula but give a warning.
   response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
   setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 

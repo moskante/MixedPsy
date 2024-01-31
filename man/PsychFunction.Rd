@@ -33,7 +33,7 @@ PsychFunction(
 \item{lapse}{Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.}
 }
 \value{
-A list containing the fitted models and additional information. Only used if model = 'gnlm'.
+A list containing the fitted models and additional information.
 }
 \description{
 This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).

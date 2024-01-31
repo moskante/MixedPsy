@@ -1,5 +1,3 @@
-x_values <- NULL
-
 
 #' Internal Function: Set global variable
 #' 
@@ -11,12 +9,14 @@ x_values <- NULL
 #' @seealso [PsychFunction_gnlm()]
 #' 
 setGlobalVar <- function(data, stimuli) {
-  x_values <<- data[,stimuli]
+  pkg.globals <- new.env()
+  
+  pkg.globals$x_values <- data[,stimuli]
 }
 
 #' Internal Function: Delete global variable
 #' 
-#' Remove the variable
+#' Remove the global variable
 #' 
 #' 
 rmGlobalVar <- function(){

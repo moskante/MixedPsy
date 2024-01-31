@@ -7,5 +7,5 @@
 rmGlobalVar()
 }
 \description{
-Remove the variable
+Remove the global variable
 }

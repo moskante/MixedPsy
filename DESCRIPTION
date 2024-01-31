@@ -20,7 +20,8 @@ Imports:
   lme4,
   Matrix,
   mnormt,
-  ggplot2
+  ggplot2,
+  here
 LazyData: true
 License: GPL (>=2)
 URL: https://mixedpsychophysics.wordpress.com
