@@ -260,7 +260,7 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
     model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
-    myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, stimuli, data, guess, lapse)
+    myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, data, stimuli, guess, lapse)
   }
   
   return(myfit)
@@ -325,11 +325,11 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @importFrom here here
 #' @return A gnlr object representing the fitted model.
 #'
-PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, lapse){
+PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, lapse){
   #source(here("R", "global.R"))
   # to do: warning if formula is defined instead of response and stimuli - or get response and stimuli from formula but give a warning.
   response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
-  setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
+  
   
   glm_coeff <- summary(model_glm)$coefficients[,1]
   start_estimate <- c(-glm_coeff[1]/glm_coeff[2], ifelse(link == "weibull", 2, 1/glm_coeff[2]))
@@ -345,12 +345,12 @@ PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, 
     start_estimate <- c(start_estimate, gamma, lambda)
   }
   
-  switch_function <- switch_mu_function(func_name = link, gamma, lambda)
+  switch_function <- switch_mu_function(func_name = link, data, stimuli, gamma, lambda)
   
   model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
                      mu = switch_function, pmu = start_estimate)
   
-  rmGlobalVar()
+  #rmGlobalVar()
   return(model_gnlm)
 }
 
@@ -359,32 +359,37 @@ PsychFunction_gnlm <- function(model_glm, link, response, stimuli, data, guess, 
 #' This function switches between different mu functions based on the provided parameters.
 #'
 #' @param func_name A character string specifying the mu function ('probit', 'logit', 'weibull').
+#' @param data dataset
+#' @param stimuli name of stimulus variable
 #' @param gamma A numeric or logical value indicating the gamma parameter.
 #' @param lambda A numeric or logical value indicating the lambda parameter.
 #'
 #' @return A function representing the selected mu function.
 #' @importFrom stats pweibull
 #' 
-switch_mu_function <- function(func_name, gamma, lambda) {
-  if (isFALSE(gamma) && isFALSE(lambda)){
-    switch(func_name,
-           probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
-  }else if (is.numeric(gamma) && isFALSE(lambda)){
-    switch(func_name,
-           probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  }else if (isFALSE(gamma) && is.numeric(lambda)){
-    switch(func_name,
-           probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  }else if(is.numeric(gamma) && is.numeric(lambda)){
-    switch(func_name,
-           probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  }
+switch_mu_function <- function(func_name, data, stimuli, gamma, lambda) {
+  #setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
+  x_values <- data[,stimuli]
+  mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
+  # if (isFALSE(gamma) && isFALSE(lambda)){
+  #   #switch(func_name,
+  #   #       probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
+  #   #       logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
+  #   #       weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
+  # }else if (is.numeric(gamma) && isFALSE(lambda)){
+  #   switch(func_name,
+  #          probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+  #          logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+  #          weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  # }else if (isFALSE(gamma) && is.numeric(lambda)){
+  #   switch(func_name,
+  #          probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+  #          logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+  #          weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  # }else if(is.numeric(gamma) && is.numeric(lambda)){
+  #   switch(func_name,
+  #          probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
+  #          logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
+  #          weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  # }
 }

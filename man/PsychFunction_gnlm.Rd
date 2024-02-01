@@ -4,7 +4,7 @@
 \alias{PsychFunction_gnlm}
 \title{Internal Function: Fit Generalized Nonlinear Models}
 \usage{
-PsychFunction_gnlm(model_glm, link, response, stimuli, data, guess, lapse)
+PsychFunction_gnlm(model_glm, link, response, data, stimuli, guess, lapse)
 }
 \arguments{
 \item{model_glm}{A glm object obtained from PsychFunction_glm.}
@@ -13,9 +13,9 @@ PsychFunction_gnlm(model_glm, link, response, stimuli, data, guess, lapse)
 
 \item{response}{A character vector of response variables.}
 
-\item{stimuli}{A character vector of stimulus variables.}
-
 \item{data}{A data frame containing the variables specified in the formula.}
+
+\item{stimuli}{A character vector of stimulus variables.}
 
 \item{guess}{Logical or numeric value indicating whether to include a guessing parameter.}
 
