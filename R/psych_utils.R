@@ -260,6 +260,7 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
     model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
+    x_values <- data[,stimuli]
     myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, data, stimuli, guess, lapse)
   }
   
@@ -323,6 +324,7 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @param lapse Logical or numeric value indicating whether to include a lapse parameter.
 #' @importFrom gnlm gnlr
 #' @importFrom here here
+#' @importFrom rmutil fnenvir
 #' @return A gnlr object representing the fitted model.
 #'
 PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, lapse){
@@ -345,14 +347,26 @@ PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, 
     start_estimate <- c(start_estimate, gamma, lambda)
   }
   
-  switch_function <- switch_mu_function(func_name = link, data, stimuli, gamma, lambda)
-  
+  #x_values <- data[,stimuli]
+  #this_env <- new.env()
+  #x_values <- data[,stimuli]
+  #environment(x_values) <- NULL
+  assign_global_var(data,stimuli)
+  switch_function <- fnenvir(function(p) pnorm(x_values, mean = p[1], sd = p[2]))
+  #switch_mu_function(x_values, func_name = link, data, stimuli, gamma, lambda)
+  #attr(switch_function, "model") <- TRUE
+  #environment(switch_function) <- this_env
   model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
                      mu = switch_function, pmu = start_estimate)
   
   #rmGlobalVar()
   return(model_gnlm)
 }
+
+assign_global_var <- function(data, stimuli) {
+  x_values <<- data[,stimuli]
+}
+
 
 #' Internal Function: Switch mu Function
 #'
@@ -367,10 +381,11 @@ PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, 
 #' @return A function representing the selected mu function.
 #' @importFrom stats pweibull
 #' 
-switch_mu_function <- function(func_name, data, stimuli, gamma, lambda) {
+switch_mu_function <- function(x_values, func_name, data, stimuli, gamma, lambda) {
   #setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
-  x_values <- data[,stimuli]
-  mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
+  #x_values <- parent.frame()$x_values
+  function(p) pnorm(x_values, mean = p[1], sd = p[2])
+  
   # if (isFALSE(gamma) && isFALSE(lambda)){
   #   #switch(func_name,
   #   #       probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),

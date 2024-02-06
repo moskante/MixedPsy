@@ -21,7 +21,8 @@ Imports:
   Matrix,
   mnormt,
   ggplot2,
-  here
+  here,
+  rmutil
 LazyData: true
 License: GPL (>=2)
 URL: https://mixedpsychophysics.wordpress.com
