@@ -15,7 +15,7 @@ PsychFunction_gnlm(model_glm, link, response, data, stimuli, guess, lapse)
 
 \item{data}{A data frame containing the variables specified in the formula.}
 
-\item{stimuli}{A character vector of stimulus variables.}
+\item{stimuli}{string with name of stimuli variable}
 
 \item{guess}{Logical or numeric value indicating whether to include a guessing parameter.}
 

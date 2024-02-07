@@ -317,8 +317,8 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @param model_glm A glm object obtained from PsychFunction_glm.
 #' @param link A character string specifying the link function ('probit', 'logit', 'weibull').
 #' @param response A character vector of response variables.
-#' @param stimuli A character vector of stimulus variables.
 #' @param data A data frame containing the variables specified in the formula.
+#' @param stimuli string with name of stimuli variable
 #' @param guess Logical or numeric value indicating whether to include a guessing parameter.
 #' @param lapse Logical or numeric value indicating whether to include a lapse parameter.
 #' @importFrom gnlm gnlr
@@ -326,7 +326,7 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @return A gnlr object representing the fitted model.
 #'
 PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, lapse){
-  #source(here("R", "global.R"))
+  
   # to do: warning if formula is defined instead of response and stimuli - or get response and stimuli from formula but give a warning.
   response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
   
@@ -344,13 +344,26 @@ PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, 
   }else if(is.numeric(gamma) && is.numeric(lambda)){
     start_estimate <- c(start_estimate, gamma, lambda)
   }
-  
-  switch_function <- switch_mu_function(func_name = link, data, stimuli, gamma, lambda)
+
+  #make sure you don't overwrite existing variables
+  if (exists("x_values", envir = .GlobalEnv)) {
+    decide <- readline("The variable x_values in the global environment will be overwritten and deleted. Do you wish to continue? (yes/no): ")
+    if (tolower(decide) %in% c("yes", "y")) {
+      rmGlobalVar()
+    }else{
+      stop("Function terminated by user.")
+    }
+  } else {
+    message("x_values will be created in your global environment and quickly deleted - just so you know.")
+  }
+  source(here("R", "global.R"))
+  setGlobalVar(data, stimuli) #x_values defined as global variable due to gnlm syntax. 
+  switch_function <- switch_mu_function(func_name = link, gamma, lambda)
   
   model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
                      mu = switch_function, pmu = start_estimate)
   
-  #rmGlobalVar()
+  rmGlobalVar()
   return(model_gnlm)
 }
 
@@ -359,37 +372,65 @@ PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, 
 #' This function switches between different mu functions based on the provided parameters.
 #'
 #' @param func_name A character string specifying the mu function ('probit', 'logit', 'weibull').
-#' @param data dataset
-#' @param stimuli name of stimulus variable
 #' @param gamma A numeric or logical value indicating the gamma parameter.
 #' @param lambda A numeric or logical value indicating the lambda parameter.
 #'
 #' @return A function representing the selected mu function.
 #' @importFrom stats pweibull
 #' 
-switch_mu_function <- function(func_name, data, stimuli, gamma, lambda) {
-  #setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
-  x_values <- data[,stimuli]
-  mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
-  # if (isFALSE(gamma) && isFALSE(lambda)){
-  #   #switch(func_name,
-  #   #       probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
-  #   #       logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
-  #   #       weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
-  # }else if (is.numeric(gamma) && isFALSE(lambda)){
-  #   switch(func_name,
-  #          probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-  #          logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-  #          weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  # }else if (isFALSE(gamma) && is.numeric(lambda)){
-  #   switch(func_name,
-  #          probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-  #          logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-  #          weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  # }else if(is.numeric(gamma) && is.numeric(lambda)){
-  #   switch(func_name,
-  #          probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
-  #          logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
-  #          weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
-  # }
+switch_mu_function <- function(func_name, gamma, lambda) {
+  #mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
+  if (isFALSE(gamma) && isFALSE(lambda)){
+    switch(func_name,
+          probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
+          logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
+          weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (is.numeric(gamma) && isFALSE(lambda)){
+    switch(func_name,
+           probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (isFALSE(gamma) && is.numeric(lambda)){
+    switch(func_name,
+           probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if(is.numeric(gamma) && is.numeric(lambda)){
+    switch(func_name,
+           probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }
+}
+
+#' Internal Function: Set global variable
+#' 
+#' Setting a global variable is necessary in order to correctly define the function to fit with gnlm. 
+#' 
+#' @param data dataset
+#' @param stimuli A string of the stumuli variable.
+#' 
+#' @seealso [PsychFunction_gnlm()]
+#' @noRd
+#' @return Invisible NULL.
+#'
+#' @keywords internal
+
+setGlobalVar <- function(data, stimuli) {
+  unlockBinding("x_values", globalenv())
+  #globalenv()$x_values <- data[, stimuli]
+  assign("x_values", data[, stimuli], envir = .GlobalEnv)
+  #x_values <<- data[, stimuli]
+  # Lock the binding after modification
+  lockBinding("x_values", globalenv())
+  #invisible(NULL)
+}
+
+#' Internal Function: Delete global variable
+#' 
+#' Remove the global variable
+#' @noRd
+#' 
+rmGlobalVar <- function(){
+  rm("x_values", envir = .GlobalEnv)
 }

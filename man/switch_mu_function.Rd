@@ -4,14 +4,10 @@
 \alias{switch_mu_function}
 \title{Internal Function: Switch mu Function}
 \usage{
-switch_mu_function(func_name, data, stimuli, gamma, lambda)
+switch_mu_function(func_name, gamma, lambda)
 }
 \arguments{
 \item{func_name}{A character string specifying the mu function ('probit', 'logit', 'weibull').}
-
-\item{data}{dataset}
-
-\item{stimuli}{name of stimulus variable}
 
 \item{gamma}{A numeric or logical value indicating the gamma parameter.}
 
