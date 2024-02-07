@@ -20,7 +20,9 @@ PsychFunction_glm(formula, response, stimuli, model, link, data)
 \item{data}{A data frame containing the variables specified in the formula.}
 }
 \value{
-A list containing the fitted model and additional information.
+A list containing:
+\item{model}{The fitted GLM model.}
+\item{flag}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
 }
 \description{
 This function fits a generalized linear model for psychometric functions using glm or brglm.

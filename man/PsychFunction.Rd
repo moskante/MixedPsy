@@ -33,10 +33,17 @@ PsychFunction(
 \item{lapse}{Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.}
 }
 \value{
-A list containing the fitted models and additional information.
+A list containing:
+\item{glm}{The fitted GLM model.}
+\item{recomment_br}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
+\item{brglm}{The fitted Bias Reduced GLM, if model = "brglm"}
+\item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm"}
 }
 \description{
 This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
+}
+\note{
+If model = "gnlm", a glm() will be fitted to extract initial estimates for the parameters of the non linear model.
 }
 \examples{
 \dontrun{
