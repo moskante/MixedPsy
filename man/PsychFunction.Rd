@@ -12,7 +12,8 @@ PsychFunction(
   link = "probit",
   data,
   guess = FALSE,
-  lapse = FALSE
+  lapse = FALSE,
+  ...
 )
 }
 \arguments{
@@ -20,7 +21,7 @@ PsychFunction(
 
 \item{response}{A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.}
 
-\item{stimuli}{A character vector with the name of the stimulus variable. It must be provided for gnlm.}
+\item{stimuli}{A character string with the name of the stimulus variable. It must be provided for gnlm.}
 
 \item{model}{A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.}
 
@@ -28,25 +29,25 @@ PsychFunction(
 
 \item{data}{A data frame containing the variables used in the model.}
 
-\item{guess}{Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.}
+\item{guess, lapse}{Logical or numeric value indicating whether to include a guessing parameter in the fitted psychometric function. Only used if model = 'gnlm'. Default is FALSE.}
 
-\item{lapse}{Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.}
+\item{...}{Additional arguments included for back compatibility. Deprecated arguments from older package versions ('ps.formula', 'ps.link', 'ps.data', 'br') will be automatically handled.}
 }
 \value{
 A list containing:
 \item{glm}{The fitted GLM model.}
-\item{recomment_br}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
-\item{brglm}{The fitted Bias Reduced GLM, if model = "brglm"}
-\item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm"}
+\item{recomment_br}{A logical value indicating whether bias reduced is recommended.}
+\item{brglm}{The fitted Bias Reduced GLM, if model = "brglm".}
+\item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm".}
 }
 \description{
 This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
 }
 \note{
-If model = "gnlm", a glm() will be fitted to extract initial estimates for the parameters of the non linear model.
+If 'model' is specified as "gnlm", a generalized linear model (glm) will be fitted to extract initial estimates for the parameters of the non-linear model.
 }
 \examples{
 \dontrun{
-PsychFunction_new(formula = y ~ x, data = my_data)
+PsychFunction(formula = y ~ x, data = my_data)
 }
 }

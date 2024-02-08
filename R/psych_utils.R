@@ -241,29 +241,62 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
 #'
 #' @param formula A formula specifying the model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided. 
 #' @param response A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.
-#' @param stimuli A character vector with the name of the stimulus variable. It must be provided for gnlm.
+#' @param stimuli A character string with the name of the stimulus variable. It must be provided for gnlm.
 #' @param model A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.
 #' @param link A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions (for binomial family). For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.
 #' @param data A data frame containing the variables used in the model.
-#' @param guess Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.
-#' @param lapse Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.
+#' @param guess,lapse Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. These parameters are only used if model = 'gnlm'. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as starting estimate. 
+#' @param ... Additional arguments included for back compatibility. Deprecated arguments from older package versions ('ps.formula', 'ps.link', 'ps.data', 'br') will be automatically handled.
 #'
 #' @return A list containing:
 #' \item{glm}{The fitted GLM model.}
-#' \item{recomment_br}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
-#' \item{brglm}{The fitted Bias Reduced GLM, if model = "brglm"}
-#' \item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm"}
+#' \item{recommend_br}{A logical value indicating whether bias reduced is recommended.}
+#' \item{brglm}{The fitted Bias Reduced GLM, if model = "brglm".}
+#' \item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm".}
 #' 
 #' @note
-#' If model = "gnlm", a glm() will be fitted to extract initial estimates for the parameters of the non linear model. 
+#' If 'model' is specified as "gnlm", a generalized linear model (glm) will be fitted to extract initial estimates for the parameters of the non-linear model. 
 #' 
 #' 
 #' @examples
 #' \dontrun{
-#' PsychFunction_new(formula = y ~ x, data = my_data)
+#' # Fit a psychometric function using glm with default probit link function
+#' PsychFunction(formula = cbind(n_yes, n_no) ~ x, data = my_data)
+#' 
+#' # Fit a psychometric function using brglm with link function
+#' PsychFunction(formula = cbind(n_yes, n_no) ~ x, model = "brglm", link = "logit", data = my_data)
+#' 
+#' # Fit a psychometric function using gnlm with guessing and lapse parameters
+#' PsychFunction(response = c("n_yes", "n_no"), stimuli = "x", model = "gnlm", link = "weibull", guess = TRUE, lapse = TRUE, data = my_data)
 #' }
+#'
 #' @export
-PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE){
+PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE, ...){
+  
+  #old_arguments <- c("ps.formula", "ps.link", "ps.data", "br")
+  
+  handle_deprecated_argument <- function(old_name, new_name) {
+    if (old_name %in% names(list(...))) {
+      message(paste("In PsychFunction: the '", old_name, "' argument is deprecated. Please use '", new_name, "' instead.", sep = ""))
+      return(list(...)[[old_name]])
+    }
+  }
+  
+  old_arguments <- c("ps.formula", "ps.link", "ps.data", "br")
+  
+  # Check for additional arguments and raise an error if found
+  additional_args <- setdiff(names(list(...)), old_arguments)
+  if (length(additional_args) > 0) {
+    stop(paste("Additional arguments found:", paste(additional_args, collapse = ", ")))
+  }
+  
+  formula <- if ("ps.formula" %in% names(list(...))) handle_deprecated_argument("ps.formula", "formula") else formula
+  link <- if ("ps.link" %in% names(list(...))) handle_deprecated_argument("ps.link", "link") else link
+  data <- if ("ps.data" %in% names(list(...))) handle_deprecated_argument("ps.data", "data") else data
+  
+  if ("br" %in% names(list(...))) {
+    message("In PsychFunction: 'br' was removed. For bias reduction glm, use model = 'brglm'")
+  }
   
   stopifnot(is.character(model), is.character(link), is.data.frame(data))
   
