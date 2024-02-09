@@ -39,6 +39,7 @@ A list containing:
 \item{recommend_br}{A logical value indicating whether bias reduced is recommended.}
 \item{brglm}{The fitted Bias Reduced GLM, if \code{model = "brglm"}.}
 \item{gnlm}{The fitted generalized non linear model (gnlm), if \code{model = "gnlm"}.}
+\item{gnlm_coeff}{The estimated coefficients of the gnlm. When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.}
 }
 \description{
 This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).

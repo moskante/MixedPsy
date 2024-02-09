@@ -20,13 +20,16 @@ PsychFunction_gnlm(model_glm, response, stimuli, link, data, guess, lapse)
 \item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
 }
 \value{
-A gnlr object representing the fitted model.
+A list containing:
+\item{model_gnlm}{The fitted generalized non-linear model.}
+\item{gnlr_coeff}{The estimated coefficients (see notes). }
 }
 \description{
 This function fits a generalized nonlinear model for psychometric functions.
 }
 \note{
 For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases.
+When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.
 }
 \seealso{
 [\code{\link{PsychFunction}}] [\code{\link{switch_mu_function}} ]

@@ -253,6 +253,7 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
 #' \item{recommend_br}{A logical value indicating whether bias reduced is recommended.}
 #' \item{brglm}{The fitted Bias Reduced GLM, if \code{model = "brglm"}.}
 #' \item{gnlm}{The fitted generalized non linear model (gnlm), if \code{model = "gnlm"}.}
+#' \item{gnlm_coeff}{The estimated coefficients of the gnlm. When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.}
 #' 
 #' @note
 #' If 'model' is specified as "gnlm", a generalized linear model (glm) will be fitted to extract initial estimates for the parameters of the non-linear model. 
@@ -311,7 +312,9 @@ PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model
     model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
-    myfit$gnlm <- PsychFunction_gnlm(myfit$glm, response, stimuli, link, data, guess, lapse)
+    model_gnlm <- PsychFunction_gnlm(myfit$glm, response, stimuli, link, data, guess, lapse)
+    myfit$gnlm <- model_gnlm$model
+    myfit$gnlm_coeff <- model_gnlm$gnlr_coeff
   }
   
   return(myfit)
@@ -388,9 +391,12 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @seealso 
 #' [\code{\link{PsychFunction}}] [\code{\link{switch_mu_function}} ]
 #' 
-#' @return A gnlr object representing the fitted model.
+#' @return A list containing:
+#' \item{model_gnlm}{The fitted generalized non-linear model.}
+#' \item{gnlr_coeff}{The estimated coefficients (see notes). }
 #' 
-#' @note For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases. 
+#' @note For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases.
+#' When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.
 #' 
 #'
 PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, lapse){
@@ -406,11 +412,11 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
   gamma <- if (isTRUE(guess)) runif(1, min = 0, max = 0.05) else if (is.numeric(guess)) guess else FALSE
   
   if (is.numeric(gamma) && !is.numeric(lambda)){
-    start_estimate <- c(start_estimate, gamma)
+    start_estimate <- c(start_estimate, log(gamma))
   }else if (!is.numeric(gamma) && is.numeric(lambda)){
-    start_estimate <- c(start_estimate, lambda)
+    start_estimate <- c(start_estimate, log(lambda))
   }else if(is.numeric(gamma) && is.numeric(lambda)){
-    start_estimate <- c(start_estimate, gamma, lambda)
+    start_estimate <- c(start_estimate, log(gamma), log(lambda))
   }
 
   #make sure you don't overwrite existing variables
@@ -432,7 +438,14 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
                      mu = switch_function, pmu = start_estimate)
   
   rmGlobalVar()
-  return(model_gnlm)
+  
+  gnlr_coeff <- model_gnlm$coefficients
+  
+  if (length(gnlr_coeff) > 2) {
+    gnlr_coeff[3:length(gnlr_coeff)] <- log(gnlr_coeff[3:length(gnlr_coeff)])
+  }
+  
+  return(list(model = model_gnlm, gnlr_coeff = gnlr_coeff))
 }
 
 #' Internal Function: Switch mu Function
@@ -441,6 +454,10 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
 #'
 #' @param func_name A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution. 
 #' @param gamma,lambda parameters indicating whether to include guessing and lapse parameters, respectively. If parameters are FALSE, they are not included in the model. If numeric, they are the starting estimates used in \code{\link{gnlr}}.
+#' 
+#' @note
+#' Instead of directly fitting guess and lapse parameters, this function uses \code{exp(p[3])} and \code{exp(p[4])}. By doing so, we force the estimations to be non-negative. 
+#' 
 #' 
 #' @seealso 
 #' [\code{\link{PsychFunction}}] [\code{\link{PsychFunction_gnlm}}] [\code{\link{gnlr}}]
@@ -457,19 +474,19 @@ switch_mu_function <- function(func_name, gamma, lambda) {
           weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
   }else if (is.numeric(gamma) && isFALSE(lambda)){
     switch(func_name,
-           probit = function(p) p[3] + (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) p[3] + (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) p[3] + (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+           probit = function(p) exp(p[3]) + (1 - exp(p[3])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) exp(p[3]) + (1 - exp(p[3])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) exp(p[3]) + (1 - exp(p[3])) * pweibull(x_values, scale = p[1], shape = p[2]))
   }else if (isFALSE(gamma) && is.numeric(lambda)){
     switch(func_name,
-           probit = function(p) (1 - p[3]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) (1 - p[3]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) (1 - p[3]) * pweibull(x_values, scale = p[1], shape = p[2]))
+           probit = function(p) (1 - exp(p[3])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) (1 - exp(p[3])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) (1 - exp(p[3])) * pweibull(x_values, scale = p[1], shape = p[2]))
   }else if(is.numeric(gamma) && is.numeric(lambda)){
     switch(func_name,
-           probit = function(p) p[3] + (1 - p[3] - p[4]) * pnorm(x_values, mean = p[1], sd = p[2]),
-           logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
-           weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
+           probit = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * pweibull(x_values, scale = p[1], shape = p[2]))
   }
 }
 

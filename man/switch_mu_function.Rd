@@ -17,6 +17,9 @@ A function representing the selected mu function.
 \description{
 This function switches between different mu functions based on the provided parameters.
 }
+\note{
+Instead of directly fitting guess and lapse parameters, this function uses \code{exp(p[3])} and \code{exp(p[4])}. By doing so, we force the estimations to be non-negative.
+}
 \seealso{
 [\code{\link{PsychFunction}}] [\code{\link{PsychFunction_gnlm}}] [\code{\link{gnlr}}]
 }
