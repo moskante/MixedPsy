@@ -7,15 +7,16 @@
 switch_mu_function(func_name, gamma, lambda)
 }
 \arguments{
-\item{func_name}{A character string specifying the mu function ('probit', 'logit', 'weibull').}
+\item{func_name}{A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
-\item{gamma}{A numeric or logical value indicating the gamma parameter.}
-
-\item{lambda}{A numeric or logical value indicating the lambda parameter.}
+\item{gamma, lambda}{parameters indicating whether to include guessing and lapse parameters, respectively. If parameters are FALSE, they are not included in the model. If numeric, they are the starting estimates used in \code{\link{gnlr}}.}
 }
 \value{
 A function representing the selected mu function.
 }
 \description{
 This function switches between different mu functions based on the provided parameters.
+}
+\seealso{
+[\code{\link{PsychFunction}}] [\code{\link{PsychFunction_gnlm}}] [\code{\link{gnlr}}]
 }

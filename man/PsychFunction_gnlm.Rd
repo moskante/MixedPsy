@@ -4,26 +4,30 @@
 \alias{PsychFunction_gnlm}
 \title{Internal Function: Fit Generalized Nonlinear Models}
 \usage{
-PsychFunction_gnlm(model_glm, link, response, data, stimuli, guess, lapse)
+PsychFunction_gnlm(model_glm, response, stimuli, link, data, guess, lapse)
 }
 \arguments{
-\item{model_glm}{A glm object obtained from PsychFunction_glm.}
+\item{model_glm}{A glm object obtained from PsychFunction_glm. This is used to extract starting estimate of the parameters of the non-linear model.}
 
-\item{link}{A character string specifying the link function ('probit', 'logit', 'weibull').}
+\item{response}{A character vector with the name of the response variables.}
 
-\item{response}{A character vector of response variables.}
+\item{stimuli}{A string with name of the stimuli variable.}
 
-\item{data}{A data frame containing the variables specified in the formula.}
+\item{link}{A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
-\item{stimuli}{string with name of stimuli variable}
+\item{data}{A data frame containing the variables.}
 
-\item{guess}{Logical or numeric value indicating whether to include a guessing parameter.}
-
-\item{lapse}{Logical or numeric value indicating whether to include a lapse parameter.}
+\item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
 }
 \value{
 A gnlr object representing the fitted model.
 }
 \description{
 This function fits a generalized nonlinear model for psychometric functions.
+}
+\note{
+For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases.
+}
+\seealso{
+[\code{\link{PsychFunction}}] [\code{\link{switch_mu_function}} ]
 }

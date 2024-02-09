@@ -17,7 +17,7 @@ PsychFunction(
 )
 }
 \arguments{
-\item{formula}{A formula specifying the model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided.}
+\item{formula}{A formula specifying the linear model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided.}
 
 \item{response}{A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.}
 
@@ -25,20 +25,20 @@ PsychFunction(
 
 \item{model}{A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.}
 
-\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions (for binomial family). For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
+\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
 \item{data}{A data frame containing the variables used in the model.}
 
-\item{guess, lapse}{Logical or numeric value indicating whether to include a guessing parameter in the fitted psychometric function. Only used if model = 'gnlm'. Default is FALSE.}
+\item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. These parameters are only used if \code{model = 'gnlm'}. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
 
 \item{...}{Additional arguments included for back compatibility. Deprecated arguments from older package versions ('ps.formula', 'ps.link', 'ps.data', 'br') will be automatically handled.}
 }
 \value{
 A list containing:
 \item{glm}{The fitted GLM model.}
-\item{recomment_br}{A logical value indicating whether bias reduced is recommended.}
-\item{brglm}{The fitted Bias Reduced GLM, if model = "brglm".}
-\item{gnlm}{The fitted generalized non linear model (gnlm), if model = "gnlm".}
+\item{recommend_br}{A logical value indicating whether bias reduced is recommended.}
+\item{brglm}{The fitted Bias Reduced GLM, if \code{model = "brglm"}.}
+\item{gnlm}{The fitted generalized non linear model (gnlm), if \code{model = "gnlm"}.}
 }
 \description{
 This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
@@ -48,6 +48,18 @@ If 'model' is specified as "gnlm", a generalized linear model (glm) will be fitt
 }
 \examples{
 \dontrun{
-PsychFunction(formula = y ~ x, data = my_data)
+# Fit a psychometric function using glm with default probit link function
+PsychFunction(formula = cbind(n_yes, n_no) ~ x, data = my_data)
+
+# Fit a psychometric function using brglm with link function
+PsychFunction(formula = cbind(n_yes, n_no) ~ x, model = "brglm", link = "logit", data = my_data)
+
+# Fit a psychometric function using gnlm with guessing and lapse parameters
+PsychFunction(response = c("n_yes", "n_no"), stimuli = "x", model = "gnlm", 
+              link = "weibull", guess = TRUE, lapse = TRUE, data = my_data)
 }
+
+}
+\seealso{
+\code{\link{glm}}, \code{\link{brglm}}, \code{\link{gnlr}}
 }

@@ -11,19 +11,22 @@ PsychFunction_glm(formula, response, stimuli, model, link, data)
 
 \item{response}{A character vector of response variables.}
 
-\item{stimuli}{A character vector of stimulus variables.}
+\item{stimuli}{A character string of the stimulus variable.}
 
-\item{model}{A character string specifying the model ('glm', 'brglm').}
+\item{model}{A character string specifying the model ('glm' or 'brglm').}
 
-\item{link}{A character string specifying the link function ('probit', 'logit', 'weibull').}
+\item{link}{A character string specifying the link function (possible options: 'probit', 'logit', 'weibull').}
 
-\item{data}{A data frame containing the variables specified in the formula.}
+\item{data}{A data frame containing the variables specified in the formula (or in the response and stimuli arguments).}
 }
 \value{
 A list containing:
-\item{model}{The fitted GLM model.}
+\item{model}{The fitted model.}
 \item{flag}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
 }
 \description{
-This function fits a generalized linear model for psychometric functions using glm or brglm.
+This function fits a generalized linear model for psychometric functions with glm() or brglm().
+}
+\seealso{
+[\code{\link{PsychFunction}} ]
 }
