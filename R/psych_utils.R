@@ -421,7 +421,11 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
 
   #make sure you don't overwrite existing variables
   if (exists("x_values", envir = .GlobalEnv)) {
-    decide <- readline("The variable x_values in the global environment will be overwritten and deleted. Do you wish to continue? (yes/no): ")
+    if (identical(parent.frame(), parent.frame(2))){
+      decide <- readline("The variable x_values in the global environment will be overwritten and deleted. Do you wish to continue? (yes/no): ")
+    }else{
+      decide <- "y"
+    }
     if (tolower(decide) %in% c("yes", "y")) {
       rmGlobalVar()
     }else{
