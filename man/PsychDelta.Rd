@@ -2,7 +2,7 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychDelta}
 \alias{PsychDelta}
-\title{PSE/JND from GLM Using Delta Method}
+\title{Internal function: PSE/JND from GLM Using Delta Method}
 \usage{
 PsychDelta(model_obj, alpha = 0.05, p = 0.75)
 }
@@ -23,23 +23,16 @@ Estimate Point of Subjective Equivalence (PSE), Just Noticeable
 Difference (JND), and related Standard Errors of an individual participant 
 by means of Delta Method.
 The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
-predictor and a \emph{probit} link function.
+predictor and a \emph{probit} or \emph{logit} link function.
 }
 \details{
 \code{PsychDelta} estimates PSE and JND of a psychometric
-function (object of class \code{glm}).
+function for an object of class \code{glm}.
 }
 \note{
 The function assumes that the first model coefficient is the intercept
 and the second is the slope. The estimate of the JND assumes a \emph{probit}
-link function.
-}
-\examples{
-data.S1 <- subset(simul_data, Subject == "S1")
-model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-family = binomial(link = "probit"), data = data.S1)
-PsychDelta(model.glm)
-
+or \emph{logit} link function.
 }
 \references{
 Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 

@@ -1,4 +1,50 @@
-#' PSE/JND from GLM Using Delta Method
+#' PsychEstimate - Estimate Psychological Statistics
+#'
+#' This function returns Point of Subjective Equivalence (PSE), Just Noticeable
+#' Difference (JND), and related Standard Errors of an individual participant using 
+#' either the delta method or bootstrapping.
+#'
+#' @param model_obj An object of class 'gnlm' or 'glm' representing the fitted model.
+#' @param method The estimation method. Options are "delta" or "boot".
+#' @param ... description
+#' @inheritParams PsychDelta
+#' @inheritParams PsychBoot
+#' 
+#' @return This function returns estimates of psychometric parameters.
+#' 
+#' @examples
+#' data.S1 <- subset(simul_data, Subject == "S1")
+#' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
+#' family = binomial(link = "probit"), data = data.S1)
+#' PsychEstimate(model.glm, method = "delta")
+#' 
+#' @export
+#' 
+PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, ...){
+  allowed_methods <- c("delta", "boot")
+  method <- match.arg(method, allowed_methods)
+  
+  model_class <- class(model_obj)
+  
+  if (any(model_class == "gnlm")) {
+    if (method == "boot") {
+      PsychBoot(model_obj, alpha, p)
+    } else {
+      stop("Delta method not available for model of class gnlm.")
+    }
+  } else if (any(model_class == "glm")) {
+    if (method == "boot") {
+      PsychBoot()
+    } else {
+      PsychDelta(model_obj, alpha, p)
+    }
+  } else {
+    stop("Unsupported model class.")
+  }
+  
+}
+
+#' Internal function: PSE/JND from GLM Using Delta Method
 #'
 #' Estimate Point of Subjective Equivalence (PSE), Just Noticeable
 #' Difference (JND), and related Standard Errors of an individual participant 
@@ -38,16 +84,10 @@
 #' 
 #' @keywords DeltaMethod GLM 
 #'
-#' @examples
-#' data.S1 <- subset(simul_data, Subject == "S1")
-#' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-#' family = binomial(link = "probit"), data = data.S1)
-#' PsychDelta(model.glm)
 #' 
 #' @importFrom stats vcov qnorm
 #' 
-#' @export
-#'
+#' 
 PsychDelta <- function(model_obj, alpha = 0.05, p = 0.75) {
   
   pse <- -model_obj$coef[1]/model_obj$coef[2]
@@ -83,6 +123,10 @@ PsychDelta <- function(model_obj, alpha = 0.05, p = 0.75) {
   return(output)
 }
 
+#' Internal function: PSE/JND from GLM or GNLM with Bootstrapping 
+PsychBoot <- function(){
+  
+}
 
 
 #' Plot Psychometric Function from GLM

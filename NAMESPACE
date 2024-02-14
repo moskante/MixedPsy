@@ -3,7 +3,7 @@
 export(MixDelta)
 export(MixPlot)
 export(PsySimulate)
-export(PsychDelta)
+export(PsychEstimate)
 export(PsychFunction)
 export(PsychPlot)
 export(PsychShape)
