@@ -13,11 +13,11 @@ PsychFunction_gnlm(model_glm, response, stimuli, link, data, guess, lapse)
 
 \item{stimuli}{A string with name of the stimuli variable.}
 
-\item{link}{A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
+\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
-\item{data}{A data frame containing the variables.}
+\item{data}{A data frame containing the variables used in the model.}
 
-\item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
+\item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. These parameters are only used if \code{model = 'gnlm'}. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
 }
 \value{
 A list containing:

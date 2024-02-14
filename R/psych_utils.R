@@ -4,14 +4,14 @@
 #' Difference (JND), and related Standard Errors of an individual participant 
 #' by means of Delta Method.
 #' The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
-#' predictor and a \emph{probit} link function.
+#' predictor and a \emph{probit} or \emph{logit} link function.
 #'
 #' @param model_obj the fitted psychometric function. An object of class \code{\link[stats]{glm}}.
 #' @param alpha significance level of the confidence interval.Default is 0.05 (95\% confidence interval).
 #' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
 #' 
 #' @details \code{PsychDelta} estimates PSE and JND of a psychometric
-#' function (object of class \code{glm}).
+#' function for an object of class \code{glm}.
 #' 
 #' @return \code{PsychDelta} returns a matrix including estimate, standard error,
 #' inferior and superior bounds of the confidence interval of PSE and JND. Confidence Intervals
@@ -19,7 +19,7 @@
 #'
 #' @note The function assumes that the first model coefficient is the intercept
 #' and the second is the slope. The estimate of the JND assumes a \emph{probit}
-#' link function.
+#' or \emph{logit} link function.
 #'
 #' @references
 #' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
@@ -277,6 +277,12 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
 #'
 #' @export
 PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE, ...){
+  
+  allowed_models <- c("glm", "brglm", "gnlm")
+  model <- match.arg(model, allowed_models)
+  
+  allowed_links <- c("probit", "logit", "weibull")
+  link <- match.arg(link, allowed_links)
 
   handle_deprecated_argument <- function(old_name, new_name) {
     if (old_name %in% names(list(...))) {
@@ -312,6 +318,8 @@ PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model
     model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
+    x_values<- data[,stimuli]
+    this_envir = parent.frame()
     model_gnlm <- PsychFunction_gnlm(myfit$glm, response, stimuli, link, data, guess, lapse)
     myfit$gnlm <- model_gnlm$model
     myfit$gnlm_coeff <- model_gnlm$gnlr_coeff
@@ -331,8 +339,7 @@ PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model
 #' @param response A character vector of response variables.
 #' @param stimuli A character string of the stimulus variable.
 #' @param model A character string specifying the model ('glm' or 'brglm').
-#' @param link A character string specifying the link function (possible options: 'probit', 'logit', 'weibull').
-#' @param data A data frame containing the variables specified in the formula (or in the response and stimuli arguments).
+#' @inheritParams PsychFunction
 #'
 #' @return A list containing:
 #' \item{model}{The fitted model.}
@@ -381,9 +388,7 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' @param model_glm A glm object obtained from PsychFunction_glm. This is used to extract starting estimate of the parameters of the non-linear model.
 #' @param response A character vector with the name of the response variables.
 #' @param stimuli A string with name of the stimuli variable.
-#' @param link A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution. 
-#' @param data A data frame containing the variables.
-#' @param guess,lapse Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.
+#' @inheritParams PsychFunction
 #' 
 #' @importFrom gnlm gnlr
 #' @importFrom here here
@@ -421,7 +426,7 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
 
   #make sure you don't overwrite existing variables
   if (exists("x_values", envir = .GlobalEnv)) {
-    if (identical(parent.frame(), parent.frame(2))){
+    if (identical(parent.frame(2), .GlobalEnv)){
       decide <- readline("The variable x_values in the global environment will be overwritten and deleted. Do you wish to continue? (yes/no): ")
     }else{
       decide <- "y"
@@ -437,7 +442,6 @@ PsychFunction_gnlm <- function(model_glm, response, stimuli, link, data, guess, 
   source(here("R", "global.R"))
   setGlobalVar(data, stimuli) #x_values defined as global variable due to gnlm syntax. 
   switch_function <- switch_mu_function(func_name = link, gamma, lambda)
-  
   model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
                      mu = switch_function, pmu = start_estimate)
   
