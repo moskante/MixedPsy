@@ -4,20 +4,33 @@
 \alias{PsychFunction_gnlm}
 \title{Internal Function: Fit Generalized Nonlinear Models}
 \usage{
-PsychFunction_gnlm(model_glm, response, stimuli, link, data, guess, lapse)
+PsychFunction_gnlm(
+  response,
+  stimuli,
+  data,
+  link = NULL,
+  gamma = NULL,
+  lambda = NULL,
+  pmu = NULL,
+  model = NULL
+)
 }
 \arguments{
-\item{model_glm}{A glm object obtained from PsychFunction_glm. This is used to extract starting estimate of the parameters of the non-linear model.}
-
 \item{response}{A character vector with the name of the response variables.}
 
 \item{stimuli}{A string with name of the stimuli variable.}
 
-\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
-
 \item{data}{A data frame containing the variables used in the model.}
 
-\item{guess, lapse}{Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. These parameters are only used if \code{model = 'gnlm'}. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate.}
+\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
+
+\item{gamma}{descr}
+
+\item{lambda}{descr}
+
+\item{pmu}{description}
+
+\item{model}{A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.}
 }
 \value{
 A list containing:

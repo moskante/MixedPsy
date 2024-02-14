@@ -4,10 +4,10 @@
 \alias{switch_mu_function}
 \title{Internal Function: Switch mu Function}
 \usage{
-switch_mu_function(func_name, gamma, lambda)
+switch_mu_function(link, gamma, lambda)
 }
 \arguments{
-\item{func_name}{A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
+\item{link}{A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
 \item{gamma, lambda}{parameters indicating whether to include guessing and lapse parameters, respectively. If parameters are FALSE, they are not included in the model. If numeric, they are the starting estimates used in \code{\link{gnlr}}.}
 }

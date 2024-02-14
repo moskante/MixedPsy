@@ -2,7 +2,74 @@
 % Please edit documentation in R/psych_utils.R
 \name{PsychPlot}
 \alias{PsychPlot}
-\title{Plot Psychometric Function from GLM}
+\title{#' Internal function: PSE/JND from GLM or GNLM with Bootstrapping
+#' 
+#' @param model_obj the fitted model. An object of class \code{gnlm}.
+#' @param R Integer. Number of bootstrap samples.
+#' @inheritParams PsychDelta
+#' @inheritParams PsychFunction
+#' @inheritParams PsychFunction_gnlm
+#' 
+#'  
+PsychBoot <- function(model_obj, R = 100, data, response, stimuli, alpha, p){
+  
+  model_function <- model_obj$mu
+  
+  link
+  pmu = model_obj$coefficients
+  gamma
+  lambda
+  
+  boot_try <- function(data, indices){
+    boot_data <- data[indices,]
+    
+    tryCatch(
+      {mod <- PsychFunction_gnlm(response, stimuli, link, data, pmu, gamma, lambda)
+      
+      return(mod$gnlm_coeff)
+      },
+      error = function(e){
+        return(rep(NA, length(pmu)))
+      }
+    )
+  }
+  
+  R <- 200
+  bootstrap_results <- matrix(NA, nrow = R, ncol = length(pmu))
+  
+  for (i in 1:R) {
+    
+    # Initialize retry counter
+    max_retries <- 3
+    retry_count <- 0
+    
+    # Attempt model fitting with retries
+    while (retry_count < max_retries) {
+      # Call boot with try() function to handle errors
+      result <- try(
+        boot(
+          data = data,
+          statistic = boot_try,
+          R = 1,
+        )[["t"]],
+        silent = TRUE
+      )
+      
+      # Check if model fitting was successful
+      if (!anyNA(result)) {
+        # Store the result if successful
+        bootstrap_results[i, ] <- result
+        break  # Exit retry loop
+      } else {
+        # Increment retry count
+        retry_count <- retry_count + 1
+      }
+    }
+  }
+  
+  
+}
+Plot Psychometric Function from GLM}
 \usage{
 PsychPlot(
   model_obj,

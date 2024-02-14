@@ -4,10 +4,10 @@
 \alias{PsychDelta}
 \title{Internal function: PSE/JND from GLM Using Delta Method}
 \usage{
-PsychDelta(model_obj, alpha = 0.05, p = 0.75)
+PsychDelta(model_obj, alpha, p)
 }
 \arguments{
-\item{model_obj}{the fitted psychometric function. An object of class \code{\link[stats]{glm}}.}
+\item{model_obj}{the fitted model. An object of class \code{\link[stats]{glm}}.}
 
 \item{alpha}{significance level of the confidence interval.Default is 0.05 (95\% confidence interval).}
 
