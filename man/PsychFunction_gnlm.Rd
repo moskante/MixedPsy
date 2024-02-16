@@ -8,11 +8,11 @@ PsychFunction_gnlm(
   response,
   stimuli,
   data,
+  pmu,
   link = NULL,
   gamma = NULL,
   lambda = NULL,
-  pmu = NULL,
-  model = NULL
+  formula = NULL
 )
 }
 \arguments{
@@ -22,15 +22,15 @@ PsychFunction_gnlm(
 
 \item{data}{A data frame containing the variables used in the model.}
 
+\item{pmu}{description}
+
 \item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
 \item{gamma}{descr}
 
 \item{lambda}{descr}
 
-\item{pmu}{description}
-
-\item{model}{A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.}
+\item{formula}{A formula specifying the linear model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided.}
 }
 \value{
 A list containing:

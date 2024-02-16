@@ -20,15 +20,23 @@
 #' 
 #' @export
 #' 
-PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, ...){
+PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, data = NULL, response = NULL, stimuli = NULL){
   allowed_methods <- c("delta", "boot")
   method <- match.arg(method, allowed_methods)
+  
+  if (method == "boot") {
+    if (any(is.null(list(data, response, stimuli)))) {
+      stop("data, response, and stimuli must be provided with method 'boot'")
+    }
+  } else if (!all(is.null(list(data, response, stimuli)))) {
+    warning("data, response, and stimuli should only be provided with method 'boot'")
+  }
   
   model_class <- class(model_obj)
   
   if (any(model_class == "gnlm")) {
     if (method == "boot") {
-      PsychBoot(model_obj, alpha, p)
+      PsychBoot(model_obj, data, response, stimuli, alpha, p, R = 100)
     } else {
       stop("Delta method not available for model of class gnlm.")
     }
@@ -123,73 +131,95 @@ PsychDelta <- function(model_obj, alpha, p) {
   return(output)
 }
 
-#' #' Internal function: PSE/JND from GLM or GNLM with Bootstrapping
-#' #' 
-#' #' @param model_obj the fitted model. An object of class \code{gnlm}.
-#' #' @param R Integer. Number of bootstrap samples.
-#' #' @inheritParams PsychDelta
-#' #' @inheritParams PsychFunction
-#' #' @inheritParams PsychFunction_gnlm
-#' #' 
-#' #'  
-#' PsychBoot <- function(model_obj, R = 100, data, response, stimuli, alpha, p){
-#'   
-#'   model_function <- model_obj$mu
-#'   
-#'   link
-#'   pmu = model_obj$coefficients
-#'   gamma
-#'   lambda
-#'   
-#'   boot_try <- function(data, indices){
-#'     boot_data <- data[indices,]
-#'     
-#'     tryCatch(
-#'       {mod <- PsychFunction_gnlm(response, stimuli, link, data, pmu, gamma, lambda)
-#'       
-#'       return(mod$gnlm_coeff)
-#'       },
-#'       error = function(e){
-#'         return(rep(NA, length(pmu)))
-#'       }
-#'     )
-#'   }
-#'   
-#'   R <- 200
-#'   bootstrap_results <- matrix(NA, nrow = R, ncol = length(pmu))
-#'   
-#'   for (i in 1:R) {
-#'     
-#'     # Initialize retry counter
-#'     max_retries <- 3
-#'     retry_count <- 0
-#'     
-#'     # Attempt model fitting with retries
-#'     while (retry_count < max_retries) {
-#'       # Call boot with try() function to handle errors
-#'       result <- try(
-#'         boot(
-#'           data = data,
-#'           statistic = boot_try,
-#'           R = 1,
-#'         )[["t"]],
-#'         silent = TRUE
-#'       )
-#'       
-#'       # Check if model fitting was successful
-#'       if (!anyNA(result)) {
-#'         # Store the result if successful
-#'         bootstrap_results[i, ] <- result
-#'         break  # Exit retry loop
-#'       } else {
-#'         # Increment retry count
-#'         retry_count <- retry_count + 1
-#'       }
-#'     }
-#'   }
-#'   
-#'   
-#' }
+#' Internal function: PSE/JND from GLM or GNLM with Bootstrapping
+#'
+#' @param model_obj the fitted model. An object of class \code{gnlm}.
+#' @param R Integer. Number of bootstrap samples.
+#' @inheritParams PsychDelta
+#' @inheritParams PsychFunction
+#' @inheritParams PsychFunction_gnlm
+#' 
+#' @importFrom boot boot
+#' 
+#' 
+PsychBoot <- function(model_obj, data, response, stimuli, alpha, p, R = 100){
+  model_class <- class(model_obj)
+  
+  if (any(model_class == "gnlm")) {
+    
+    boot_try <- function(data, indices, response, stimuli, pmu, formula){
+      boot_data <- data[indices,]
+      tryCatch(
+        {mod <- PsychFunction_gnlm(response, stimuli, boot_data, pmu, formula = formula)
+        
+        return(mod$gnlr_coeff)
+        },
+        error = function(e){
+          return(rep(NA, length(model_obj$coefficients)))
+        }
+      )
+    }
+  } else if (any(model_class == "glm")) {
+    data <- model_obj$data
+    boot_try <- function(data, indices, link, formula){
+      boot_data <- data[indices,]
+      tryCatch(
+        {mod <- glm(formula, family = binomial(link = link), data = boot_data)
+        
+        return(mod$coefficients)
+        },
+        error = function(e){
+          return(rep(NA, length(model_obj$coefficients)))
+        }
+      )
+    }
+  }
+  
+  bootstrap_results <- matrix(NA, nrow = R, ncol = length(model_obj$coefficients))
+  
+  for (i in 1:R) {
+    
+    # Initialize retry counter
+    max_retries <- 3
+    retry_count <- 0
+    
+    # Attempt model fitting with retries
+    while (retry_count < max_retries) {
+      if (any(model_class == "gnlm")) {
+        result <- try(
+          boot(
+            data = data,
+            statistic = boot_try,
+            response = response, stimuli = stimuli, pmu = model_obj$coefficients, formula = model_obj$mu,
+            R = 1, sim = "ordinary")[["t"]],
+          silent = TRUE
+        )} else if (any(model_class == "glm")){
+          result <- try(
+            boot(
+              data = data,
+              statistic = boot_try,
+              formula = model_obj$formula,
+              link = model_obj$family[["link"]],
+              R = 1, sim = "ordinary")[["t"]],
+            silent = TRUE
+          )
+        }
+      
+      # Check if model fitting was successful
+      if (!anyNA(result)) {
+        # Store the result if successful
+        bootstrap_results[i, ] <- result
+        break  # Exit retry loop
+      } else {
+        # Increment retry count
+        retry_count <- retry_count + 1
+      }
+    }
+  }
+  
+  return(bootstrap_results)
+  
+}
 
 
 #' Plot Psychometric Function from GLM
@@ -390,7 +420,7 @@ PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model
   
   allowed_links <- c("probit", "logit", "weibull")
   link <- match.arg(link, allowed_links)
-
+  
   handle_deprecated_argument <- function(old_name, new_name) {
     if (old_name %in% names(list(...))) {
       message(paste("In PsychFunction: the '", old_name, "' argument is deprecated. Please use '", new_name, "' instead.", sep = ""))
@@ -426,7 +456,7 @@ PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
     start_estimate = StartEstimate(myfit$glm, link, guess, lapse)
-    model_gnlm <- PsychFunction_gnlm(response, stimuli, data, link, start_estimate$gamma, start_estimate$lambda, start_estimate$pmu)
+    model_gnlm <- PsychFunction_gnlm(response, stimuli, data, start_estimate$pmu, link, start_estimate$gamma, start_estimate$lambda)
     myfit$gnlm <- model_gnlm$model
     myfit$gnlm_coeff <- model_gnlm$gnlr_coeff
   }
@@ -446,7 +476,7 @@ StartEstimate <- function(model_glm, link, guess, lapse){
   
   gamma <- if (isTRUE(guess)) runif(1, min = 0, max = 0.05) else if (is.numeric(guess)) guess else FALSE
   lambda <- if (isTRUE(lapse)) runif(1, min = 0, max = 0.05) else if (is.numeric(lapse)) lapse else FALSE
-    
+  
   if (is.numeric(gamma) && !is.numeric(lambda)){
     start_estimate <- c(start_estimate, log(gamma))
   }else if (!is.numeric(gamma) && is.numeric(lambda)){
@@ -489,6 +519,8 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
   }else{
     message("The provided formula was used as an argument in glm()")
   }
+  
+  
   
   if (link == "weibull"){
     warning("Weibull is not a possible link function for glm. Probit link was used for fitting the model.")
@@ -534,23 +566,18 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #' When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.
 #' 
 #'
-PsychFunction_gnlm <- function(response, stimuli, data, link = NULL, gamma = NULL, lambda = NULL, pmu = NULL, model = NULL){
+PsychFunction_gnlm <- function(response, stimuli, data, pmu, link = NULL, gamma = NULL, lambda = NULL, formula = NULL){
   
   stopifnot(is.character(response), is.character(stimuli))
   
   response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
   
-  if (!is.null(model)) {
-    model_eqn <- paste(attr(model$mu, "model"))
-    link <- 0
-    gamma <- 0
-    lambda <- 0
-    pmu <- model$coefficients
-    mu <- model$mu
+  if (!is.null(formula)) {
+    mu <- formula
     
   } else {
-    if (any(is.null(c(link, gamma, lambda, pmu)))) {
-      stop("When 'model' is not provided, all of 'link', 'gamma', 'lambda', 'pmu' must be specified.")
+    if (any(is.null(c(link, gamma, lambda)))) {
+      stop("When 'formula' is not provided, all of 'link', 'gamma', 'lambda', must be specified.")
     }
     mu <- switch_mu_function(link = link, gamma, lambda)
   }
@@ -568,7 +595,8 @@ PsychFunction_gnlm <- function(response, stimuli, data, link = NULL, gamma = NUL
       stop("Function terminated by user.")
     }
   } else {
-    message("x_values will be created in your global environment and quickly deleted - just so you know.")
+    if (identical(parent.frame(2), .GlobalEnv)){
+      message("x_values will be created in your global environment and quickly deleted - just so you know.")}
   }
   
   
@@ -584,7 +612,7 @@ PsychFunction_gnlm <- function(response, stimuli, data, link = NULL, gamma = NUL
   gnlr_coeff <- model_gnlm$coefficients
   
   if (length(gnlr_coeff) > 2) {
-    gnlr_coeff[3:length(gnlr_coeff)] <- log(gnlr_coeff[3:length(gnlr_coeff)])
+    gnlr_coeff[3:length(gnlr_coeff)] <- exp(gnlr_coeff[3:length(gnlr_coeff)])
   }
   
   return(list(model = model_gnlm, gnlr_coeff = gnlr_coeff))
@@ -612,9 +640,9 @@ switch_mu_function <- function(link, gamma, lambda) {
   #mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
   if (isFALSE(gamma) && isFALSE(lambda)){
     switch(link,
-          probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
-          logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
-          weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
+           probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
   }else if (is.numeric(gamma) && isFALSE(lambda)){
     switch(link,
            probit = function(p) exp(p[3]) + (1 - exp(p[3])) * pnorm(x_values, mean = p[1], sd = p[2]),

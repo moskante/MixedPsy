@@ -4,7 +4,15 @@
 \alias{PsychEstimate}
 \title{PsychEstimate - Estimate Psychological Statistics}
 \usage{
-PsychEstimate(model_obj, alpha = 0.05, p = 0.75, method, ...)
+PsychEstimate(
+  model_obj,
+  alpha = 0.05,
+  p = 0.75,
+  method,
+  data = NULL,
+  response = NULL,
+  stimuli = NULL
+)
 }
 \arguments{
 \item{model_obj}{An object of class 'gnlm' or 'glm' representing the fitted model.}
@@ -14,6 +22,12 @@ PsychEstimate(model_obj, alpha = 0.05, p = 0.75, method, ...)
 \item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 
 \item{method}{The estimation method. Options are "delta" or "boot".}
+
+\item{data}{A data frame containing the variables used in the model.}
+
+\item{response}{A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.}
+
+\item{stimuli}{A character string with the name of the stimulus variable. It must be provided for gnlm.}
 
 \item{...}{description}
 }
