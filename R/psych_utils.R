@@ -28,7 +28,7 @@ PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, data = NULL
     if (any(is.null(list(data, response, stimuli)))) {
       stop("data, response, and stimuli must be provided with method 'boot'")
     }
-  } else if (!all(is.null(list(data, response, stimuli)))) {
+  } else if (!all(is.null(c(data, response, stimuli)))) {
     warning("data, response, and stimuli should only be provided with method 'boot'")
   }
   
@@ -92,11 +92,14 @@ PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, data = NULL
 #' 
 #' @keywords DeltaMethod GLM 
 #'
-#' 
+#' @export
 #' @importFrom stats vcov qnorm
 #' 
 #' 
-PsychDelta <- function(model_obj, alpha, p) {
+PsychDelta <- function(model_obj, alpha = 0.05, p = 0.75) {
+  
+  if(length(sys.calls()) == 1)
+    warning("PsychDelta is deprecated in newer versions of the package. Use PsychFunction().")
   
   pse <- -model_obj$coef[1]/model_obj$coef[2]
   BETA <- model_obj$coef[2]
@@ -151,8 +154,9 @@ PsychBoot <- function(model_obj, data, response, stimuli, alpha, p, R = 100){
       boot_data <- data[indices,]
       tryCatch(
         {mod <- PsychFunction_gnlm(response, stimuli, boot_data, pmu, formula = formula)
-        
-        return(mod$gnlr_coeff)
+        model_coefficients <- mod$gnlr_coeff
+        psych_params <- estimate_params(model_coefficients, formula)
+        return(psych_params)
         },
         error = function(e){
           return(rep(NA, length(model_obj$coefficients)))
@@ -221,6 +225,26 @@ PsychBoot <- function(model_obj, data, response, stimuli, alpha, p, R = 100){
   
 }
 
+estimate_params <- function(model_coefficients, formula){
+  
+  model_formula <- paste(attr(formula, "model"))
+  
+  psych_params <- c(pse = model_coefficients[1])
+    
+  
+  
+  if (length(model_coefficients == 3)){ #the third parameter is either gamma or lambda
+    if (grepl("exp\\(p\\[3\\]\\) \\+ ", model_formula)){
+      psych_params <- c(psych_params, gamma = model_coefficients[3])
+    }else if(grepl("exp\\(p\\[3\\]\\)\\)", model_formula)){
+      psych_params <- c(psych_params, lambda = model_coefficients[3])
+    }
+  }else if (length(model_coefficients == 3)){
+    psych_params <- c(psych_params, gamma = model_coefficients[3], lambda = model_coefficients[4])
+  }
+  
+  return(psych_params)
+}
 
 #' Plot Psychometric Function from GLM
 #'

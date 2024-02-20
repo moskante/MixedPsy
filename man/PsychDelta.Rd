@@ -4,7 +4,7 @@
 \alias{PsychDelta}
 \title{Internal function: PSE/JND from GLM Using Delta Method}
 \usage{
-PsychDelta(model_obj, alpha, p)
+PsychDelta(model_obj, alpha = 0.05, p = 0.75)
 }
 \arguments{
 \item{model_obj}{the fitted model. An object of class \code{\link[stats]{glm}}.}
