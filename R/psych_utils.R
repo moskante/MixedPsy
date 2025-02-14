@@ -1,17 +1,71 @@
-#' PSE/JND from GLM Using Delta Method
+#' PsychEstimate - Estimate Psychological Statistics
+#'
+#' This function returns Point of Subjective Equivalence (PSE), Just Noticeable
+#' Difference (JND), and related Standard Errors of an individual participant using 
+#' either the delta method or bootstrapping.
+#'
+#' @param model_obj An object of class 'gnlm' or 'glm' representing the fitted model.
+#' @param method The estimation method. Options are "delta" or "boot".
+#' @param ... description
+#' @inheritParams PsychDelta
+#' @inheritParams PsychBoot
+#' 
+#' @return This function returns estimates of psychometric parameters.
+#' 
+#' @examples
+#' data.S1 <- subset(simul_data, Subject == "S1")
+#' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
+#' family = binomial(link = "probit"), data = data.S1)
+#' PsychEstimate(model.glm, method = "delta")
+#' 
+#' @export
+#' 
+PsychEstimate <- function(model_obj, alpha = 0.05, p = 0.75, method, data = NULL, response = NULL, stimuli = NULL){
+  allowed_methods <- c("delta", "boot")
+  method <- match.arg(method, allowed_methods)
+  
+  if (method == "boot") {
+    if (any(is.null(list(data, response, stimuli)))) {
+      stop("data, response, and stimuli must be provided with method 'boot'")
+    }
+  } else if (!all(is.null(c(data, response, stimuli)))) {
+    warning("data, response, and stimuli should only be provided with method 'boot'")
+  }
+  
+  model_class <- class(model_obj)
+  
+  if (any(model_class == "gnlm")) {
+    if (method == "boot") {
+      PsychBoot(model_obj, data, response, stimuli, alpha, p, R = 100)
+    } else {
+      stop("Delta method not available for model of class gnlm.")
+    }
+  } else if (any(model_class == "glm")) {
+    if (method == "boot") {
+      PsychBoot(model_obj, alpha, p)
+    } else {
+      PsychDelta(model_obj, alpha, p)
+    }
+  } else {
+    stop("Unsupported model class.")
+  }
+  
+}
+
+#' Internal function: PSE/JND from GLM Using Delta Method
 #'
 #' Estimate Point of Subjective Equivalence (PSE), Just Noticeable
 #' Difference (JND), and related Standard Errors of an individual participant 
 #' by means of Delta Method.
 #' The method only applies to a GLM (object of class \code{\link[stats]{glm}}) with one continuous 
-#' predictor and a \emph{probit} link function.
+#' predictor and a \emph{probit} or \emph{logit} link function.
 #'
-#' @param model.obj the fitted psychometric function. An object of class \code{\link[stats]{glm}}.
+#' @param model_obj the fitted model. An object of class \code{\link[stats]{glm}}.
 #' @param alpha significance level of the confidence interval.Default is 0.05 (95\% confidence interval).
 #' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
 #' 
 #' @details \code{PsychDelta} estimates PSE and JND of a psychometric
-#' function (object of class \code{glm}).
+#' function for an object of class \code{glm}.
 #' 
 #' @return \code{PsychDelta} returns a matrix including estimate, standard error,
 #' inferior and superior bounds of the confidence interval of PSE and JND. Confidence Intervals
@@ -19,7 +73,7 @@
 #'
 #' @note The function assumes that the first model coefficient is the intercept
 #' and the second is the slope. The estimate of the JND assumes a \emph{probit}
-#' link function.
+#' or \emph{logit} link function.
 #'
 #' @references
 #' Faraggi, D., Izikson, P., & Reiser, B. (2003). Confidence intervals for the 50 per cent 
@@ -38,49 +92,166 @@
 #' 
 #' @keywords DeltaMethod GLM 
 #'
-#' @examples
-#' data.S1 <- subset(simul_data, Subject == "S1")
-#' model.glm = glm(formula = cbind(Longer, Total - Longer) ~ X,
-#' family = binomial(link = "probit"), data = data.S1)
-#' PsychDelta(model.glm)
-#' 
+#' @export
 #' @importFrom stats vcov qnorm
 #' 
-#' @export
-#'
-PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
+#' 
+PsychDelta <- function(model_obj, alpha = 0.05, p = 0.75) {
   
-  pse <- -model.obj$coef[1]/model.obj$coef[2]
-  BETA <- model.obj$coef[2]
+  if(length(sys.calls()) == 1)
+    warning("PsychDelta is deprecated in newer versions of the package. Use PsychFunction().")
   
-  var.alpha <- vcov(model.obj)[1, 1]
-  var.beta <- vcov(model.obj)[2, 2]
-  cov.alpha.beta <- vcov(model.obj)[2, 1]
+  pse <- -model_obj$coef[1]/model_obj$coef[2]
+  BETA <- model_obj$coef[2]
   
-  var.pse <- (1/BETA^2) * (var.alpha + (2 * pse * cov.alpha.beta) + (pse^2 * var.beta))  #PSE
-  inferior.pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var.pse))
-  superior.pse <- pse + (qnorm(1 - (alpha/2)) * sqrt(var.pse))
+  var_alpha <- vcov(model_obj)[1, 1]
+  var_beta <- vcov(model_obj)[2, 2]
+  cov_alpha_beta <- vcov(model_obj)[2, 1]
   
-  jnd <- qnorm(p) * (1/BETA)
-  var.jnd <- (qnorm(p) * (-1/BETA^2))^2 * var.beta  #JND
-  inferior.jnd <- jnd - (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
-  superior.jnd <- jnd + (qnorm(1 - (alpha/2)) * sqrt(var.jnd))
+  var_pse <- (1/BETA^2) * (var_alpha + (2 * pse * cov_alpha_beta) + (pse^2 * var_beta))  #PSE
+  inferior_pse <- pse - (qnorm(1 - (alpha/2)) * sqrt(var_pse))
+  superior_pse <- pse + (qnorm(1 - (alpha/2)) * sqrt(var_pse))
   
-  output <- matrix(rbind(c(pse, sqrt(var.pse), inferior.pse, superior.pse), c(jnd, sqrt(var.jnd),
-                                                                              inferior.jnd, superior.jnd)), nrow = 2, dimnames = list(param <- c("pse", "jnd"), statistics <- c("Estimate",
-                                                                                                                                                                                "Std. Error", "Inferior", "Superior")))
+  family <- model_obj$family
+  if (family$link == "probit"){
+    jnd_const <- qnorm(p)
+  }else if(family$link == "logit"){
+    jnd_const <- log(3)
+  }else{
+    warning("link not found")
+  }
+  jnd <- jnd_const * (1/BETA)
+  var_jnd <- (jnd_const * (-1/BETA^2))^2 * var_beta  #JND
+  inferior_jnd <- jnd - (qnorm(1 - (alpha/2)) * sqrt(var_jnd))
+  superior_jnd <- jnd + (qnorm(1 - (alpha/2)) * sqrt(var_jnd))
+  
+  output <- matrix(rbind(c(pse, sqrt(var_pse), inferior_pse, superior_pse), 
+                         c(jnd, sqrt(var_jnd), inferior_jnd, superior_jnd)), 
+                   nrow = 2, 
+                   dimnames = list(param <- c("pse", "jnd"), 
+                                   statistics <- c("Estimate", "Std. Error", "Inferior", "Superior")))
   
   return(output)
 }
 
+#' Internal function: PSE/JND from GLM or GNLM with Bootstrapping
+#'
+#' @param model_obj the fitted model. An object of class \code{gnlm}.
+#' @param R Integer. Number of bootstrap samples.
+#' @inheritParams PsychDelta
+#' @inheritParams PsychFunction
+#' @inheritParams PsychFunction_gnlm
+#' 
+#' @importFrom boot boot
+#' 
+#' 
+PsychBoot <- function(model_obj, data, response, stimuli, alpha, p, R = 100){
+  model_class <- class(model_obj)
+  
+  if (any(model_class == "gnlm")) {
+    
+    boot_try <- function(data, indices, response, stimuli, pmu, formula){
+      boot_data <- data[indices,]
+      tryCatch(
+        {mod <- PsychFunction_gnlm(response, stimuli, boot_data, pmu, formula = formula)
+        model_coefficients <- mod$gnlr_coeff
+        psych_params <- estimate_params(model_coefficients, formula)
+        return(psych_params)
+        },
+        error = function(e){
+          return(rep(NA, length(model_obj$coefficients)))
+        }
+      )
+    }
+  } else if (any(model_class == "glm")) {
+    data <- model_obj$data
+    boot_try <- function(data, indices, link, formula){
+      boot_data <- data[indices,]
+      tryCatch(
+        {mod <- glm(formula, family = binomial(link = link), data = boot_data)
+        
+        return(mod$coefficients)
+        },
+        error = function(e){
+          return(rep(NA, length(model_obj$coefficients)))
+        }
+      )
+    }
+  }
+  
+  bootstrap_results <- matrix(NA, nrow = R, ncol = length(model_obj$coefficients))
+  
+  for (i in 1:R) {
+    
+    # Initialize retry counter
+    max_retries <- 3
+    retry_count <- 0
+    
+    # Attempt model fitting with retries
+    while (retry_count < max_retries) {
+      if (any(model_class == "gnlm")) {
+        result <- try(
+          boot(
+            data = data,
+            statistic = boot_try,
+            response = response, stimuli = stimuli, pmu = model_obj$coefficients, formula = model_obj$mu,
+            R = 1, sim = "ordinary")[["t"]],
+          silent = TRUE
+        )} else if (any(model_class == "glm")){
+          result <- try(
+            boot(
+              data = data,
+              statistic = boot_try,
+              formula = model_obj$formula,
+              link = model_obj$family[["link"]],
+              R = 1, sim = "ordinary")[["t"]],
+            silent = TRUE
+          )
+        }
+      
+      # Check if model fitting was successful
+      if (!anyNA(result)) {
+        # Store the result if successful
+        bootstrap_results[i, ] <- result
+        break  # Exit retry loop
+      } else {
+        # Increment retry count
+        retry_count <- retry_count + 1
+      }
+    }
+  }
+  
+  return(bootstrap_results)
+  
+}
 
+estimate_params <- function(model_coefficients, formula){
+  
+  model_formula <- paste(attr(formula, "model"))
+  
+  psych_params <- c(pse = model_coefficients[1])
+    
+  
+  
+  if (length(model_coefficients == 3)){ #the third parameter is either gamma or lambda
+    if (grepl("exp\\(p\\[3\\]\\) \\+ ", model_formula)){
+      psych_params <- c(psych_params, gamma = model_coefficients[3])
+    }else if(grepl("exp\\(p\\[3\\]\\)\\)", model_formula)){
+      psych_params <- c(psych_params, lambda = model_coefficients[3])
+    }
+  }else if (length(model_coefficients == 3)){
+    psych_params <- c(psych_params, gamma = model_coefficients[3], lambda = model_coefficients[4])
+  }
+  
+  return(psych_params)
+}
 
 #' Plot Psychometric Function from GLM
 #'
 #' Plot a psychometric function given an object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}. 
 #' The plot can be drawn on a new or existing \code{ggplot} object.
 #'
-#' @param model.obj the fitted psychometric function. An object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
+#' @param model_obj the fitted psychometric function. An object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.
 #' @param addTo specifies an existing \code{ggplot} object where the new line should be plotted. If no object is given, the function is drawn on a new plot.
 #' @param showData logical, defines if proportion of binomial responses for each stimulus level are presented. Default is TRUE.
 #' @param ps.type,ps.size type and size of the plotted line (see \code{"ggplot2-spec"}).
@@ -118,7 +289,7 @@ PsychDelta <- function(model.obj, alpha = 0.05, p = 0.75) {
 #' 
 #' @export
 #' 
-PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
+PsychPlot <- function(model_obj, addTo = NULL, showData = TRUE,
                       ps.type = "solid", ps.size = 1, ps.lab = ""){
   if(is.null(addTo)){
     p <- ggplot()
@@ -126,14 +297,14 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
     p <- addTo}
   
   # GLM
-  temp <- names(model.obj$model)
+  temp <- names(model_obj$model)
   xname <- temp[2]
   
-  data <- model.obj$data
-  data$y <- model.obj$y
+  data <- model_obj$data
+  data$y <- model_obj$y
   longData <- data.frame(pretty(data[[xname]], 1000))
   names(longData) <- xname
-  longData$y <- predict(object = model.obj, newdata = longData, type = "response")
+  longData$y <- predict(object = model_obj, newdata = longData, type = "response")
   
   plot <- list()
   
@@ -143,8 +314,8 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
     plot$data <- geom_point(inherit.aes = FALSE, data = data, aes_string(xname, 'y', color = 'ps.lab'))
   }
   
-  if(model.obj$family[["link"]] == "probit"){
-    psych <- PsychDelta(model.obj)
+  if(model_obj$family[["link"]] %in% c("probit", "logit")){
+    psych <- PsychDelta(model_obj, alpha = 0.05, p = 0.75)
     plot$segment <- geom_segment(inherit.aes = FALSE, data = NULL, 
                                  aes(x = psych["pse", "Inferior"], xend = psych["pse", "Superior"], 
                                      y = 0.5, yend = 0.5, color = ps.lab),
@@ -229,23 +400,71 @@ PsychShape <- function(pse = 0, jnd = 1, p = 0.75, x.range = c(NA, NA), ps.link 
 #'
 #' This function provides an interface for fitting psychometric functions using various models: generalized linear model (glm), glm with bias reduction (brglm), generalized non-linear model (gnlm).
 #'
-#' @param formula A formula specifying the model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided. 
+#' @param formula A formula specifying the linear model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided. 
 #' @param response A character vector with the name of the response variables. It is used to create the matrix of the binomial response. It must be provided for gnlm.
-#' @param stimuli A character vector with the name of the stimulus variable. It must be provided for gnlm.
+#' @param stimuli A character string with the name of the stimulus variable. It must be provided for gnlm.
 #' @param model A character string specifying the model. Possible options are 'glm' for the generalized linear model, 'brglm' for glm with bias reduction, 'gnlm' for generalized non-linear model. Default is 'glm'.
-#' @param link A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions (for binomial family). For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.
+#' @param link A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.
 #' @param data A data frame containing the variables used in the model.
-#' @param guess Logical or numeric value indicating whether to include a guessing parameter. Only used if model = 'gnlm'. Default is FALSE.
-#' @param lapse Logical or numeric value indicating whether to include a lapse parameter. Only used if model = 'gnlm'. Default is FALSE.
+#' @param guess,lapse Logical or numeric values indicating whether to include guessing and lapse parameters, respectively. These parameters are only used if \code{model = 'gnlm'}. Default is FALSE for both. If parameters are FALSE, they are not included in the model. If TRUE, parameters are estimated with a randomly assigned starting value. If numeric, the value is used as a starting estimate. 
+#' @param ... Additional arguments included for back compatibility. Deprecated arguments from older package versions ('ps.formula', 'ps.link', 'ps.data', 'br') will be automatically handled.
 #'
-#' @return A list containing the fitted models and additional information. 
-#'
+#' @return A list containing:
+#' \item{glm}{The fitted GLM model.}
+#' \item{recommend_br}{A logical value indicating whether bias reduced is recommended.}
+#' \item{brglm}{The fitted Bias Reduced GLM, if \code{model = "brglm"}.}
+#' \item{gnlm}{The fitted generalized non linear model (gnlm), if \code{model = "gnlm"}.}
+#' \item{gnlm_coeff}{The estimated coefficients of the gnlm. When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.}
+#' 
+#' @note
+#' If 'model' is specified as "gnlm", a generalized linear model (glm) will be fitted to extract initial estimates for the parameters of the non-linear model. 
+#' 
+#' 
 #' @examples
 #' \dontrun{
-#' PsychFunction_new(formula = y ~ x, data = my_data)
+#' # Fit a psychometric function using glm with default probit link function
+#' PsychFunction(formula = cbind(n_yes, n_no) ~ x, data = my_data)
+#' 
+#' # Fit a psychometric function using brglm with link function
+#' PsychFunction(formula = cbind(n_yes, n_no) ~ x, model = "brglm", link = "logit", data = my_data)
+#' 
+#' # Fit a psychometric function using gnlm with guessing and lapse parameters
+#' PsychFunction(response = c("n_yes", "n_no"), stimuli = "x", model = "gnlm", 
+#'               link = "weibull", guess = TRUE, lapse = TRUE, data = my_data)
 #' }
+#'
+#' @seealso
+#' \code{\link{glm}}, \code{\link{brglm}}, \code{\link{gnlr}}
+#'
 #' @export
-PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE){
+PsychFunction <- function(formula = NULL, response = NULL, stimuli = NULL, model = "glm", link = "probit", data, guess = FALSE, lapse = FALSE, ...){
+  
+  allowed_models <- c("glm", "brglm", "gnlm")
+  model <- match.arg(model, allowed_models)
+  
+  allowed_links <- c("probit", "logit", "weibull")
+  link <- match.arg(link, allowed_links)
+  
+  handle_deprecated_argument <- function(old_name, new_name) {
+    if (old_name %in% names(list(...))) {
+      message(paste("In PsychFunction: the '", old_name, "' argument is deprecated. Please use '", new_name, "' instead.", sep = ""))
+      return(list(...)[[old_name]])
+    }
+  }
+  
+  old_arguments <- c("ps.formula", "ps.link", "ps.data", "br")
+  # Check for additional arguments and raise an error if found
+  additional_args <- setdiff(names(list(...)), old_arguments)
+  if (length(additional_args) > 0) {
+    stop(paste("Additional arguments found:", paste(additional_args, collapse = ", ")))
+  }
+  
+  formula <- if ("ps.formula" %in% names(list(...))) handle_deprecated_argument("ps.formula", "formula") else formula
+  link <- if ("ps.link" %in% names(list(...))) handle_deprecated_argument("ps.link", "link") else link
+  data <- if ("ps.data" %in% names(list(...))) handle_deprecated_argument("ps.data", "data") else data
+  if ("br" %in% names(list(...))) {
+    message("In PsychFunction: 'br' was removed. For bias reduction glm, use model = 'brglm'")
+  }
   
   stopifnot(is.character(model), is.character(link), is.data.frame(data))
   
@@ -260,52 +479,87 @@ PsychFunction <- function (formula = NULL, response = NULL, stimuli = NULL, mode
     model_brglm <- PsychFunction_glm(formula, response, stimuli, model, link, data)
     myfit$brglm <- model_brglm$model
   }else if(model == "gnlm"){
-    x_values <- data[,stimuli]
-    myfit$gnlm <- PsychFunction_gnlm(myfit$glm, link, response, data, stimuli, guess, lapse)
+    start_estimate = StartEstimate(myfit$glm, link, guess, lapse)
+    model_gnlm <- PsychFunction_gnlm(response, stimuli, data, start_estimate$pmu, link, start_estimate$gamma, start_estimate$lambda)
+    myfit$gnlm <- model_gnlm$model
+    myfit$gnlm_coeff <- model_gnlm$gnlr_coeff
   }
   
   return(myfit)
 }
 
-
-
+#' Internal Function: Find start estimate parameters for gnlm
+#' 
+#' @param model_glm A glm object obtained from PsychFunction_glm. This is used to extract starting estimate of the parameters of the non-linear model.
+#' @inheritParams PsychFunction
+#' 
+StartEstimate <- function(model_glm, link, guess, lapse){
+  
+  glm_coeff <- summary(model_glm)$coefficients[,1]
+  start_estimate <- c(-glm_coeff[1]/glm_coeff[2], ifelse(link == "weibull", 2, 1/glm_coeff[2]))
+  
+  gamma <- if (isTRUE(guess)) runif(1, min = 0, max = 0.05) else if (is.numeric(guess)) guess else FALSE
+  lambda <- if (isTRUE(lapse)) runif(1, min = 0, max = 0.05) else if (is.numeric(lapse)) lapse else FALSE
+  
+  if (is.numeric(gamma) && !is.numeric(lambda)){
+    start_estimate <- c(start_estimate, log(gamma))
+  }else if (!is.numeric(gamma) && is.numeric(lambda)){
+    start_estimate <- c(start_estimate, log(lambda))
+  }else if(is.numeric(gamma) && is.numeric(lambda)){
+    start_estimate <- c(start_estimate, log(gamma), log(lambda))
+  }
+  
+  return(list(pmu = start_estimate, gamma = gamma, lambda = lambda))
+  
+}
 
 #' Internal Function: Fit Generalized Linear Models
 #'
-#' This function fits a generalized linear model for psychometric functions using glm or brglm.
+#' This function fits a generalized linear model for psychometric functions with glm() or brglm().
 #'
 #' @param formula A formula specifying the model. If NULL, 'response' and 'stimuli' must be provided.
 #' @param response A character vector of response variables.
-#' @param stimuli A character vector of stimulus variables.
-#' @param model A character string specifying the model ('glm', 'brglm').
-#' @param link A character string specifying the link function ('probit', 'logit', 'weibull').
-#' @param data A data frame containing the variables specified in the formula.
+#' @param stimuli A character string of the stimulus variable.
+#' @param model A character string specifying the model ('glm' or 'brglm').
+#' @inheritParams PsychFunction
 #'
-#' @return A list containing the fitted model and additional information.
+#' @return A list containing:
+#' \item{model}{The fitted model.}
+#' \item{flag}{A logical value indicating whether the a Bias Reduced GLM (brglm) is recommended.}
 #'
 #' @importFrom brglm brglm
 #' @importFrom stats glm
 #' @importFrom stats as.formula
 #' 
+#' @seealso
+#' [\code{\link{PsychFunction}} ]
+#' 
 PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
-  if (is.null(formula)){
+  if(is.null(formula)){
     stopifnot(is.character(response), is.character(stimuli))
     formula_string <- paste("cbind(", response[1], ",", response[2], ")", "~", stimuli)
-    formula <- as.formula(formula_string)  
+    formula <- as.formula(formula_string) 
+    message(paste("glm formula was built from response and stimuli strings as: ", formula_string))
+  }else{
+    message("The provided formula was used as an argument in glm()")
   }
+  
+  
+  
   if (link == "weibull"){
-    print("Warning: weibull is not a possible link function for glm. probit was used instead")
+    warning("Weibull is not a possible link function for glm. Probit link was used for fitting the model.")
     link = "probit"
   }
+  
   model_glm <- glm(formula, family = binomial(link = link), 
                    data = data)
   
   eps <- 1e-15
   brflag <- ifelse(1 - max(model_glm$fitted.values) <= eps & 
                      trunc(min(model_glm$fitted.values)) == 0, TRUE, FALSE)
-  if (model == "brglm" ) { #& brflag == TRUE
-    model_glm <- brglm(formula, family = binomial(link = link), 
-                       data = data)
+  
+  if (model == "brglm" ) {
+    model_glm <- brglm(formula, family = binomial(link = link), data = data)
   }
   
   return(list(model = model_glm, flag = brflag))
@@ -315,38 +569,66 @@ PsychFunction_glm <- function(formula, response, stimuli, model, link, data){
 #'
 #' This function fits a generalized nonlinear model for psychometric functions.
 #'
-#' @param model_glm A glm object obtained from PsychFunction_glm.
-#' @param link A character string specifying the link function ('probit', 'logit', 'weibull').
-#' @param response A character vector of response variables.
-#' @param stimuli A character vector of stimulus variables.
-#' @param data A data frame containing the variables specified in the formula.
-#' @param guess Logical or numeric value indicating whether to include a guessing parameter.
-#' @param lapse Logical or numeric value indicating whether to include a lapse parameter.
+#' @param response A character vector with the name of the response variables.
+#' @param stimuli A string with name of the stimuli variable.
+#' @param pmu description
+#' @param gamma descr
+#' @param lambda descr
+#' @inheritParams PsychFunction
+#' 
 #' @importFrom gnlm gnlr
 #' @importFrom here here
+<<<<<<< HEAD
 #' @importFrom rmutil fnenvir
 #' @return A gnlr object representing the fitted model.
+=======
+#' 
+#' @seealso 
+#' [\code{\link{PsychFunction}}] [\code{\link{switch_mu_function}} ]
+#' 
+#' @return A list containing:
+#' \item{model_gnlm}{The fitted generalized non-linear model.}
+#' \item{gnlr_coeff}{The estimated coefficients (see notes). }
+#' 
+#' @note For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases.
+#' When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.
+#' 
+>>>>>>> 68028e7c9192c5fecae41ef5fb1d74a14c12d29f
 #'
-PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, lapse){
-  #source(here("R", "global.R"))
-  # to do: warning if formula is defined instead of response and stimuli - or get response and stimuli from formula but give a warning.
+PsychFunction_gnlm <- function(response, stimuli, data, pmu, link = NULL, gamma = NULL, lambda = NULL, formula = NULL){
+  
+  stopifnot(is.character(response), is.character(stimuli))
+  
   response <- parse(text = paste("cbind(", response[1], ",", response[2], ")"))
   
-  
-  glm_coeff <- summary(model_glm)$coefficients[,1]
-  start_estimate <- c(-glm_coeff[1]/glm_coeff[2], ifelse(link == "weibull", 2, 1/glm_coeff[2]))
-  
-  lambda <- if (isTRUE(lapse)) runif(1, min = 0, max = 0.05) else if (is.numeric(lapse)) lapse else FALSE
-  gamma <- if (isTRUE(guess)) runif(1, min = 0, max = 0.05) else if (is.numeric(guess)) guess else FALSE
-  
-  if (is.numeric(gamma) && !is.numeric(lambda)){
-    start_estimate <- c(start_estimate, gamma)
-  }else if (!is.numeric(gamma) && is.numeric(lambda)){
-    start_estimate <- c(start_estimate, lambda)
-  }else if(is.numeric(gamma) && is.numeric(lambda)){
-    start_estimate <- c(start_estimate, gamma, lambda)
+  if (!is.null(formula)) {
+    mu <- formula
+    
+  } else {
+    if (any(is.null(c(link, gamma, lambda)))) {
+      stop("When 'formula' is not provided, all of 'link', 'gamma', 'lambda', must be specified.")
+    }
+    mu <- switch_mu_function(link = link, gamma, lambda)
   }
   
+  #make sure you don't overwrite existing variables
+  if (exists("x_values", envir = .GlobalEnv)) {
+    if (identical(parent.frame(2), .GlobalEnv)){
+      decide <- readline("The variable x_values in the global environment will be overwritten and deleted. Do you wish to continue? (yes/no): ")
+    }else{
+      decide <- "y"
+    }
+    if (tolower(decide) %in% c("yes", "y")) {
+      rmGlobalVar()
+    }else{
+      stop("Function terminated by user.")
+    }
+  } else {
+    if (identical(parent.frame(2), .GlobalEnv)){
+      message("x_values will be created in your global environment and quickly deleted - just so you know.")}
+  }
+  
+<<<<<<< HEAD
   #x_values <- data[,stimuli]
   #this_env <- new.env()
   #x_values <- data[,stimuli]
@@ -356,31 +638,53 @@ PsychFunction_gnlm <- function(model_glm, link, response, data, stimuli, guess, 
   #switch_mu_function(x_values, func_name = link, data, stimuli, gamma, lambda)
   #attr(switch_function, "model") <- TRUE
   #environment(switch_function) <- this_env
-  model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
-                     mu = switch_function, pmu = start_estimate)
+=======
   
-  #rmGlobalVar()
-  return(model_gnlm)
+  source(here("R", "global.R"))
+  setGlobalVar(data, stimuli) #x_values defined as global variable due to gnlm syntax. 
+  
+  
+>>>>>>> 68028e7c9192c5fecae41ef5fb1d74a14c12d29f
+  model_gnlm <- gnlr(y = with(data, eval(response)), distribution = "binomial",
+                     mu = mu, pmu = pmu)
+  
+  rmGlobalVar()
+  
+  gnlr_coeff <- model_gnlm$coefficients
+  
+  if (length(gnlr_coeff) > 2) {
+    gnlr_coeff[3:length(gnlr_coeff)] <- exp(gnlr_coeff[3:length(gnlr_coeff)])
+  }
+  
+  return(list(model = model_gnlm, gnlr_coeff = gnlr_coeff))
 }
 
+<<<<<<< HEAD
 assign_global_var <- function(data, stimuli) {
   x_values <<- data[,stimuli]
 }
 
+=======
+>>>>>>> 68028e7c9192c5fecae41ef5fb1d74a14c12d29f
 
 #' Internal Function: Switch mu Function
 #'
 #' This function switches between different mu functions based on the provided parameters.
 #'
-#' @param func_name A character string specifying the mu function ('probit', 'logit', 'weibull').
-#' @param data dataset
-#' @param stimuli name of stimulus variable
-#' @param gamma A numeric or logical value indicating the gamma parameter.
-#' @param lambda A numeric or logical value indicating the lambda parameter.
+#' @param link A string specifying the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution. 
+#' @param gamma,lambda parameters indicating whether to include guessing and lapse parameters, respectively. If parameters are FALSE, they are not included in the model. If numeric, they are the starting estimates used in \code{\link{gnlr}}.
+#' 
+#' @note
+#' Instead of directly fitting guess and lapse parameters, this function uses \code{exp(p[3])} and \code{exp(p[4])}. By doing so, we force the estimations to be non-negative. 
+#' 
+#' 
+#' @seealso 
+#' [\code{\link{PsychFunction}}] [\code{\link{PsychFunction_gnlm}}] [\code{\link{gnlr}}]
 #'
 #' @return A function representing the selected mu function.
 #' @importFrom stats pweibull
 #' 
+<<<<<<< HEAD
 switch_mu_function <- function(x_values, func_name, data, stimuli, gamma, lambda) {
   #setGlobalVar(data, stimuli) #x_values defined as global variable (<<-) due to gnlm syntax. 
   #x_values <- parent.frame()$x_values
@@ -407,4 +711,61 @@ switch_mu_function <- function(x_values, func_name, data, stimuli, gamma, lambda
   #          logit = function(p) p[3] + (1 - p[3] - p[4]) * plogis(x_values, location = p[1], scale = p[2]),
   #          weibull = function(p) p[3] + (1 - p[3] - p[4]) * pweibull(x_values, scale = p[1], shape = p[2]))
   # }
+=======
+switch_mu_function <- function(link, gamma, lambda) {
+  #mu <- function(p) pnorm(x_values, mean = p[1], sd = p[2])
+  if (isFALSE(gamma) && isFALSE(lambda)){
+    switch(link,
+           probit = function(p) pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (is.numeric(gamma) && isFALSE(lambda)){
+    switch(link,
+           probit = function(p) exp(p[3]) + (1 - exp(p[3])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) exp(p[3]) + (1 - exp(p[3])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) exp(p[3]) + (1 - exp(p[3])) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if (isFALSE(gamma) && is.numeric(lambda)){
+    switch(link,
+           probit = function(p) (1 - exp(p[3])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) (1 - exp(p[3])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) (1 - exp(p[3])) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }else if(is.numeric(gamma) && is.numeric(lambda)){
+    switch(link,
+           probit = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * pnorm(x_values, mean = p[1], sd = p[2]),
+           logit = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * plogis(x_values, location = p[1], scale = p[2]),
+           weibull = function(p) exp(p[3]) + (1 - exp(p[3]) - exp(p[4])) * pweibull(x_values, scale = p[1], shape = p[2]))
+  }
+}
+
+#' Internal Function: Set global variable
+#' 
+#' Setting a global variable is necessary in order to correctly define the function to fit with gnlm. 
+#' 
+#' @param data dataset
+#' @param stimuli A string of the stumuli variable.
+#' 
+#' @seealso [PsychFunction_gnlm()]
+#' @noRd
+#' @return Invisible NULL.
+#'
+#' @keywords internal
+
+setGlobalVar <- function(data, stimuli) {
+  unlockBinding("x_values", globalenv())
+  #globalenv()$x_values <- data[, stimuli]
+  assign("x_values", data[, stimuli], envir = .GlobalEnv)
+  #x_values <<- data[, stimuli]
+  # Lock the binding after modification
+  lockBinding("x_values", globalenv())
+  #invisible(NULL)
+}
+
+#' Internal Function: Delete global variable
+#' 
+#' Remove the global variable
+#' @noRd
+#' 
+rmGlobalVar <- function(){
+  rm("x_values", envir = .GlobalEnv)
+>>>>>>> 68028e7c9192c5fecae41ef5fb1d74a14c12d29f
 }

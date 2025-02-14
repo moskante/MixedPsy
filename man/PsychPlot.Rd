@@ -5,7 +5,7 @@
 \title{Plot Psychometric Function from GLM}
 \usage{
 PsychPlot(
-  model.obj,
+  model_obj,
   addTo = NULL,
   showData = TRUE,
   ps.type = "solid",
@@ -14,7 +14,7 @@ PsychPlot(
 )
 }
 \arguments{
-\item{model.obj}{the fitted psychometric function. An object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.}
+\item{model_obj}{the fitted psychometric function. An object of class \code{\link[stats]{glm}} or \code{\link[brglm]{brglm}}.}
 
 \item{addTo}{specifies an existing \code{ggplot} object where the new line should be plotted. If no object is given, the function is drawn on a new plot.}
 

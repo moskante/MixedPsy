@@ -4,26 +4,46 @@
 \alias{PsychFunction_gnlm}
 \title{Internal Function: Fit Generalized Nonlinear Models}
 \usage{
-PsychFunction_gnlm(model_glm, link, response, data, stimuli, guess, lapse)
+PsychFunction_gnlm(
+  response,
+  stimuli,
+  data,
+  pmu,
+  link = NULL,
+  gamma = NULL,
+  lambda = NULL,
+  formula = NULL
+)
 }
 \arguments{
-\item{model_glm}{A glm object obtained from PsychFunction_glm.}
+\item{response}{A character vector with the name of the response variables.}
 
-\item{link}{A character string specifying the link function ('probit', 'logit', 'weibull').}
+\item{stimuli}{A string with name of the stimuli variable.}
 
-\item{response}{A character vector of response variables.}
+\item{data}{A data frame containing the variables used in the model.}
 
-\item{data}{A data frame containing the variables specified in the formula.}
+\item{pmu}{description}
 
-\item{stimuli}{A character vector of stimulus variables.}
+\item{link}{A character string specifying the link function. For generalized linear models, it defines the link function specified in the family object. See \code{\link[stats]{family}} for details of family functions for the binomial family. For generalized non-linear models, it defines the function being fitted. Possible options are 'probit' for the cumulative normal distribution, 'logit' for the cumulative logit distribution, 'weibull' for cumulative Weibull distribution.}
 
-\item{guess}{Logical or numeric value indicating whether to include a guessing parameter.}
+\item{gamma}{descr}
 
-\item{lapse}{Logical or numeric value indicating whether to include a lapse parameter.}
+\item{lambda}{descr}
+
+\item{formula}{A formula specifying the linear model (glm or brglm). If NULL, 'response' and 'stimuli' must be provided.}
 }
 \value{
-A gnlr object representing the fitted model.
+A list containing:
+\item{model_gnlm}{The fitted generalized non-linear model.}
+\item{gnlr_coeff}{The estimated coefficients (see notes). }
 }
 \description{
 This function fits a generalized nonlinear model for psychometric functions.
+}
+\note{
+For easier use of the \code{\link{gnlr}} function, the vector of stimuli is defined as a global variable. It's recommended to avoid global variables for better code maintainability and to prevent potential conflicts. This implementation will be changed in future releases.
+When guess and lapse parameters are present, the fitted coefficients returned by the \code{glnr} function undergo a log-transformation. This transformation is applied as a result of fitting the parameters of the model using the exponential function, which ensures that the coefficients remain positive.
+}
+\seealso{
+[\code{\link{PsychFunction}}] [\code{\link{switch_mu_function}} ]
 }
