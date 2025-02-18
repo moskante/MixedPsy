@@ -14,7 +14,7 @@ pseMer(
 )
 }
 \arguments{
-\item{mer.obj}{an object of class \code{\linkS4class{merMod}}.}
+\item{mer.obj}{an object of class \code{\link[lme4]{merMod}}.}
 
 \item{B}{integer. Number of bootstrap samples.}
 
@@ -42,7 +42,7 @@ given an object of class \code{\link[lme4]{merMod}}.
 }
 \details{
 \code{pseMer} estimates PSE and JND (and additional user defined parameters) from a 
-fitted GLMM model (class \code{\linkS4class{merMod}}).
+fitted GLMM model (class \code{\link[lme4]{merMod}}).
 }
 \note{
 A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,

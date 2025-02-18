@@ -8,7 +8,7 @@ xplode(model.obj, name.cont = NA, name.factor = NA, names.response = NA)
 }
 \arguments{
 \item{model.obj}{The GLMM fitted with \code{glmer}. An object of class
-\code{"\linkS4class{merMod}"}.}
+\code{"\link[lme4]{merMod}"}.}
 
 \item{name.cont}{A string providing the name of the continuous predictor,
 as in the formula object of the fitted model}
@@ -20,12 +20,12 @@ predictor, as in the formula object of the fitted model}
 response variable, as in the formula object of the fitted model}
 }
 \description{
-Extract values from an object of class \code{\linkS4class{merMod}}
+Extract values from an object of class \code{\link[lme4]{merMod}}
 (more specifically, from an object of subclass \code{glmerMod}).
 }
 \details{
 For simplicity and maintenance reasons, several \code{MixedPsy} functions take as input an
- object of class \code{xplode} instead of an object of class \code{\linkS4class{merMod}}.
+ object of class \code{xplode} instead of an object of class \code{\link[lme4]{merMod}}.
 }
 \examples{
 library(lme4)

@@ -282,7 +282,7 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
 #' Difference (JND) and the related Standard Errors by means of Bootstrap Method, 
 #' given an object of class \code{\link[lme4]{merMod}}.
 #' 
-#' @param mer.obj an object of class \code{\linkS4class{merMod}}.
+#' @param mer.obj an object of class \code{\link[lme4]{merMod}}.
 #' @param B integer. Number of bootstrap samples.
 #' @param FUN an optional, custom made function to specify the required parameters to be estimated.
 #' If NULL, \code{pseMer} estimates PSE and 50\%JND of a univariable GLMM with a single intercept and slope.
@@ -298,7 +298,7 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
 #' based on the percentile method.
 #'
 #' @details \code{pseMer} estimates PSE and JND (and additional user defined parameters) from a 
-#' fitted GLMM model (class \code{\linkS4class{merMod}}). 
+#' fitted GLMM model (class \code{\link[lme4]{merMod}}). 
 #' 
 #' @note A first custom function was written in 2012 for the non-CRAN package MERpsychophisics,
 #' based on the algorithm in Moscatelli et al. (2012). The current function is a wrapper

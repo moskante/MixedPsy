@@ -1,10 +1,10 @@
 #' Extract values from a fitted GLMM object
 #'
-#' Extract values from an object of class \code{\linkS4class{merMod}}
+#' Extract values from an object of class \code{\link[lme4]{merMod}}
 #' (more specifically, from an object of subclass \code{glmerMod}). 
 #'
 #' @param model.obj The GLMM fitted with \code{glmer}. An object of class
-#' \code{"\linkS4class{merMod}"}.
+#' \code{"\link[lme4]{merMod}"}.
 #' @param name.cont  A string providing the name of the continuous predictor,
 #' as in the formula object of the fitted model
 #' @param name.factor A string providing the name of name of the categorical
@@ -13,7 +13,7 @@
 #'  response variable, as in the formula object of the fitted model
 #'  
 #' @details For simplicity and maintenance reasons, several \code{MixedPsy} functions take as input an
-#'  object of class \code{xplode} instead of an object of class \code{\linkS4class{merMod}}. 
+#'  object of class \code{xplode} instead of an object of class \code{\link[lme4]{merMod}}. 
 #'
 #'  
 #' @keywords GLMM
