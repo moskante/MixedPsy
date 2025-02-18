@@ -2,10 +2,42 @@
 % Please edit documentation in R/psych_utils_multi.R
 \name{PsychParameters}
 \alias{PsychParameters}
-\title{Fit multiple psychometric functions with GLM}
+\title{Calculate PSE and JND Parameters from a List of GLM Models}
 \usage{
 PsychParameters(model_list, se = TRUE)
 }
+\arguments{
+\item{model_list}{A structured list of grouped models obtained from \code{\link{PsychModels}}. The function can also take as input a GLM model or a list of GLM models.}
+
+\item{se}{Logical. if \code{TRUE}, the function includes columns for standard errors of JND and PSE. Default is \code{TRUE}.}
+}
+\value{
+A data frame containing PSE and JND estimates, along with their standard errors (if \code{se = TRUE}). 
+If the input is a grouped list of models, the output includes columns for the grouping factors.
+}
 \description{
-Fit multiple psychometric functions with GLM
+This function calculates the Point of Subjective Equality (PSE) and Just Noticeable Difference (JND) from a list of fitted Generalized Linear Models (GLMs). It extracts these parameters using the \code{\link{PsychDelta}} function and returns them in a structured dataframe.
+}
+\details{
+The function supports three types of input:
+\itemize{
+  \item A structured list of models (as produced by \code{\link{PsychModels}}): Extracts PSE and JND for each model and includes the corresponding grouping factors in the output.
+  \item A single GLM model: Returns a one-row data frame with PSE, JND, and (if requested) standard errors.
+  \item A list of GLM models: Computes PSE and JND for each model and returns a data frame.
+}
+}
+\examples{
+model_list <- PsychModels(formula = cbind(Longer, Total - Longer) ~ X,
+data = simul_data,
+group_factors = "Subject")
+psych_parameters <- PsychParameters(model_list)
+
+model_list_vibro <- PsychModels(vibro_exp3,
+group_factors = c("subject", "vibration"),
+formula = cbind(faster, slower) ~ speed)
+psych_parameters_vibro <- PsychParameters(model_list_vibro)
+ 
+}
+\seealso{
+\code{\link{PsychModels}}, \code{\link{PsychDelta}}
 }

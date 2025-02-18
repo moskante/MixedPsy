@@ -234,7 +234,7 @@ PsychPlot <- function(model.obj, addTo = NULL, showData = TRUE,
 #'
 #' Plot a psychometric function with known PSE and JND on a new or existing \code{ggplot} object.
 #'
-#' @param pse,jnd point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.
+#' @param pse,jnd point of subjective equivalence (PSE) and just noticeable difference (JND) of the desired psychometric function.
 #' @param p probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).
 #' @param x.range vector of length two specifying the range of the psychometric function.
 #' @param ps.link a link function for the binomial family of error distribution.

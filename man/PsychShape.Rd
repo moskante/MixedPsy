@@ -17,7 +17,7 @@ PsychShape(
 )
 }
 \arguments{
-\item{pse, jnd}{point of subjective equivalende (PSE) and just noticeable difference (JND) of the desired psychometric function.}
+\item{pse, jnd}{point of subjective equivalence (PSE) and just noticeable difference (JND) of the desired psychometric function.}
 
 \item{p}{probability value relative to the JND upper limit. Default is 0.75 (value for 50\% JND).}
 

@@ -2,10 +2,39 @@
 % Please edit documentation in R/psych_utils_multi.R
 \name{PsychInterpolate}
 \alias{PsychInterpolate}
-\title{Fit multiple psychometric functions with GLM}
+\title{Interpolate Predictions from a List of GLM Models}
 \usage{
 PsychInterpolate(model_list, n_points = 100)
 }
+\arguments{
+\item{model_list}{A structured list of grouped models obtained from \code{\link{PsychModels}}.}
+
+\item{n_points}{An integer number. It specifies the number of points to interpolate along the independent variable range. Default is 100.}
+}
+\value{
+A data frame containing the interpolated independent variable, the corresponding predicted values from the GLM model, and columns for the grouping factors.
+}
 \description{
-Fit multiple psychometric functions with GLM
+This function generates an interpolated dataset by predicting values across a range of an independent variable from a list of generalized linear models (GLMs).
+}
+\details{
+The function takes a structured list of models, as produced by \code{\link{PsychModels}}, and generates a new dataset with interpolated values for the independent variable. 
+Predictions are computed at evenly spaced points across the observed range for each model, and the results are returned in a long-format data frame.
+}
+\examples{
+model_list <- PsychModels(formula = cbind(Longer, Total - Longer) ~ X,
+data = simul_data,
+group_factors = "Subject")
+
+longData <- PsychInterpolate(model_list)
+
+# use the interpolated dataset to plot model:
+library(ggplot2)
+ggplot(longData, aes(X, prediction, color = Subject)) +
+geom_line() +
+geom_point(data = simul_data, aes(X, Longer/Total))
+
+}
+\seealso{
+\code{\link{PsychModels}}, \code{\link[stats]{predict}}.
 }

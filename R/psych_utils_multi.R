@@ -26,6 +26,10 @@
 #' 
 #' @importFrom dplyr group_by group_split across distinct
 #' @importFrom purrr map_chr map
+#' @importFrom magrittr "%>%"
+#' @importFrom rlang set_names
+#' @importFrom tidyselect all_of
+#' 
 #' @export 
 #'
 #' 
@@ -34,15 +38,23 @@ PsychModels <- function(data, group_factors = NULL, formula, link = "probit") {
   
   if(!is.null(group_factors)){
     
-    models <- data %>% group_by(across(all_of(group_factors))) %>%
-      group_split() %>%
-      set_names(map_chr(., ~ paste(unlist(distinct(.x, across(all_of(group_factors))) %>% as.list()), collapse = "_"))) %>%
-      map(~ {
-        group_levels <- distinct(.x, across(all_of(group_factors))) %>% as.list()
+    grouped_data <- data %>% 
+      group_by(across(all_of(group_factors))) %>%
+      group_split() 
+    group_names <- map_chr(grouped_data, function(group_data) {
+      paste(unlist(distinct(group_data, across(all_of(group_factors))) %>% as.list()), collapse = "_")
+    })
+    
+    models <- grouped_data %>%
+      set_names(group_names) %>%
+      map(function(group_data) {
+        group_levels <- distinct(group_data, across(all_of(group_factors))) %>% as.list()
         model <- glm(formula = formula, 
-                     family = binomial(link = link), data = .x)
+                     family = binomial(link = link), 
+                     data = group_data)
         list(model = model, group = group_levels)
       })
+    
   } else {
     model <- glm(formula = formula, 
                  family = binomial(link = link), data = data)
@@ -52,8 +64,38 @@ PsychModels <- function(data, group_factors = NULL, formula, link = "probit") {
   return(models)
 }
 
-#' Fit multiple psychometric functions with GLM
+#' Calculate PSE and JND Parameters from a List of GLM Models
 #' 
+#' This function calculates the Point of Subjective Equality (PSE) and Just Noticeable Difference (JND) from a list of fitted Generalized Linear Models (GLMs). It extracts these parameters using the \code{\link{PsychDelta}} function and returns them in a structured dataframe.
+#' 
+#' @param model_list A structured list of grouped models obtained from \code{\link{PsychModels}}. The function can also take as input a GLM model or a list of GLM models.  
+#' @param se Logical. if \code{TRUE}, the function includes columns for standard errors of JND and PSE. Default is \code{TRUE}.
+#' 
+#' @details
+#' The function supports three types of input:
+#' \itemize{
+#'   \item A structured list of models (as produced by \code{\link{PsychModels}}): Extracts PSE and JND for each model and includes the corresponding grouping factors in the output.
+#'   \item A single GLM model: Returns a one-row data frame with PSE, JND, and (if requested) standard errors.
+#'   \item A list of GLM models: Computes PSE and JND for each model and returns a data frame.
+#' }
+#' 
+#' @return A data frame containing PSE and JND estimates, along with their standard errors (if \code{se = TRUE}). 
+#' If the input is a grouped list of models, the output includes columns for the grouping factors.
+#' 
+#' @seealso \code{\link{PsychModels}}, \code{\link{PsychDelta}}
+#' 
+#' @examples
+#' model_list <- PsychModels(formula = cbind(Longer, Total - Longer) ~ X,
+#' data = simul_data,
+#' group_factors = "Subject")
+#' psych_parameters <- PsychParameters(model_list)
+#' 
+#' model_list_vibro <- PsychModels(vibro_exp3,
+#' group_factors = c("subject", "vibration"),
+#' formula = cbind(faster, slower) ~ speed)
+#' psych_parameters_vibro <- PsychParameters(model_list_vibro)
+#'  
+#' @importFrom purrr map_dfr
 #' @export
 #'
 #' 
@@ -112,7 +154,34 @@ PsychParameters <- function(model_list, se = TRUE) {
   
 }
 
-#' Fit multiple psychometric functions with GLM
+#' Interpolate Predictions from a List of GLM Models
+#' 
+#' This function generates an interpolated dataset by predicting values across a range of an independent variable from a list of generalized linear models (GLMs).
+#' 
+#' @param model_list A structured list of grouped models obtained from \code{\link{PsychModels}}.  
+#' @param n_points An integer number. It specifies the number of points to interpolate along the independent variable range. Default is 100.
+#' 
+#' @details
+#' The function takes a structured list of models, as produced by \code{\link{PsychModels}}, and generates a new dataset with interpolated values for the independent variable. 
+#' Predictions are computed at evenly spaced points across the observed range for each model, and the results are returned in a long-format data frame.
+#' 
+#' @return A data frame containing the interpolated independent variable, the corresponding predicted values from the GLM model, and columns for the grouping factors.
+#' 
+#' @seealso \code{\link{PsychModels}}, \code{\link[stats]{predict}}.
+#' 
+#' @examples
+#' model_list <- PsychModels(formula = cbind(Longer, Total - Longer) ~ X,
+#' data = simul_data,
+#' group_factors = "Subject")
+#' 
+#' longData <- PsychInterpolate(model_list)
+#' 
+#' # use the interpolated dataset to plot model:
+#' library(ggplot2)
+#' ggplot(longData, aes(X, prediction, color = Subject)) +
+#' geom_line() +
+#' geom_point(data = simul_data, aes(X, Longer/Total))
+#' 
 #' @export
 #'
 #' 
@@ -137,7 +206,7 @@ PsychInterpolate <- function(model_list, n_points = 100) {
       
       # Generate evenly spaced values over x range
       x_range <- range(model$model[[x_var]], na.rm = TRUE)
-      interp_x <- data.frame(seq(x_range[1], x_range[2], length.out = 1000))
+      interp_x <- data.frame(seq(x_range[1], x_range[2], length.out = n_points))
       colnames(interp_x) <- x_var
       
       # Add group factor columns
