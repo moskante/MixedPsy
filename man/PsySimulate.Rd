@@ -11,49 +11,60 @@ PsySimulate(
   ntrials = 40,
   nintervals = 9,
   xint = c(40, 120),
-  constant = T
+  constant = T,
+  lapse = FALSE,
+  guess = FALSE,
+  lapse_range = c(0, 0.05),
+  guess_range = c(0, 0.05)
 )
 }
 \arguments{
-\item{fixeff}{array of fixed effects. First item is the intercept, second
-item is the slope.}
+\item{fixeff}{Numeric array of fixed effects. The first item is the intercept, the second element is the slope.}
 
-\item{raneff}{array of random effects. First item is the intercept, second
-item is the covariance, third item is the slope.}
+\item{raneff}{Numeric array of random effects. The first element is the intercept, the second is the covariance, the third is the slope variance.}
 
-\item{nsubjects}{number of subjects to simulate. Default is 8.}
+\item{nsubjects}{Integer. Number of subjects to simulate. Default is 8.}
 
-\item{ntrials}{number of trials for each stimulus level. Default is 40.}
+\item{ntrials}{Integer. Number of trials for each stimulus level. Default is 40.}
 
-\item{nintervals}{number of stimulus levels. Default is 9.}
+\item{nintervals}{Integer. Number of stimulus levels. Default is 9.}
 
-\item{xint}{range of the stimulus interval. Default is c(40,120)}
+\item{xint}{Numeric array specifying the range of stimulus intensity. Default is c(40,120)}
 
-\item{constant}{logical. If set to FALSE, stimulus levels are randomly generated,
-uniformly distributed values within the selected interval.
-otherwise, the X interval is divided in  intervals of constant
-length. Default is TRUE.}
+\item{constant}{Logical. If TRUE (defualt), stimulus levels are evenly spaced across `xint`. If FALSE, stimulus levels are randomly generated within the interval.}
+
+\item{lapse}{Logical or numeric. If FALSE (default), no lapse rate is applied. If TRUE, a random lapse rate is drawn from `lapse_range`. If a numeric value is provided, all subjects will have the same lapse rate.}
+
+\item{guess}{Logical or numeric. If FALSE (default), no guessing rate is applied. If TRUE, a random guessing rate is drawn from `guess_range`. If a numeric value is provided, all subjects will have the same guess rate.}
+
+\item{lapse_range}{Numeric array defining the minimum and maximum lapse rates when `lapse = TRUE`. Default is c(0, 0.05).}
+
+\item{guess_range}{Numeric array defining the minimum and maximum guessing rates when `guess = TRUE`. Default is c(0.05, 0.10).}
 }
 \value{
-\code{PsySimulate} returns a simulated dataset. If no input arguments are specified, the function returns 
-a dataset with the same characteristics as \code{\link{simul_data}}.
+A data frame containing simulated psychophysical data with the following columns:
+\itemize{
+  \item \code{Subject} - Subject identifier.
+  \item \code{X} - Stimulus intensity levels.
+  \item \code{Intercept} - Individual intercept values.
+  \item \code{Slope} - Individual slope values.
+  \item \code{Gamma} (optional) - Guess rate, included if `guess` is not FALSE.
+  \item \code{Lambda} (optional) - Lapse rate, included if `lapse` is not FALSE.
+  \item \code{Longer} - Number of "Longer" responses at each stimulus level.
+  \item \code{Total} - Total number of trials per stimulus level.
+}
 }
 \description{
-The function simulates data of a typical psychophysics experiment. For each simulated 
-participant, the function returns the following information: individual slope and intercept 
-coefficients, given the fixed and random effects parameters provided as input; summary of 
-the simulated binomial response to a range of intensity levels between a specified range.
+The function simulates data from a typical psychophysics experiment using a 2-alternative forced choice task and the method of constant stimuli. 
+For each simulated participant, the function returns the following information: individual slope and intercept coefficients, based on the fixed and random effects parameters provided as input; summary of the simulated binomial response across a range of intensity levels within a specified stimulus range; individual lapse and guess rates, if applicable.
 }
 \examples{
 datafr.S1 <- PsySimulate(fixeff = c(0, 1), xint = c(-5,5), 
 nsubject = 1, ntrials = 60, nintervals = 10, constant = FALSE)
-library(ggplot2)
-g <- ggplot(datafr.S1, aes(X,Longer/Total)) + geom_point()
 
-PsychShape(pse = 0, jnd = qnorm(0.75)/1, ps.link = "probit", 
-x.range = c(-5,5), addTo = g, ps.color = "red")
+simul_data <- PsySimulate(ntrials = 160, nsubjects = 10, guess = TRUE, lapse = TRUE)
 
 }
 \seealso{
-\code{\link{PsychShape}} for plotting a psychometric function given PSE and JND.
+\code{\link{PsychShape}} for plotting a psychometric function given PSE and JND. \code{\link{simul_data}} for a dataset simulated with the function.
 }
