@@ -216,7 +216,7 @@ MixDelta <- function(xplode.obj, alpha = 0.05, p = 0.75) {
 #' 
 
 MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
-
+  
   xname = xplode.obj$cont.colname
   yname = xplode.obj$response.colnames[1]
   
@@ -242,11 +242,11 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
   temp.data$size = xplode.obj$size
   
   temp.model = glmer(formula = temp.formula, family = binomial("probit"), data = temp.data,
-                           nAGQ = 1)
+                     nAGQ = 1)
   
   longData = expand.grid(cont = pretty(temp.data[[xname]], 1000),
-                          group = grouplevels, 
-                          factor = factorlevels)
+                         group = grouplevels, 
+                         factor = factorlevels)
   names(longData) = c(xname,groupname,factorname)
   longData$y = predict(object = temp.model, newdata = longData, type = "response")
   
@@ -274,6 +274,88 @@ MixPlot <- function(xplode.obj, facet_by= NULL, showData = TRUE){
   print(p + plot)
   
 }
+
+#' Interpolate Predictions from a GLMM
+#' 
+#' This function generates an interpolated dataset by predicting values across a range of an independent variable for a GLMM.
+#' 
+#' @param xplode.obj an object of class \code{\link{xplode}}.  
+#' @param n_points An integer number. It specifies the number of points to interpolate along the independent variable range. Default is 100.
+#' 
+#' @return A data frame containing the interpolated independent variable, the corresponding predicted values from the fitted GLMM, and columns for the independent factors.
+
+#' 
+#' @seealso \code{\link{xplode}}, \code{\link[stats]{predict}}.
+#' 
+#' @examples
+#' mod.simul = glmer(formula = cbind(Longer, Total - Longer) ~ X + (1 | Subject), 
+#' family = binomial(link = "probit"), data = simul_data)
+#' xplode.mod = xplode(model = mod.simul, name.cont = "X")
+#' 
+#' longData <- MixInterpolate(xplode.mod)
+#' 
+#' # use the interpolated dataset to plot model:
+#' library(ggplot2)
+#' ggplot(longData, aes(X, prediction, color = Subject)) +
+#' geom_line() +
+#' geom_point(data = simul_data, aes(X, Longer/Total))
+#' 
+#' @export
+#'
+#' 
+
+MixInterpolate <- function(xplode.obj, n_points = 100) {
+  xname <- xplode.obj$cont.colname
+  
+  factorname <- xplode.obj$factor.colname
+  factorlevels <- if (!is.null(factorname)) xplode.obj$factor.levels else NULL
+  
+  groupname <- xplode.obj$Groups.colnames
+  grouplevels <- xplode.obj$Groups.levels
+  
+  temp.data <- as.data.frame(xplode.obj$model.frame)
+  temp.formula <- xplode.obj$formula
+  
+  if (is.matrix(temp.data[[1]])) {
+    resp <- split(temp.data[[1]], col(temp.data[[1]]))
+    names(resp) <- paste0("y", seq_along(resp))
+    temp.data <- cbind(temp.data, data.frame(resp))
+    temp.formula <- update(temp.formula, cbind(y1, y2) ~ .)
+  }
+  
+  temp.link <- xplode.obj$family$link
+  
+  temp.model = glmer(formula = temp.formula, 
+                     family = binomial(link = temp.link), 
+                     data = temp.data)
+  
+  xseq <- seq(min(temp.data[[xname]], na.rm = TRUE),
+              max(temp.data[[xname]], na.rm = TRUE),
+              length.out = n_points)
+  
+  if (!is.null(factorname)) {
+    longData <- expand.grid(
+      cont = xseq,
+      group = grouplevels,
+      factor = factorlevels
+    )
+    names(longData) <- c(xname, groupname, factorname)
+  } else {
+    longData <- expand.grid(
+      cont = xseq,
+      group = grouplevels
+    )
+    names(longData) <- c(xname, groupname)
+  }
+  
+  longData$prediction <-  predict(object = temp.model, newdata = longData, type = "response")
+  
+  return(longData)
+  
+}
+
+
+
 
 
 #' PSE/JND from GLMM Estimates Using Bootstrap Method
